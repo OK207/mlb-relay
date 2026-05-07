@@ -1,14 +1,14 @@
- name: MLB Relay                                                               
-  on:             
-    repository_dispatch:
-      types: [mlb-picks]
-  jobs:
-    send:
-      runs-on: ubuntu-latest                                                    
-      steps:
-        - name: Send to Telegram                                                
-          run: |  
-            curl -s -X POST "https://api.telegram.org/bot${{ 
-  secrets.TELEGRAM_TOKEN }}/sendMessage" \                                      
-              --data-urlencode "chat_id=8644528540" \
-              --data-urlencode "text=${{ github.event.client_payload.text }}"  
+name: MLB Relay
+on:
+  repository_dispatch:
+    types: [mlb-picks]
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send to Telegram
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TG_TEXT: ${{ github.event.client_payload.text }}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" --data-urlencode "chat_id=8644528540" --data-urlencode "text=${TG_TEXT}"
