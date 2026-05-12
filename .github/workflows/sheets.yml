@@ -1,0 +1,110 @@
+name: Update MLB Google Sheet                             
+
+  on:
+    repository_dispatch:
+      types: [mlb-sheets-log-picks, mlb-sheets-grade-picks]
+                                                                                
+  jobs:
+    update:                                                                     
+      runs-on: ubuntu-latest                                
+      steps:
+        - uses: actions/checkout@v4
+
+        - run: pip install gspread
+
+        - name: Update sheet
+          env:
+            CREDS: ${{ secrets.GOOGLE_SHEETS_CREDS }}
+            SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}                            
+            DATE: ${{ github.event.client_payload.date }}
+            EVENT: ${{ github.event.action }}                                   
+          run: |                                            
+            python3 - << 'EOF'                                                  
+            import gspread, json, os
+            from datetime import datetime, timedelta                            
+                                                            
+            gc =
+  gspread.service_account_from_dict(json.loads(os.environ['CREDS']))            
+            ws = gc.open_by_key(os.environ['SHEET_ID']).sheet1
+            date_str = os.environ['DATE']                                       
+            event = os.environ['EVENT']                     
+
+            GS_EPOCH = datetime(1899, 12, 30)                                   
+   
+            def to_gs_date(s):                                                  
+                return (datetime.strptime(s, '%Y-%m-%d') - GS_EPOCH).days
+                                                                                
+            def parse_row_date(cell):
+                try:                                                            
+                    v = float(cell)                         
+                    return (GS_EPOCH + timedelta(days=v)).date()                
+                except Exception:
+                    for fmt in ('%Y-%m-%d','%m/%d/%Y','%m/%d/%y'):              
+                        try: return datetime.strptime(str(cell).strip(),        
+  fmt).date()
+                        except: pass                                            
+                return None                                                     
+  
+            target_date = datetime.strptime(date_str, '%Y-%m-%d').date()        
+                                                            
+            if event == 'mlb-sheets-log-picks':
+                with open(f'picks/{date_str}.json') as f:
+                    picks = json.load(f)                                        
+                if not picks:
+                    print('No picks to log'); exit(0)                           
+                                                                                
+                col_a = ws.col_values(1)
+                last = max((i + 1 for i, v in enumerate(col_a) if v and i > 0), 
+  default=1)                                                                    
+  
+                rows = []                                                       
+                for idx, p in enumerate(picks):             
+                    n = last + 1 + idx
+                    prev = n - 1
+                    wf = f'=E{n}' if n == 2 else f'=F{prev}+E{n}'
+                    sf = f'=D{n}' if n == 2 else f'=D{n}+G{prev}'               
+                    rows.append([to_gs_date(date_str), p['bet'], p['odds'],
+  p['units'],                                                                   
+                for idx, p in enumerate(picks):
+                    n = last + 1 + idx
+                    prev = n - 1
+
+                rows = []
+                for idx, p in enumerate(picks):
+                    n = last + 1 + idx
+                    prev = n - 1
+                    wf = f'=E{n}' if n == 2 else f'=F{prev}+E{n}'
+                    sf = f'=D{n}' if n == 2 else f'=D{n}+G{prev}'
+                    rows.append([to_gs_date(date_str), p['bet'], p['odds'], p['units'],
+                                  '', wf, sf, f'=(F{n}/G{n})*100', '', 'ccr-auto'])
+
+                ws.update(f'A{last+1}:J{last+len(rows)}', rows, value_input_option='USER_ENTERED')
+                print(f'Logged {len(rows)} pick(s) for {date_str}')
+
+            elif event == 'mlb-sheets-grade-picks':
+                try:
+                    with open(f'grades/{date_str}.json') as f:
+                        raw = json.load(f)
+                except FileNotFoundError:
+                    print(f'No grades file for {date_str}'); exit(0)
+
+                grades = {g['bet']: g['net'] for g in raw
+                          if g.get('outcome') in ('W','L','P') and g.get('net') is not None}
+                if not grades:
+                    print('No gradeable picks'); exit(0)
+
+                all_rows = ws.get_all_values()
+                updates = []
+                for i, row in enumerate(all_rows[1:], start=2):
+                    if len(row) < 2: continue
+                    rd = parse_row_date(row[0])
+                    if rd == target_date and row[1] in grades:
+                        if len(row) < 5 or not str(row[4]).strip():
+                            updates.append({'range': f'E{i}', 'values': [[grades[row[1]]]]})
+
+                if updates:
+                    ws.batch_update(updates)
+                    print(f'Graded {len(updates)} pick(s) for {date_str}')
+                else:
+                    print(f'No ungraded rows found for {date_str}')
+            EOF
