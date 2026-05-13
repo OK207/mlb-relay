@@ -1,8 +1,8 @@
-name: Update MLB Google Sheet
+name: Update Google Sheet
 
 on:
   repository_dispatch:
-    types: [mlb-sheets-log-picks, mlb-sheets-grade-picks]
+    types: [mlb-sheets-log-picks, mlb-sheets-grade-picks, nba-sheets-log-picks, nba-sheets-grade-picks]
 
 jobs:
   update:
@@ -24,14 +24,21 @@ jobs:
           from datetime import datetime, timedelta
 
           gc = gspread.service_account_from_dict(json.loads(os.environ['CREDS']))
-          ws = gc.open_by_key(os.environ['SHEET_ID']).sheet1
+          wb = gc.open_by_key(os.environ['SHEET_ID'])
           date_str = os.environ['DATE']
           event = os.environ['EVENT']
+
+          is_nba = event.startswith('nba-')
+          ws = wb.worksheet('NBA') if is_nba else wb.sheet1
 
           GS_EPOCH = datetime(1899, 12, 30)
 
           def to_gs_date(s):
               return (datetime.strptime(s, '%Y-%m-%d') - GS_EPOCH).days
+
+          def to_display_date(s):
+              dt = datetime.strptime(s, '%Y-%m-%d')
+              return f'{dt.month}/{dt.day}/{str(dt.year)[2:]}'
 
           def parse_row_date(cell):
               try:
@@ -45,8 +52,9 @@ jobs:
 
           target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
 
-          if event == 'mlb-sheets-log-picks':
-              with open(f'picks/{date_str}.json') as f:
+          if event in ('mlb-sheets-log-picks', 'nba-sheets-log-picks'):
+              picks_path = f'picks/nba/{date_str}.json' if is_nba else f'picks/{date_str}.json'
+              with open(picks_path) as f:
                   picks = json.load(f)
               if not picks:
                   print('No picks to log'); exit(0)
@@ -60,15 +68,17 @@ jobs:
                   prev = n - 1
                   wf = f'=E{n}' if n == 2 else f'=F{prev}+E{n}'
                   sf = f'=D{n}' if n == 2 else f'=D{n}+G{prev}'
-                  rows.append([to_gs_date(date_str), p['bet'], p['odds'], p['units'],
+                  date_val = to_display_date(date_str) if is_nba else to_gs_date(date_str)
+                  rows.append([date_val, p['bet'], p['odds'], p['units'],
                                 '', wf, sf, f'=(F{n}/G{n})*100', '', 'ccr-auto'])
 
               ws.update(f'A{last+1}:J{last+len(rows)}', rows, value_input_option='USER_ENTERED')
               print(f'Logged {len(rows)} pick(s) for {date_str}')
 
-          elif event == 'mlb-sheets-grade-picks':
+          elif event in ('mlb-sheets-grade-picks', 'nba-sheets-grade-picks'):
+              grades_path = f'grades/nba/{date_str}.json' if is_nba else f'grades/{date_str}.json'
               try:
-                  with open(f'grades/{date_str}.json') as f:
+                  with open(grades_path) as f:
                       raw = json.load(f)
               except FileNotFoundError:
                   print(f'No grades file for {date_str}'); exit(0)
