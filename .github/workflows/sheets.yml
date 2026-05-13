@@ -1,6 +1,10 @@
 name: Update Google Sheet
 
 on:
+  push:
+    paths:
+      - 'picks/**.json'
+      - 'grades/**.json'
   repository_dispatch:
     types: [mlb-sheets-log-picks, mlb-sheets-grade-picks, nba-sheets-log-picks, nba-sheets-grade-picks]
 
@@ -9,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - run: pip install gspread
 
@@ -20,13 +26,43 @@ jobs:
           EVENT: ${{ github.event.action }}
         run: |
           python3 - << 'EOF'
-          import gspread, json, os
+          import gspread, json, os, subprocess, re
           from datetime import datetime, timedelta
+
+          event_name = os.environ.get('GITHUB_EVENT_NAME', 'repository_dispatch')
+
+          if event_name == 'push':
+              result = subprocess.run(['git', 'diff', '--name-only', 'HEAD~1', 'HEAD'],
+                                      capture_output=True, text=True)
+              changed = [l for l in result.stdout.strip().split('\n') if l]
+              event = None
+              date_str = None
+              for f in changed:
+                  m = re.match(r'^picks/(nba/)?(\d{4}-\d{2}-\d{2})\.json$', f)
+                  if m:
+                      sport = 'nba' if m.group(1) else 'mlb'
+                      event = f'{sport}-sheets-log-picks'
+                      date_str = m.group(2)
+                      break
+                  m = re.match(r'^grades/(nba/)?(\d{4}-\d{2}-\d{2})\.json$', f)
+                  if m:
+                      sport = 'nba' if m.group(1) else 'mlb'
+                      event = f'{sport}-sheets-grade-picks'
+                      date_str = m.group(2)
+                      break
+              if not event or not date_str:
+                  print('No relevant file change detected'); exit(0)
+          else:
+              event = os.environ.get('EVENT', '')
+              date_str = os.environ.get('DATE', '')
+
+          if not event or not date_str:
+              print('Missing event or date'); exit(1)
+
+          print(f'Event: {event}  Date: {date_str}')
 
           gc = gspread.service_account_from_dict(json.loads(os.environ['CREDS']))
           wb = gc.open_by_key(os.environ['SHEET_ID'])
-          date_str = os.environ['DATE']
-          event = os.environ['EVENT']
 
           is_nba = event.startswith('nba-')
           ws = wb.worksheet('NBA') if is_nba else wb.sheet1
@@ -45,9 +81,11 @@ jobs:
                   v = float(cell)
                   return (GS_EPOCH + timedelta(days=v)).date()
               except Exception:
-                  for fmt in ('%Y-%m-%d','%m/%d/%Y','%m/%d/%y'):
-                      try: return datetime.strptime(str(cell).strip(), fmt).date()
-                      except: pass
+                  for fmt in ('%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y'):
+                      try:
+                          return datetime.strptime(str(cell).strip(), fmt).date()
+                      except Exception:
+                          pass
               return None
 
           target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -59,11 +97,23 @@ jobs:
               if not picks:
                   print('No picks to log'); exit(0)
 
+              all_rows = ws.get_all_values()
+              existing_bets = set()
+              for row in all_rows[1:]:
+                  if len(row) >= 2:
+                      rd = parse_row_date(row[0])
+                      if rd == target_date and row[1].strip():
+                          existing_bets.add(row[1].strip())
+
+              new_picks = [p for p in picks if p['bet'] not in existing_bets]
+              if not new_picks:
+                  print(f'All {len(picks)} picks already logged for {date_str}'); exit(0)
+
               col_a = ws.col_values(1)
               last = max((i + 1 for i, v in enumerate(col_a) if v and i > 0), default=1)
 
               rows = []
-              for idx, p in enumerate(picks):
+              for idx, p in enumerate(new_picks):
                   n = last + 1 + idx
                   prev = n - 1
                   wf = f'=E{n}' if n == 2 else f'=F{prev}+E{n}'
@@ -73,7 +123,7 @@ jobs:
                                 '', wf, sf, f'=(F{n}/G{n})*100', '', 'ccr-auto'])
 
               ws.update(f'A{last+1}:J{last+len(rows)}', rows, value_input_option='USER_ENTERED')
-              print(f'Logged {len(rows)} pick(s) for {date_str}')
+              print(f'Logged {len(rows)} new pick(s) for {date_str} (skipped {len(picks)-len(new_picks)} duplicates)')
 
           elif event in ('mlb-sheets-grade-picks', 'nba-sheets-grade-picks'):
               grades_path = f'grades/nba/{date_str}.json' if is_nba else f'grades/{date_str}.json'
@@ -84,14 +134,15 @@ jobs:
                   print(f'No grades file for {date_str}'); exit(0)
 
               grades = {g['bet']: g['net'] for g in raw
-                        if g.get('outcome') in ('W','L','P') and g.get('net') is not None}
+                        if g.get('outcome') in ('W', 'L', 'P') and g.get('net') is not None}
               if not grades:
                   print('No gradeable picks'); exit(0)
 
               all_rows = ws.get_all_values()
               updates = []
               for i, row in enumerate(all_rows[1:], start=2):
-                  if len(row) < 2: continue
+                  if len(row) < 2:
+                      continue
                   rd = parse_row_date(row[0])
                   if rd == target_date and row[1] in grades:
                       if len(row) < 5 or not str(row[4]).strip():
