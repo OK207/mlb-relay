@@ -118,7 +118,7 @@ jobs:
                   prev = n - 1
                   wf = f'=E{n}' if n == 2 else f'=F{prev}+E{n}'
                   sf = f'=D{n}' if n == 2 else f'=D{n}+G{prev}'
-                  date_val = to_display_date(date_str) if is_nba else to_gs_date(date_str)
+                  date_val = to_display_date(date_str)
                   rows.append([date_val, p['bet'], p['odds'], p['units'],
                                 '', wf, sf, f'=(F{n}/G{n})*100', '', 'ccr-auto'])
 
