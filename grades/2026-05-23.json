@@ -1,0 +1,23 @@
+[
+  {
+    "bet": "Pirates ML",
+    "odds": -154,
+    "units": 2.0,
+    "outcome": "L",
+    "net": -2.0
+  },
+  {
+    "bet": "Rays ML",
+    "odds": 125,
+    "units": 1.0,
+    "outcome": "P",
+    "net": 0.0
+  },
+  {
+    "bet": "Mariners ML",
+    "odds": -142,
+    "units": 1.0,
+    "outcome": "L",
+    "net": -1.0
+  }
+]
