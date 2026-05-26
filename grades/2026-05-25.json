@@ -1,0 +1,16 @@
+[
+  {
+    "bet": "Phillies ML",
+    "odds": -132,
+    "units": 1,
+    "outcome": "L",
+    "net": -1.0
+  },
+  {
+    "bet": "Yankees ML",
+    "odds": -148,
+    "units": 1,
+    "outcome": "W",
+    "net": 0.68
+  }
+]
