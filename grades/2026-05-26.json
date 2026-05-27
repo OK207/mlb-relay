@@ -1,0 +1,23 @@
+[
+  {
+    "bet": "Padres ML",
+    "odds": -118,
+    "units": 2,
+    "outcome": "L",
+    "net": -2.0
+  },
+  {
+    "bet": "Braves ML",
+    "odds": -108,
+    "units": 1,
+    "outcome": "W",
+    "net": 0.93
+  },
+  {
+    "bet": "Reds ML",
+    "odds": -116,
+    "units": 1,
+    "outcome": "W",
+    "net": 0.86
+  }
+]
