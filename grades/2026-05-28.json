@@ -1,0 +1,16 @@
+[
+  {
+    "bet": "Braves ML",
+    "odds": -138,
+    "units": 2.0,
+    "outcome": "W",
+    "net": 1.45
+  },
+  {
+    "bet": "Rangers ML",
+    "odds": -150,
+    "units": 1.0,
+    "outcome": "L",
+    "net": -1.0
+  }
+]
