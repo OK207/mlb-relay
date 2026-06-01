@@ -1,0 +1,23 @@
+[
+  {
+    "bet": "Dodgers ML",
+    "odds": -120,
+    "units": 2.0,
+    "outcome": "W",
+    "net": 1.67
+  },
+  {
+    "bet": "Mariners ML",
+    "odds": -148,
+    "units": 1.0,
+    "outcome": "W",
+    "net": 0.68
+  },
+  {
+    "bet": "Rays ML",
+    "odds": -210,
+    "units": 1.0,
+    "outcome": "W",
+    "net": 0.48
+  }
+]
