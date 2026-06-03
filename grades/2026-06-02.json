@@ -1,0 +1,23 @@
+[
+  {
+    "bet": "Mariners ML",
+    "odds": -152,
+    "units": 1.0,
+    "outcome": "W",
+    "net": 0.66
+  },
+  {
+    "bet": "Phillies ML",
+    "odds": -130,
+    "units": 1.0,
+    "outcome": "W",
+    "net": 0.77
+  },
+  {
+    "bet": "Giants ML",
+    "odds": 160,
+    "units": 0.5,
+    "outcome": "L",
+    "net": -0.5
+  }
+]
