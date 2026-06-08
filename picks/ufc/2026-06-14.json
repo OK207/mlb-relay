@@ -1,0 +1,21 @@
+{
+  "event": "UFC Freedom 250",
+  "event_date": "2026-06-14",
+  "picks": [
+    {
+      "bet": "Pereira ML",
+      "odds": -111,
+      "units": 1.0
+    },
+    {
+      "bet": "Lopes ML",
+      "odds": -192,
+      "units": 1.0
+    },
+    {
+      "bet": "Ruffy ML",
+      "odds": -155,
+      "units": 0.5
+    }
+  ]
+}
