@@ -3,18 +3,13 @@
   "event_date": "2026-06-14",
   "picks": [
     {
-      "bet": "Pereira ML",
-      "odds": -111,
-      "units": 1.0
+      "bet": "Garcia ML",
+      "odds": 154,
+      "units": 0.75
     },
     {
-      "bet": "Lopes ML",
-      "odds": -192,
-      "units": 1.0
-    },
-    {
-      "bet": "Ruffy ML",
-      "odds": -155,
+      "bet": "Gane ML",
+      "odds": -113,
       "units": 0.5
     }
   ]
