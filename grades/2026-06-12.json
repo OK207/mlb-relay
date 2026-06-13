@@ -1,0 +1,16 @@
+[
+  {
+    "bet": "Mariners ML",
+    "odds": -148,
+    "units": 2,
+    "outcome": "W",
+    "net": 1.35
+  },
+  {
+    "bet": "Dodgers ML",
+    "odds": -138,
+    "units": 1,
+    "outcome": "L",
+    "net": -1.0
+  }
+]
