@@ -1,0 +1,16 @@
+[
+  {
+    "bet": "Reds ML",
+    "odds": -140,
+    "units": 2,
+    "outcome": "W",
+    "net": 1.43
+  },
+  {
+    "bet": "Tigers ML",
+    "odds": 105,
+    "units": 1,
+    "outcome": "W",
+    "net": 1.05
+  }
+]
