@@ -8,5 +8,10 @@
     "bet": "Rays ML",
     "odds": 160,
     "units": 1
+  },
+  {
+    "bet": "Phillies ML",
+    "odds": -174,
+    "units": 0.5
   }
 ]
