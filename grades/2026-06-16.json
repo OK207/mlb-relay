@@ -1,0 +1,23 @@
+[
+  {
+    "bet": "Red Sox ML",
+    "odds": 100,
+    "units": 1,
+    "outcome": "L",
+    "net": -1.0
+  },
+  {
+    "bet": "Rays ML",
+    "odds": 160,
+    "units": 1,
+    "outcome": "L",
+    "net": -1.0
+  },
+  {
+    "bet": "Phillies ML",
+    "odds": -174,
+    "units": 0.5,
+    "outcome": "W",
+    "net": 0.29
+  }
+]
