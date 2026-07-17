@@ -10,18 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - name: Send to Telegram
         env:
           TG_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-          TG_TEXT: ${{ github.event.client_payload.text }}
+          GITHUB_EVENT: ${{ github.event_name }}
+          CLIENT_TEXT: ${{ github.event.client_payload.text }}
         run: |
-          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
-            TG_TEXT=$(cat dispatch/*.txt | tail -1 | xargs -I{} cat {})
-            # Find the pushed dispatch file
+          if [ "$GITHUB_EVENT" = "push" ]; then
             DISPATCH_FILE=$(git diff --name-only HEAD~1 HEAD | grep '^dispatch/' | head -1)
-            if [ -n "$DISPATCH_FILE" ]; then
-              TG_TEXT=$(cat "$DISPATCH_FILE")
-            fi
+            MSG=$(cat "$DISPATCH_FILE")
+          else
+            MSG="$CLIENT_TEXT"
           fi
-          curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" --data-urlencode "chat_id=8644528540" --data-urlencode "text=${TG_TEXT}"
+          curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=8644528540" \
+            --data-urlencode "text=${MSG}"
