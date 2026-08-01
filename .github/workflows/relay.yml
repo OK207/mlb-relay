@@ -1,29 +1,102 @@
 name: MLB Relay
+
 on:
   repository_dispatch:
     types: [mlb-picks]
   push:
     paths:
       - 'dispatch/*.txt'
+
 jobs:
   send:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
+
       - name: Send to Telegram
         env:
           TG_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          GITHUB_EVENT: ${{ github.event_name }}
+          TG_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.event.after }}
           CLIENT_TEXT: ${{ github.event.client_payload.text }}
         run: |
-          if [ "$GITHUB_EVENT" = "push" ]; then
-            DISPATCH_FILE=$(git diff --name-only HEAD~1 HEAD | grep '^dispatch/' | head -1)
-            MSG=$(cat "$DISPATCH_FILE")
-          else
-            MSG="$CLIENT_TEXT"
-          fi
-          curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
-            --data-urlencode "chat_id=8644528540" \
-            --data-urlencode "text=${MSG}"
+          python3 - <<'EOF'
+          import json, os, subprocess, sys, urllib.parse, urllib.request, urllib.error
+
+          TG_TOKEN = os.environ['TG_TOKEN']
+          # Falls back to the original hard-coded chat so nothing breaks if the secret is unset.
+          CHAT_ID = os.environ.get('TG_CHAT_ID') or '8644528540'
+          ZERO = '0' * 40
+          LIMIT = 3900  # Telegram caps a single sendMessage at 4096 chars
+
+          def git(*args):
+              return subprocess.run(['git', *args], capture_output=True, text=True).stdout.strip()
+
+          messages = []
+
+          if os.environ['EVENT_NAME'] == 'push':
+              before = os.environ.get('BEFORE_SHA', '')
+              after = os.environ.get('AFTER_SHA', '') or 'HEAD'
+              # A push can carry several commits; diff the whole range, not just the tip.
+              have_before = (
+                  before and before != ZERO
+                  and subprocess.run(['git', 'cat-file', '-e', before + '^{commit}'],
+                                     capture_output=True).returncode == 0
+              )
+              rng = f'{before}..{after}' if have_before else 'HEAD~1..HEAD'
+              changed = git('diff', '--name-only', '--diff-filter=d', rng, '--', 'dispatch/*.txt')
+              for path in sorted(f for f in changed.split('\n') if f):
+                  with open(path) as fh:
+                      body = fh.read().strip()
+                  if body:
+                      messages.append(body)
+                  else:
+                      print(f'{path} is empty, skipping')
+              if not messages:
+                  print(f'No dispatch/*.txt content in {rng}; nothing to send.')
+                  sys.exit(0)
+          else:
+              text = (os.environ.get('CLIENT_TEXT') or '').strip()
+              if not text:
+                  print('repository_dispatch carried no client_payload.text; nothing to send.')
+                  sys.exit(0)
+              messages.append(text)
+
+          def chunks(text):
+              while len(text) > LIMIT:
+                  cut = text.rfind('\n', 0, LIMIT)
+                  if cut <= 0:
+                      cut = LIMIT
+                  yield text[:cut]
+                  text = text[cut:].lstrip('\n')
+              yield text
+
+          failures = 0
+          for msg in messages:
+              for part in chunks(msg):
+                  data = urllib.parse.urlencode({'chat_id': CHAT_ID, 'text': part}).encode()
+                  req = urllib.request.Request(
+                      f'https://api.telegram.org/bot{TG_TOKEN}/sendMessage', data=data)
+                  try:
+                      with urllib.request.urlopen(req, timeout=30) as r:
+                          if json.loads(r.read()).get('ok'):
+                              print(f'sent {len(part)} chars')
+                          else:
+                              print('Telegram replied ok=false')
+                              failures += 1
+                  except urllib.error.HTTPError as e:
+                      print('Telegram HTTP', e.code, e.read().decode()[:300])
+                      failures += 1
+                  except Exception as e:
+                      print('Telegram error:', e)
+                      failures += 1
+
+          # The old version piped curl to /dev/null, so a failed send looked like success.
+          if failures:
+              sys.exit(f'{failures} Telegram send(s) failed')
+          print(f'Delivered {len(messages)} message(s).')
+          EOF
