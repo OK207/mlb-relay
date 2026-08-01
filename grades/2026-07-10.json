@@ -24,7 +24,7 @@
     "bet": "Pirates ML",
     "odds": -130,
     "units": 1.0,
-    "outcome": "PENDING",
-    "net": null
+    "outcome": "P",
+    "net": 0.0
   }
 ]
