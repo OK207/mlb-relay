@@ -160,6 +160,12 @@ jobs:
                   net = payout(p['odds'], p['units'], outcome) if outcome in 'WLP' else None
                   if outcome == 'PENDING':
                       pending += 1
+                      # Show the candidate games so a human can resolve it.
+                      team = re.sub(r' (ML|[+-]1\.5)$', '', p['bet']).split('/')[0]
+                      for g in games:
+                          if team in (g['away'], g['home']):
+                              print(f"      {p['bet']}: {g['away']} {g['as']} @ "
+                                    f"{g['home']} {g['hs']}  final={g['final']}")
                   else:
                       day_pnl += net
                   graded.append({'bet': p['bet'], 'odds': p['odds'], 'units': p['units'],
