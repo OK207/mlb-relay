@@ -8,6 +8,20 @@ on:
   repository_dispatch:
     types: [mlb-sheets-log-picks, mlb-sheets-grade-picks, nba-sheets-log-picks,
             nba-sheets-grade-picks, ufc-sheets-log-picks, ufc-sheets-grade-picks]
+  # Manual re-run for a past date, since repository_dispatch is blocked for
+  # routine sessions and an unchanged file never shows up in a push diff.
+  workflow_dispatch:
+    inputs:
+      event:
+        description: 'What to run'
+        required: true
+        type: choice
+        options: [mlb-sheets-log-picks, mlb-sheets-grade-picks, nba-sheets-log-picks,
+                  nba-sheets-grade-picks, ufc-sheets-log-picks, ufc-sheets-grade-picks]
+      date:
+        description: 'Date to process (YYYY-MM-DD)'
+        required: true
+        type: string
 
 jobs:
   update:
@@ -27,8 +41,8 @@ jobs:
         env:
           CREDS: ${{ secrets.GOOGLE_SHEETS_CREDS }}
           SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
-          DATE: ${{ github.event.client_payload.date }}
-          EVENT: ${{ github.event.action }}
+          DATE: ${{ github.event.client_payload.date || inputs.date }}
+          EVENT: ${{ github.event.action || inputs.event }}
           BEFORE_SHA: ${{ github.event.before }}
           AFTER_SHA: ${{ github.event.after }}
         run: |
@@ -64,6 +78,12 @@ jobs:
           def unwrap(doc):
               # UFC files are {"event":..., "picks":[...]}; MLB/NBA are a bare list.
               return doc['picks'] if isinstance(doc, dict) else doc
+
+          def norm_bet(b):
+              # Hand-entered rows read "Gane ML vs Pereira - UFC Freedom 250" while
+              # the routine writes "Gane ML". Compare on the leading clause so the
+              # same wager is neither logged twice nor missed when grading.
+              return str(b).split(' vs ')[0].split(' - ')[0].strip().lower()
 
           jobs = []  # (event, date_str)
 
@@ -152,9 +172,9 @@ jobs:
               existing_bets = set()
               for row in ws.get_all_values()[1:]:
                   if len(row) >= 2 and parse_row_date(row[0]) == target_date and row[1].strip():
-                      existing_bets.add(row[1].strip())
+                      existing_bets.add(norm_bet(row[1]))
 
-              new_picks = [p for p in picks if p['bet'] not in existing_bets]
+              new_picks = [p for p in picks if norm_bet(p['bet']) not in existing_bets]
               if not new_picks:
                   print(f'All {len(picks)} picks already logged for {date_str}')
                   return
@@ -185,7 +205,7 @@ jobs:
                   print(f'No grades file for {date_str}')
                   return
 
-              grades = {g['bet']: g['net'] for g in raw
+              grades = {norm_bet(g['bet']): g['net'] for g in raw
                         if g.get('outcome') in ('W', 'L', 'P') and g.get('net') is not None}
               if not grades:
                   print('No gradeable picks')
@@ -195,9 +215,10 @@ jobs:
               for i, row in enumerate(ws.get_all_values()[1:], start=2):
                   if len(row) < 2:
                       continue
-                  if parse_row_date(row[0]) == target_date and row[1] in grades:
+                  if parse_row_date(row[0]) == target_date and norm_bet(row[1]) in grades:
                       if len(row) < 5 or not str(row[4]).strip():
-                          updates.append({'range': f'E{i}', 'values': [[grades[row[1]]]]})
+                          updates.append({'range': f'E{i}',
+                                          'values': [[grades[norm_bet(row[1])]]]})
 
               if updates:
                   ws.batch_update(updates)

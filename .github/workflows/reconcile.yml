@@ -187,8 +187,33 @@ jobs:
               sys.exit('apply mode requires confirm: yes')
           if broken:
               sys.exit('refusing to rewrite: rows with a date but no bet (or vice versa)')
-          if not missing and not dupes:
-              print('Nothing to insert and nothing to clean up.')
+          # Where a sheet row and a repo pick describe the same wager but disagree
+          # on price or stake, the repo is the record of what the model published,
+          # so bring the row into line. Logged per correction, never silent.
+          repo = {}
+          for path in sorted(glob.glob(GLOB)):
+              m = PATH_RE.match(path)
+              if not m:
+                  continue
+              d = datetime.strptime(m.group(1), '%Y-%m-%d').date()
+              for p in unwrap(json.load(open(path))):
+                  repo[(d, norm_bet(p['bet']))] = p
+
+          fixed = 0
+          for d, r in real:
+              p = repo.get((d, norm_bet(r[1])))
+              if not p:
+                  continue
+              for col, key in ((2, 'odds'), (3, 'units')):
+                  if str(r[col]).strip() != str(p[key]):
+                      print(f'   {d}  {r[1]}: {key} {r[col]!r} -> {p[key]!r}')
+                      r[col] = p[key]
+                      fixed += 1
+          if fixed:
+              print(f'Corrected {fixed} cell(s) to match the repo')
+
+          if not missing and not dupes and not fixed:
+              print('Nothing to insert, clean up or correct.')
               sys.exit(0)
 
           # Merge: keep every existing bet row verbatim, slot the missing picks
