@@ -141,8 +141,14 @@ jobs:
           if dates and dates[0] and dates[-1]:
               print(f'Date range: {dates[0]} .. {dates[-1]}')
 
+          # Hand-entered rows name a bet "Gane ML vs Pereira - UFC Freedom 250"
+          # while the routine writes "Gane ML". Compare on the leading clause so
+          # the same wager is not logged twice under two conventions.
+          def norm_bet(b):
+              return b.split(' vs ')[0].split(' - ')[0].strip().lower()
+
           # What does the repo have that the sheet does not?
-          existing = {(dates[i], data[i][1].strip())
+          existing = {(dates[i], norm_bet(data[i][1]))
                       for i in range(len(data)) if dates[i] and len(data[i]) > 1}
           missing = []
           for path in sorted(glob.glob(GLOB)):
@@ -151,8 +157,24 @@ jobs:
                   continue
               d = datetime.strptime(m.group(1), '%Y-%m-%d').date()
               for p in unwrap(json.load(open(path))):
-                  if (d, p['bet']) not in existing:
+                  if (d, norm_bet(p['bet'])) not in existing:
                       missing.append((d, p))
+
+          # Self-heal: drop any ccr-backfill row that duplicates a hand-entered
+          # row for the same wager. A run before the normalisation above could
+          # have written one.
+          manual = {(dates[i], norm_bet(data[i][1]))
+                    for i in range(len(data))
+                    if dates[i] and len(data[i]) > 9 and data[i][9] != 'ccr-backfill'}
+          dupes = [i for i in range(len(data))
+                   if dates[i] and len(data[i]) > 9 and data[i][9] == 'ccr-backfill'
+                   and (dates[i], norm_bet(data[i][1])) in manual]
+          if dupes:
+              print(f'\nDuplicate backfill rows to remove: {len(dupes)}')
+              for i in dupes:
+                  print(f'   {dates[i]}  {data[i][1]}  (duplicates a hand-entered row)')
+              real = [real[i] for i in range(len(real)) if i not in set(dupes)]
+              data = [r for _, r in real]
           print(f'\nRepo picks missing from sheet: {len(missing)}')
           for d, p in missing[:60]:
               print(f'   {d}  {p["bet"]:<26} {p["odds"]:>5}  {p["units"]}u')
