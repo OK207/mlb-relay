@@ -29,6 +29,16 @@ For each pick {bet, odds, units}:
   "X/Y Over N" or "X/Y Under N" → total bet. WIN if combined final score satisfies condition, LOSS otherwise. PUSH if score equals line exactly.
   "X +1.5" → underdog RL. WIN if X's margin (their score - opponent) + 1.5 > 0. LOSS otherwise.
   "X -1.5" → favorite RL. WIN if X's margin - 1.5 > 0. LOSS otherwise.
+  "[Last Name] K Over N" or "[Last Name] K Under N" → pitcher strikeout prop, logged by the
+    5:15pm afternoon routine. WIN if that pitcher's strikeout total satisfies the condition,
+    LOSS otherwise, PUSH if it equals the line exactly. Strikeout totals are NOT in the
+    schedule/linescore response used in 0b — get them from
+    https://statsapi.mlb.com/api/v1/game/{gamePk}/boxscore (players -> stats.pitching.strikeOuts)
+    or WebSearch the pitcher's line for that date. If you cannot confirm the K total, mark
+    PENDING rather than guessing — an ungraded prop is recoverable, a wrong one is not.
+- Any bet whose format matches none of the above: mark PENDING and name it in the message.
+  Never silently drop a bet from the results block; a logged stake with no result quietly
+  drags the tracked ROI down forever.
 - Calculate units result:
   WIN with negative odds (e.g. -130): result = +units * (100 / 130)
   WIN with positive odds (e.g. +115): result = +units * (115 / 100)

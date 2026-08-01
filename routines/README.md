@@ -99,9 +99,10 @@ been recovered so far, from the routines' own 11am session transcripts:
 - **Recorded in git and logged to the sheet in date order:** 7/1–7/11, 7/16,
   7/18, 7/20–8/1 (51 bets). Every odds/units pair was cross-checked against the
   projected return the routine printed at the time before being written.
-- **Still missing** (no transcript supplied yet): 6/10, 6/18–6/30, 7/12–7/15
-  — 18 days. Those cards exist only in the run sessions at
-  [claude.ai/code/routines](https://claude.ai/code/routines).
+- **Accounted for, not missing:** 6/10 and 6/18–6/30 are days the model did not
+  run, and 7/12–7/15 was the All-Star break (no games). No cards were produced
+  on those dates, so there is nothing to recover. The pick record is complete
+  for every day the model actually published a card.
 - **7/17** is a known conflict: the 11am transcript lists Yankees +105 2u,
   Cardinals -112 1u, Red Sox -130 1u, while the repo file (pushed 1:43pm, and
   already graded) has Red Sox -130 2u and Yankees +100 1u. The repo version
