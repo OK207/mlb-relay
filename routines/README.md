@@ -141,31 +141,25 @@ actually published at the time.
 Commit with `[skip-sheets]` in the message to land picks in git without the
 sheets workflow appending them to the bottom, then place them with `apply`.
 
-## UFC tab — 6/14 needs your eye
+## UFC tab — 6/14 resolved
 
-The UFC worksheet already existed with three hand-entered rows for 6/14, named
-in a different style to what the routine writes:
+The UFC worksheet already held hand-entered rows for 6/14 named in a different
+style to what the routine writes (`Gane ML vs Pereira - UFC Freedom 250` vs
+`Gane ML`), and the two sources disagreed on price: the sheet said +105, the
+repo said -113.
 
-| hand-entered | odds | units |
-|---|---|---|
-| Gaethje ML vs Topuria - UFC Freedom 250 | +500 | 0.75 |
-| Gane ML vs Pereira - UFC Freedom 250 | +105 | 1 |
-| Zahabi ML vs O'Malley - UFC Freedom 250 | +275 | 0.5 |
+Resolved in favour of the repo's **-113**:
 
-`picks/ufc/2026-06-14.json` (written by the routine) records a different card:
-Gane ML **-113** 1u and Garcia ML +154 0.75u. Only Gane appears in both, at two
-different prices, and neither source mentions the other's extra fights.
+- the duplicate Gane row the backfill created has been removed
+- the surviving row's odds were corrected +105 -> -113
+- 6/14 is graded: Gane **W +0.88u**, Garcia **L -0.75u**
 
-The backfill first logged Gane twice; the duplicate has been removed and
-reconcile now compares bets on their leading clause so it cannot recur. What is
-still unresolved:
+Both workflows now compare bets on the leading clause, so the two naming
+conventions match for dedupe *and* for grading. `reconcile` also corrects a
+row's odds/units when they disagree with the repo, logging every change.
 
-- **Which price is right for Gane on 6/14** — the sheet keeps the hand-entered
-  +105 at 1u. `grades/` scored it at -113 (+0.88u); at +105 the win is +1.05u.
-- **Garcia ML +154 0.75u** is in the sheet from the repo but was never
-  hand-entered, so it may be a published pick that was not actually staked.
-- **Gaethje and Zahabi** are in the sheet but not in the repo, so they look like
-  wagers placed outside the model.
-
-If the UFC tab is a record of bets actually placed rather than of model output,
-the two sources should probably not be merged at all.
+Still ungraded on that tab: **Gaethje ML vs Topuria +500 0.75u** and
+**Zahabi ML vs O'Malley +275 0.5u**. Both were hand-entered and have no
+counterpart in `picks/ufc/`, so they look like wagers placed outside the model.
+Their outcomes are known from the event (Gaethje beat Topuria; O'Malley beat
+Zahabi) but they have been left alone rather than written into a manual log.
