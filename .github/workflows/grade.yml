@@ -1,0 +1,234 @@
+name: Grade Picks
+
+# Grades any picks/<date>.json that has no grades/<date>.json yet, using the
+# MLB Stats API for final scores, then writes the grades back to the repo and
+# into column E of the sheet.
+#
+# This runs here rather than in a routine session because the runner has open
+# network access to statsapi.mlb.com. Scores come from MLB's own API, never
+# from a search summary.
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Single date YYYY-MM-DD, or blank for every ungraded date'
+        required: false
+        default: ''
+        type: string
+      confirm:
+        description: 'Type yes to write grades'
+        required: true
+        default: 'no'
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install gspread
+
+      - name: Grade
+        env:
+          CREDS: ${{ secrets.GOOGLE_SHEETS_CREDS }}
+          SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          ONE_DATE: ${{ inputs.date }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          python3 - << 'EOF'
+          import glob, gspread, json, os, re, sys, urllib.request
+          from datetime import datetime, timedelta
+
+          WRITE = os.environ.get('CONFIRM', '').lower() == 'yes'
+          ONE = os.environ.get('ONE_DATE', '').strip()
+
+          todo = []
+          for f in sorted(glob.glob('picks/*.json')):
+              m = re.match(r'^picks/(\d{4}-\d{2}-\d{2})\.json$', f)
+              if not m:
+                  continue
+              d = m.group(1)
+              if ONE and d != ONE:
+                  continue
+              if os.path.exists(f'grades/{d}.json'):
+                  continue
+              picks = json.load(open(f))
+              if picks:
+                  todo.append((d, picks))
+          if not todo:
+              print('Nothing ungraded.')
+              sys.exit(0)
+          print(f'Dates to grade: {len(todo)}  bets: {sum(len(p) for _, p in todo)}')
+
+          def scoreboard(date_str):
+              url = ('https://statsapi.mlb.com/api/v1/schedule?sportId=1&date='
+                     + date_str + '&hydrate=linescore,team')
+              req = urllib.request.Request(url, headers={'User-Agent': 'mlb-relay-grader'})
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  doc = json.loads(r.read())
+              games = []
+              for day in doc.get('dates', []):
+                  for g in day.get('games', []):
+                      a, h = g['teams']['away'], g['teams']['home']
+                      games.append({
+                          'away': a['team'].get('teamName', ''),
+                          'home': h['team'].get('teamName', ''),
+                          'as': a.get('score'), 'hs': h.get('score'),
+                          'final': g['status'].get('abstractGameState') == 'Final',
+                      })
+              return games
+
+          def payout(odds, units, outcome):
+              if outcome == 'W':
+                  return round(units * (100 / abs(odds) if odds < 0 else odds / 100), 2)
+              if outcome == 'L':
+                  return round(-units, 2)
+              return 0.0
+
+          def games_for(games, *names):
+              out = []
+              for g in games:
+                  if all(n in (g['away'], g['home']) for n in names):
+                      out.append(g)
+              return out
+
+          def grade_one(bet, games):
+              """Return (outcome, note). PENDING whenever anything is unclear."""
+              m = re.match(r'^(.+?) ML$', bet)
+              if m:
+                  team = m.group(1)
+                  gs = [g for g in games if team in (g['away'], g['home'])]
+                  if not gs:
+                      return 'PENDING', 'no game found for team'
+                  results = set()
+                  for g in gs:
+                      if not g['final'] or g['as'] is None or g['hs'] is None:
+                          return 'PENDING', 'game not final'
+                      mine = g['as'] if g['away'] == team else g['hs']
+                      theirs = g['hs'] if g['away'] == team else g['as']
+                      results.add('W' if mine > theirs else 'L' if mine < theirs else 'P')
+                  if len(results) > 1:
+                      return 'PENDING', f'doubleheader split ({sorted(results)}) - which game is ambiguous'
+                  return results.pop(), f'{len(gs)} game(s)'
+
+              m = re.match(r'^(.+?)/(.+?) (Over|Under) ([\d.]+)$', bet)
+              if m:
+                  t1, t2, side, line = m.group(1), m.group(2), m.group(3), float(m.group(4))
+                  gs = games_for(games, t1, t2)
+                  if len(gs) != 1:
+                      return 'PENDING', f'{len(gs)} games matched {t1}/{t2}'
+                  g = gs[0]
+                  if not g['final'] or g['as'] is None or g['hs'] is None:
+                      return 'PENDING', 'game not final'
+                  total = g['as'] + g['hs']
+                  if total == line:
+                      return 'P', f'total {total} = line'
+                  hit = total > line if side == 'Over' else total < line
+                  return ('W' if hit else 'L'), f'total {total} vs {line}'
+
+              m = re.match(r'^(.+?) ([+-]1\.5)$', bet)
+              if m:
+                  team, spread = m.group(1), float(m.group(2))
+                  gs = [g for g in games if team in (g['away'], g['home'])]
+                  if len(gs) != 1:
+                      return 'PENDING', f'{len(gs)} games matched {team}'
+                  g = gs[0]
+                  if not g['final'] or g['as'] is None or g['hs'] is None:
+                      return 'PENDING', 'game not final'
+                  mine = g['as'] if g['away'] == team else g['hs']
+                  theirs = g['hs'] if g['away'] == team else g['as']
+                  margin = mine - theirs + spread
+                  if margin == 0:
+                      return 'P', 'exact push'
+                  return ('W' if margin > 0 else 'L'), f'margin {mine - theirs}{spread:+}'
+
+              return 'PENDING', 'unrecognised bet format'
+
+          written, all_rows, pending = [], [], 0
+          for date_str, picks in todo:
+              try:
+                  games = scoreboard(date_str)
+              except Exception as e:
+                  print(f'{date_str}: score fetch FAILED ({e}) - skipping, left ungraded')
+                  continue
+              graded, day_pnl = [], 0.0
+              for p in picks:
+                  outcome, note = grade_one(p['bet'], games)
+                  net = payout(p['odds'], p['units'], outcome) if outcome in 'WLP' else None
+                  if outcome == 'PENDING':
+                      pending += 1
+                  else:
+                      day_pnl += net
+                  graded.append({'bet': p['bet'], 'odds': p['odds'], 'units': p['units'],
+                                 'outcome': outcome, 'net': net})
+                  all_rows.append((date_str, p['bet'], outcome, net, note))
+              print(f'{date_str}: {len(games)} games | '
+                    + ' '.join(f"{g['outcome']}" for g in graded)
+                    + f' | day {day_pnl:+.2f}u')
+              if WRITE:
+                  with open(f'grades/{date_str}.json', 'w') as f:
+                      json.dump(graded, f, indent=2)
+                  written.append(date_str)
+
+          print('\n--- audit ---')
+          for d, bet, outcome, net, note in all_rows:
+              print(f'  {d}  {bet:<26} {outcome:<8} '
+                    f'{"" if net is None else format(net, "+.2f"):>7}   {note}')
+          total = sum(r[3] for r in all_rows if r[3] is not None)
+          print(f'\ngraded {len(all_rows) - pending} bet(s), {pending} pending, net {total:+.2f}u')
+
+          if not WRITE:
+              print('\nDry run - confirm: yes to write.')
+              sys.exit(0)
+
+          # Commit the grades files back to the repo.
+          import subprocess
+          subprocess.run(['git', 'config', 'user.name', 'mlb-agent'], check=True)
+          subprocess.run(['git', 'config', 'user.email', 'mlb-agent@auto'], check=True)
+          subprocess.run(['git', 'add', 'grades'], check=True)
+          if subprocess.run(['git', 'diff', '--cached', '--quiet']).returncode != 0:
+              subprocess.run(['git', 'commit', '-m',
+                              f'grades: backfill {len(written)} date(s) from MLB Stats API'],
+                             check=True)
+              subprocess.run(['git', 'push'], check=True)
+              print(f'committed grades for {len(written)} date(s)')
+
+          # A push made with GITHUB_TOKEN does not trigger other workflows, so
+          # apply the grades to the sheet here rather than waiting on sheets.yml.
+          gc = gspread.service_account_from_dict(json.loads(os.environ['CREDS']))
+          ws = gc.open_by_key(os.environ['SHEET_ID']).sheet1
+          GS_EPOCH = datetime(1899, 12, 30)
+
+          def parse_row_date(cell):
+              try:
+                  return (GS_EPOCH + timedelta(days=float(cell))).date()
+              except Exception:
+                  for fmt in ('%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y'):
+                      try:
+                          return datetime.strptime(str(cell).strip(), fmt).date()
+                      except Exception:
+                          pass
+              return None
+
+          def norm_bet(b):
+              return str(b).split(' vs ')[0].split(' - ')[0].strip().lower()
+
+          wanted = {}
+          for d, bet, outcome, net, _ in all_rows:
+              if outcome in ('W', 'L', 'P') and net is not None:
+                  wanted[(datetime.strptime(d, '%Y-%m-%d').date(), norm_bet(bet))] = net
+
+          updates = []
+          for i, row in enumerate(ws.get_all_values()[1:], start=2):
+              if len(row) < 2:
+                  continue
+              key = (parse_row_date(row[0]), norm_bet(row[1]))
+              if key in wanted and (len(row) < 5 or not str(row[4]).strip()):
+                  updates.append({'range': f'E{i}', 'values': [[wanted[key]]]})
+          if updates:
+              ws.batch_update(updates)
+          print(f'sheet: filled {len(updates)} result cell(s)')
+          EOF
