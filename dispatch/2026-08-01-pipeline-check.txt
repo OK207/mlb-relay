@@ -1,0 +1,4 @@
+TEST - pipeline verification (not a pick)
+
+Delivery path confirmed: routine session -> git push origin main -> GitHub Actions -> Telegram.
+No PAT involved. Safe to ignore.
