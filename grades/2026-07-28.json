@@ -10,7 +10,7 @@
     "bet": "Reds ML",
     "odds": -161,
     "units": 1,
-    "outcome": "PENDING",
-    "net": null
+    "outcome": "L",
+    "net": -1.0
   }
 ]
