@@ -1,0 +1,23 @@
+[
+  {
+    "bet": "Rays ML",
+    "odds": -160,
+    "units": 2,
+    "outcome": "L",
+    "net": -2
+  },
+  {
+    "bet": "Braves ML",
+    "odds": -120,
+    "units": 1,
+    "outcome": "W",
+    "net": 0.83
+  },
+  {
+    "bet": "Brewers ML",
+    "odds": -126,
+    "units": 1.0,
+    "outcome": "W",
+    "net": 0.79
+  }
+]

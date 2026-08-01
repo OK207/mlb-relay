@@ -1,0 +1,16 @@
+[
+  {
+    "bet": "Guardians ML",
+    "odds": 115,
+    "units": 1,
+    "outcome": "L",
+    "net": -1
+  },
+  {
+    "bet": "Yankees ML",
+    "odds": 165,
+    "units": 0.75,
+    "outcome": "L",
+    "net": -0.75
+  }
+]

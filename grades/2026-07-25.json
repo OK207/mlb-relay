@@ -1,0 +1,30 @@
+[
+  {
+    "bet": "Nationals ML",
+    "odds": -142,
+    "units": 2,
+    "outcome": "W",
+    "net": 1.41
+  },
+  {
+    "bet": "White Sox ML",
+    "odds": -127,
+    "units": 2,
+    "outcome": "L",
+    "net": -2
+  },
+  {
+    "bet": "Cubs ML",
+    "odds": 112,
+    "units": 1,
+    "outcome": "W",
+    "net": 1.12
+  },
+  {
+    "bet": "Dodgers ML",
+    "odds": -140,
+    "units": 0.75,
+    "outcome": "W",
+    "net": 0.54
+  }
+]

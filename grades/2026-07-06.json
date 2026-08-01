@@ -1,0 +1,23 @@
+[
+  {
+    "bet": "Blue Jays ML",
+    "odds": -110,
+    "units": 2,
+    "outcome": "L",
+    "net": -2
+  },
+  {
+    "bet": "Brewers ML",
+    "odds": -111,
+    "units": 1,
+    "outcome": "W",
+    "net": 0.9
+  },
+  {
+    "bet": "Padres ML",
+    "odds": -182,
+    "units": 1,
+    "outcome": "L",
+    "net": -1
+  }
+]

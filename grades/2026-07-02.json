@@ -1,0 +1,16 @@
+[
+  {
+    "bet": "Brewers ML",
+    "odds": -162,
+    "units": 1,
+    "outcome": "L",
+    "net": -1
+  },
+  {
+    "bet": "Rays ML",
+    "odds": -143,
+    "units": 1,
+    "outcome": "W",
+    "net": 0.7
+  }
+]

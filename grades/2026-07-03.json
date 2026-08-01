@@ -1,0 +1,23 @@
+[
+  {
+    "bet": "Rays ML",
+    "odds": -108,
+    "units": 2,
+    "outcome": "W",
+    "net": 1.85
+  },
+  {
+    "bet": "Nationals ML",
+    "odds": -150,
+    "units": 1,
+    "outcome": "W",
+    "net": 0.67
+  },
+  {
+    "bet": "Cardinals ML",
+    "odds": 110,
+    "units": 1,
+    "outcome": "W",
+    "net": 1.1
+  }
+]

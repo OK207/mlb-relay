@@ -1,0 +1,16 @@
+[
+  {
+    "bet": "Red Sox ML",
+    "odds": -145,
+    "units": 2,
+    "outcome": "W",
+    "net": 1.38
+  },
+  {
+    "bet": "Pirates ML",
+    "odds": 103,
+    "units": 1,
+    "outcome": "L",
+    "net": -1
+  }
+]

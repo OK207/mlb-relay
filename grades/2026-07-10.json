@@ -1,0 +1,30 @@
+[
+  {
+    "bet": "Red Sox ML",
+    "odds": 116,
+    "units": 2,
+    "outcome": "W",
+    "net": 2.32
+  },
+  {
+    "bet": "Braves ML",
+    "odds": -164,
+    "units": 1,
+    "outcome": "L",
+    "net": -1
+  },
+  {
+    "bet": "Tigers ML",
+    "odds": -120,
+    "units": 1,
+    "outcome": "W",
+    "net": 0.83
+  },
+  {
+    "bet": "Pirates ML",
+    "odds": -130,
+    "units": 1.0,
+    "outcome": "PENDING",
+    "net": null
+  }
+]

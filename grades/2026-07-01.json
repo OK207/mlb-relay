@@ -1,0 +1,23 @@
+[
+  {
+    "bet": "Orioles ML",
+    "odds": -137,
+    "units": 2,
+    "outcome": "W",
+    "net": 1.46
+  },
+  {
+    "bet": "Phillies ML",
+    "odds": -136,
+    "units": 1,
+    "outcome": "W",
+    "net": 0.74
+  },
+  {
+    "bet": "Braves ML",
+    "odds": -136,
+    "units": 1,
+    "outcome": "W",
+    "net": 0.74
+  }
+]

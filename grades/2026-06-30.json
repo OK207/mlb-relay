@@ -1,0 +1,23 @@
+[
+  {
+    "bet": "Rangers ML",
+    "odds": -120,
+    "units": 1.0,
+    "outcome": "W",
+    "net": 0.83
+  },
+  {
+    "bet": "Tigers ML",
+    "odds": 120,
+    "units": 0.75,
+    "outcome": "W",
+    "net": 0.9
+  },
+  {
+    "bet": "Phillies ML",
+    "odds": -139,
+    "units": 0.75,
+    "outcome": "W",
+    "net": 0.54
+  }
+]
