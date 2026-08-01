@@ -3,5 +3,10 @@
     "bet": "Red Sox ML",
     "odds": -127,
     "units": 2
+  },
+  {
+    "bet": "A's ML",
+    "odds": 125,
+    "units": 0.75
   }
 ]

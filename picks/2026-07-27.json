@@ -8,5 +8,10 @@
     "bet": "Nationals ML",
     "odds": -130,
     "units": 1
+  },
+  {
+    "bet": "Yankees ML",
+    "odds": -148,
+    "units": 0.5
   }
 ]

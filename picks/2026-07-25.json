@@ -13,5 +13,10 @@
     "bet": "Cubs ML",
     "odds": 112,
     "units": 1
+  },
+  {
+    "bet": "Dodgers ML",
+    "odds": -140,
+    "units": 0.75
   }
 ]

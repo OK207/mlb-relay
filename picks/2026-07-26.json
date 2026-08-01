@@ -3,5 +3,10 @@
     "bet": "Guardians ML",
     "odds": 115,
     "units": 1
+  },
+  {
+    "bet": "Yankees ML",
+    "odds": 165,
+    "units": 0.75
   }
 ]

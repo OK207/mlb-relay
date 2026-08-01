@@ -8,5 +8,15 @@
     "bet": "Royals ML",
     "odds": 102,
     "units": 0.5
+  },
+  {
+    "bet": "Giants ML",
+    "odds": 120,
+    "units": 0.75
+  },
+  {
+    "bet": "Nationals ML",
+    "odds": 105,
+    "units": 1.0
   }
 ]

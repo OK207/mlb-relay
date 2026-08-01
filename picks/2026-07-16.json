@@ -3,5 +3,10 @@
     "bet": "Mets/Phillies Under 9.5",
     "odds": -104,
     "units": 0.5
+  },
+  {
+    "bet": "Mets ML",
+    "odds": 109,
+    "units": 0.75
   }
 ]

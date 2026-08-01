@@ -3,5 +3,10 @@
     "bet": "Nationals ML",
     "odds": 112,
     "units": 1
+  },
+  {
+    "bet": "Pirates ML",
+    "odds": -133,
+    "units": 1.0
   }
 ]

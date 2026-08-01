@@ -13,5 +13,10 @@
     "bet": "Tigers ML",
     "odds": -120,
     "units": 1
+  },
+  {
+    "bet": "Pirates ML",
+    "odds": -130,
+    "units": 1.0
   }
 ]
