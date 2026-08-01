@@ -99,15 +99,25 @@ been recovered so far, from the routines' own 11am session transcripts:
 - **Recorded in git and logged to the sheet in date order:** 7/1–7/11, 7/16,
   7/18, 7/20–8/1 (51 bets). Every odds/units pair was cross-checked against the
   projected return the routine printed at the time before being written.
-- **Accounted for, not missing:** 6/10 and 6/18–6/30 are days the model did not
-  run, and 7/12–7/15 was the All-Star break (no games). No cards were produced
-  on those dates, so there is nothing to recover. The pick record is complete
-  for every day the model actually published a card.
+- **Afternoon (5pm) session recovered:** 15 evening ML bets across 6/30, 7/7,
+  7/9, 7/10, 7/12, 7/16, 7/18, 7/19, 7/25, 7/26, 7/27, 7/31, appended to each
+  date's morning card. 12 of the 15 printed a projected return that their odds
+  and stake reproduce exactly; the other 3 gave only an edge tier.
+- **Accounted for, not missing:** 6/10 and most of 6/18–6/30 are days the model
+  did not run, and 7/13–7/15 was the All-Star break. No cards exist for those
+  dates.
+- **Two dates where the 5pm session ran but the 11am one did not:** 6/30 and
+  7/12 have afternoon picks and no morning card, so `picks/2026-06-30.json` and
+  `picks/2026-07-12.json` hold the afternoon session alone. Worth noting that
+  6/30 falls inside the "model did not work" window and 7/12 was initially
+  thought to be All-Star break — the 5pm run evidently produced cards on both
+  (7/12's references a Dodgers/Diamondbacks game), so the outage was specific
+  to the morning routine and the break started 7/13.
 - **7/17** is a known conflict: the 11am transcript lists Yankees +105 2u,
   Cardinals -112 1u, Red Sox -130 1u, while the repo file (pushed 1:43pm, and
   already graded) has Red Sox -130 2u and Yankees +100 1u. The repo version
   stands; the transcript version was not applied.
-- **51 backfilled bets are logged but ungraded** (column E empty). Grading
+- **66 backfilled bets are logged but ungraded** (column E empty). Grading
   needs a verified final score per bet.
 
 Do **not** regenerate missing picks by re-running the model. Those games have
