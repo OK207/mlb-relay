@@ -205,7 +205,14 @@ jobs:
               if not p:
                   continue
               for col, key in ((2, 'odds'), (3, 'units')):
-                  if str(r[col]).strip() != str(p[key]):
+                  def same(a, b):
+                      # '1' and 1.0 are the same stake; compare numerically so a
+                      # formatting difference is not reported as a correction.
+                      try:
+                          return abs(float(a) - float(b)) < 1e-9
+                      except (TypeError, ValueError):
+                          return str(a).strip() == str(b).strip()
+                  if not same(r[col], p[key]):
                       print(f'   {d}  {r[1]}: {key} {r[col]!r} -> {p[key]!r}')
                       r[col] = p[key]
                       fixed += 1
