@@ -89,6 +89,8 @@ jobs:
                           'home': h['team'].get('teamName', ''),
                           'as': a.get('score'), 'hs': h.get('score'),
                           'final': g['status'].get('abstractGameState') == 'Final',
+                          'gn': g.get('gameNumber', 1),
+                          'state': g['status'].get('detailedState', ''),
                       })
               return games
 
@@ -116,8 +118,10 @@ jobs:
                       return 'PENDING', 'no game found for team'
                   results = set()
                   for g in gs:
-                      if not g['final'] or g['as'] is None or g['hs'] is None:
-                          return 'PENDING', 'game not final'
+                      if g['as'] is None or g['hs'] is None:
+                          return 'PENDING', f"no score recorded [{g['state']}] - likely void"
+                      if not g['final']:
+                          return 'PENDING', f"not final [{g['state']}]"
                       mine = g['as'] if g['away'] == team else g['hs']
                       theirs = g['hs'] if g['away'] == team else g['as']
                       results.add('W' if mine > theirs else 'L' if mine < theirs else 'P')
@@ -175,8 +179,8 @@ jobs:
                       team = re.sub(r' (ML|[+-]1\.5)$', '', p['bet']).split('/')[0]
                       for g in games:
                           if team in (g['away'], g['home']):
-                              print(f"      {p['bet']}: {g['away']} {g['as']} @ "
-                                    f"{g['home']} {g['hs']}  final={g['final']}")
+                              print(f"      {p['bet']}: G{g['gn']} {g['away']} {g['as']} @ "
+                                    f"{g['home']} {g['hs']}  [{g['state']}]")
                   else:
                       day_pnl += net
                   graded.append({'bet': p['bet'], 'odds': p['odds'], 'units': p['units'],
