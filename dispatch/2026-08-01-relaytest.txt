@@ -1,0 +1,4 @@
+TEST MESSAGE - relay pipeline check (not a pick)
+
+If you are reading this, text delivery is working again.
+Sent from the fixed relay workflow via git push (no PAT involved).
