@@ -53,8 +53,19 @@ jobs:
               d = m.group(1)
               if ONE and d != ONE:
                   continue
-              if os.path.exists(f'grades/{d}.json'):
-                  continue
+              # Re-visit a graded date only if something in it is still PENDING,
+              # so today's unfinished games resolve on a later run instead of
+              # being stuck at PENDING forever.
+              gp = f'grades/{d}.json'
+              if os.path.exists(gp):
+                  try:
+                      done = json.load(open(gp))
+                  except Exception:
+                      done = []
+                  if not any(g.get('outcome') == 'PENDING' for g in done):
+                      continue
+                  print(f'{d}: revisiting, '
+                        f'{sum(1 for g in done if g.get("outcome") == "PENDING")} pending')
               picks = json.load(open(f))
               if picks:
                   todo.append((d, picks))
