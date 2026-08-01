@@ -1,0 +1,16 @@
+[
+  {
+    "bet": "Gane ML",
+    "odds": -113,
+    "units": 1.0,
+    "outcome": "W",
+    "net": 0.88
+  },
+  {
+    "bet": "Garcia ML",
+    "odds": 154,
+    "units": 0.75,
+    "outcome": "L",
+    "net": -0.75
+  }
+]
