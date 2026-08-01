@@ -118,8 +118,12 @@ jobs:
                       return 'PENDING', 'no game found for team'
                   results = set()
                   for g in gs:
+                      # A postponed or cancelled game never actions: the stake
+                      # is returned, which scores as a push, not a loss.
+                      if any(k in g['state'] for k in ('Postponed', 'Cancelled', 'Canceled')):
+                          return 'P', f"{g['state']} - no action, stake returned"
                       if g['as'] is None or g['hs'] is None:
-                          return 'PENDING', f"no score recorded [{g['state']}] - likely void"
+                          return 'PENDING', f"no score recorded [{g['state']}]"
                       if not g['final']:
                           return 'PENDING', f"not final [{g['state']}]"
                       mine = g['as'] if g['away'] == team else g['hs']

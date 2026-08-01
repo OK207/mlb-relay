@@ -45,7 +45,9 @@ For each pick {bet, odds, units}:
   LOSS: result = -units
   PUSH: result = 0
   Round to 2dp.
-- If the game is not yet Final: mark as PENDING (leave ungraded).
+- If the game was postponed or cancelled: the bet never actioned and the stake was
+  returned, so grade it PUSH (net 0). It is not a loss.
+- If the game is not yet Final for any other reason: mark as PENDING (leave ungraded).
 
 0d. Build results block (plain text, no emoji):
 
