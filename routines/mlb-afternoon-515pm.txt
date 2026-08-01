@@ -1,0 +1,251 @@
+IMPORTANT: If any WebFetch call returns HTTP 403 or connection error, do NOT stop the analysis. Immediately switch to the fallback method specified for that step. WebSearch is the universal fallback — it routes through different infrastructure and is not affected by site-level IP blocks. Run the full analysis with whatever data is available, noting any gaps.
+
+Run bash to get today's date as YYYY-MM-DD (TODAY).
+
+You are running the MLB afternoon session. Budget: 8 web calls. Use WebSearch as the fallback for any WebFetch that returns 403 — WebSearch is not blocked from this environment. This session does TWO things:
+1. Evening ML picks: for games NOT already picked by the morning card (confirmed lineups available now)
+2. K props: pitcher strikeout props for qualifying SPs
+
+Do NOT re-pick games already in the morning card. Do NOT revisit morning picks.
+
+---
+
+STEP 0 - READ MORNING PICKS (0 web calls - local git clone, no token):
+
+cd /home/user/mlb-relay && git checkout -q main && git fetch -q origin main && git reset -q --hard origin/main
+cat picks/TODAY.json 2>/dev/null || echo NO_PICKS_FILE
+
+Save as TODAY_PICKS (NO_PICKS_FILE means the morning card logged nothing).
+Extract team names already picked (e.g. 'Dodgers ML' -> 'Dodgers'). Games with
+a team already picked are covered by the morning card - skip ML analysis there.
+---
+
+STEP 1 - SLATE (1 web call):
+WebFetch https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=TODAY&hydrate=probablePitcher,team&gameType=R
+
+Extract all games: home/away teams, game time ET, SP name + throws, game status.
+Separate into:
+- ALREADY_COVERED: any game where either team appears in TODAY_PICKS
+- NOT_COVERED: games where neither team is in TODAY_PICKS AND game is Scheduled/Pre-Game (not started)
+
+Identify top K prop candidates from NOT_COVERED games (and ALREADY_COVERED is OK for K props since they are independent - but apply correlation rule in Step 7).
+
+Good K prop SP candidates: Cole, Wheeler, Strider, Gausman, Nola, Burnes, Skubal, Kirby, Soriano, Cease, Peralta
+SP K% defaults:
+- Elite (0.30+): Strider, Cole
+- Above avg (0.26-0.29): Wheeler, Gausman, Nola, Burnes, Skubal, Kirby
+- Average (0.23-0.25): Soriano, Cease, E.Rodriguez, C.Rodon (downgrade to 0.21 if ERA > 5.00)
+- Below avg (<0.23): Alcantara, Valdez, Civale (skip unless line <= 4.5)
+
+---
+
+STEP 2 - ODDS (1-2 web calls):
+Primary: WebFetch https://www.oddsshark.com/mlb/odds
+If 403 or error: WebSearch "MLB moneyline odds TODAY DraftKings site:sportsbookreview.com OR site:oddsshark.com"
+Extract ML, RL, and totals for ALL games. Note line movement where visible.
+Focus on NOT_COVERED games for ML analysis. Also extract total for K prop candidate games (run environment context).
+If only approximate odds available from WebSearch, note "approx" and use for directional context only.
+
+---
+
+STEP 3 - LINEUPS + WEATHER (1-2 web calls):
+Primary: WebFetch https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=TODAY&hydrate=lineups,team,weather
+Look for lineupPlayers arrays for confirmed batting orders. Check weather fields for outdoor parks.
+If lineups not populated: WebSearch "MLB confirmed lineups TODAY batting order handedness"
+For NOT_COVERED games: extract confirmed batting order + handedness for both teams. Note any scratches.
+For K prop candidate games: extract confirmed opposing lineup handedness split.
+Note weather per outdoor game (temp, wind speed/direction) from the API response or WebSearch fallback.
+
+Lineup status: Confirmed (non-empty lineupPlayers) / Not Yet Posted (empty or missing).
+Not Yet Posted = skip for both ML and K prop analysis.
+
+Opponent K% defaults by team:
+- High (0.26+): Athletics, Marlins, Tigers, Cubs, Pirates, Rockies
+- Low (0.20-0.22): Cardinals, Yankees, Astros, Red Sox, Royals
+- Average (0.23): all others
+Platoon adj: RHP vs 6+ LHB -> opp_k_pct += 0.005; LHP vs 6+ RHB -> opp_k_pct += 0.005
+
+---
+
+STEP 4 - UMPIRES (1 web call):
+WebSearch "MLB umpire assignments TODAY home plate umpire"
+For each NOT_COVERED game and each K prop candidate game: extract HP umpire name.
+
+HP umpire for K props = HARD GATE: unknown umpire = No Play on K prop.
+For ML: note umpire K-tendency as context (K-friendly = under lean; run-friendly = over lean).
+
+Umpire K-tendency adj: known K-friendly = +0.010; known run-friendly = -0.010; unknown = 0.0
+
+---
+
+STEP 5 - K PROP LINES (1-2 web calls):
+WebSearch "MLB pitcher strikeout props today over under DraftKings TODAY [names of K prop candidates]"
+If the search returns thin results: WebSearch "[SP1 name] strikeout prop TODAY" individually for top 1-2 candidates.
+
+For each K prop candidate: extract K over/under line, over price, under price from the search results.
+If NO confirmed line found for a candidate: mark SP as No Line - No Play. Do NOT publish without a confirmed line.
+If no K prop data found at all: mark ALL K prop candidates as No Line - No Play and skip K props entirely.
+
+---
+
+STEP 6 - ANALYZE EVENING ML (0 web calls - use data from Steps 1-4):
+
+For each NOT_COVERED game with confirmed lineups and confirmed SPs, run this analysis:
+
+LAYER 1 - SP MATCHUP (35%):
+- xFIP tier from ERA proxy: ERA < 3.20 = Elite, 3.20-3.60 = Above avg, 3.60-4.20 = Average, 4.20-4.80 = Below avg, > 4.80 = Poor
+- Classify SP tier for each side. SP tier gap drives ML edge.
+- Handedness vs lineup: note platoon advantage
+
+LAYER 2 - OFFENSE vs SP (20%):
+- Use wRC+ proxy: confirmed lineup with heavy high-OBP bats vs poor SP = offense advantage
+- K-prone lineup vs elite SP = pitcher advantage
+
+LAYER 3 - TEAM QUALITY BASELINE (15%):
+- Use implied win prob from ML line as baseline team quality signal
+- Favorite at -150 = ~60% implied. Adjust from SP matchup.
+
+LAYER 4 - PARK + WEATHER (10%):
+- Dome parks: neutral. Coors: +1.5 runs both sides.
+- Wind > 15 mph out: +0.5 runs. Wind > 15 mph in: -0.5 runs. Temp < 55F: -0.2. Temp > 85F: +0.2
+
+LAYER 5 - UMPIRE (5%):
+- K-friendly: -0.3 total lean. Run-friendly: +0.3 total lean.
+
+EDGE CALC:
+- Estimate model win prob from SP tier gap + lineup advantage + context
+- Compare to covers.com implied win prob (convert ML line to implied %)
+- Edge = model prob - implied prob
+- A-tier >= 4%, B-tier 2.5-3.9%, C-tier 1.0-2.4%
+
+STAKING GUARDRAILS (apply to evening ML picks):
+- Cap at 1.0u standard. Underdogs (+odds): cap 0.75u.
+- Heavy favorites (-160+): cap 0.5u.
+- 2+ favorites at -140+ on same slate: cap each at 0.75u (clustering rule).
+- A-tier edge required minimum. Skip B/C-tier if SP data is thin.
+
+SKIP conditions: SP unconfirmed, rain > 40%, line moved significantly against pick, no edge after full analysis.
+
+---
+
+STEP 7 - K PROP MODEL (inline Python - 0 web calls):
+
+python3 << 'PYEOF'
+import json, math
+
+LEAGUE_K_PCT = 0.233
+CALIBRATION = 0.82
+
+def poisson_p_over(line, mu):
+    if mu <= 0: return 0.0
+    k = int(line)
+    cdf, term = 0.0, math.exp(-mu)
+    for i in range(k + 1):
+        cdf += term
+        if i < k: term *= mu / (i + 1)
+    return max(0.0, min(1.0, 1.0 - cdf))
+
+def calibrate(p): return 0.5 + CALIBRATION * (p - 0.5)
+def implied(o): return (abs(o)/(abs(o)+100) if o < 0 else 100/(o+100)) if o else None
+def tier(e): return ('A' if e>=0.04 else 'B' if e>=0.025 else 'C' if e>=0.01 else 'Pass') if e is not None else 'No Data'
+
+# Fill from Steps 1-5:
+candidates = [
+    # {'name':'Gerrit Cole','team':'Yankees','opponent':'Blue Jays',
+    #  'line':7.5,'over_price':-120,'under_price':-100,
+    #  'sp_k_pct':0.29,'opp_k_pct':0.20,'projected_ip':6.0,'umpire_k_adj':0.0},
+]
+
+for c in candidates:
+    adj = max(0.05, min(0.50, c['sp_k_pct']*(c['opp_k_pct']/LEAGUE_K_PCT)+c.get('umpire_k_adj',0.0)))
+    mu = adj * c['projected_ip'] * 4.35
+    p_over = calibrate(poisson_p_over(c['line'], mu))
+    p_under = 1.0 - p_over
+    imp_o, imp_u = implied(c.get('over_price')), implied(c.get('under_price'))
+    e_o = round(p_over-imp_o,4) if imp_o else None
+    e_u = round(p_under-imp_u,4) if imp_u else None
+    print(json.dumps({'player':c['name'],'team':c['team'],'opponent':c['opponent'],
+        'line':c['line'],'mean_k':round(mu,2),'p_over':round(p_over,4),'p_under':round(p_under,4),
+        'edge_over':e_o,'edge_under':e_u,'tier_over':tier(e_o),'tier_under':tier(e_u),
+        'over_price':c.get('over_price'),'under_price':c.get('under_price')}))
+PYEOF
+
+Projected IP: Ace healthy = 6.0; Average SP = 5.5; Recent short outings = 5.0; Opener/bulk = skip.
+
+K PROP GATES:
+HARD (any fail = No Play): SP confirmed, lineup Expected or better, IP >= 5.0, umpire identity confirmed, K line confirmed same-day from BettingPros, A-tier edge, 0.5u cap.
+SOFT (flag only): Umpire K-tendency unknown -> use 0.0, note 'neutral assumed'.
+
+CORRELATION: If morning ML pick on same game at 1.0u -> skip K prop. If morning ML at 0.5u or less -> K prop OK, flag 'correlated'. No morning pick -> proceed freely.
+
+---
+
+STEP 8 - FORMAT COMBINED OUTPUT (plain ASCII, no emoji):
+
+[Only include Evening ML section if new ML picks qualified. Only include K Props section if K props qualified.]
+
+MLB Picks - [Month Day] (Afternoon)
+
+EVENING ML [omit section if none]
+[Team] ML [odds] | Bet Xu -> Win Yu
+[SP] vs [SP]. [1-2 sentences with SP tier gap, lineup context, park/weather/umpire]
+Final edge: X% ([tier])
+
+K PROPS [omit section if none]
+[Player] K Over/Under [line] [odds] | Bet 0.5u -> Win Xu
+[SP] vs [opponent]. [K-rate, opp K%, umpire, proj IP, mean Ks, edge]
+Umpire: [Name] ([K-tendency or 'neutral assumed'])
+Final edge: X% (A-tier)
+
+No Play: [each with reason - e.g. 'already in morning card', 'K line unavailable', 'B-tier edge', 'SP unconfirmed']
+
+If nothing qualifies at all: 'MLB Afternoon - [Month Day] - No new plays. Morning card covers the slate.'
+
+---
+
+STEP 9 - ADD NEW PICKS TO TODAY'S PICKS FILE (0 web calls - only if new picks exist):
+
+The morning card already wrote /home/user/mlb-relay/picks/TODAY.json. Read it, append
+today's new afternoon picks to that JSON array, and write the combined array
+back to the same path with the Write tool. Do not drop the morning entries.
+If the file does not exist yet, create it with just the new picks.
+Do not commit yet - STEP 10 pushes everything at once.
+
+ML bet name format: '[Nickname] ML' e.g. {"bet":"Dodgers ML","odds":-128,"units":1.0}
+K prop format: '[Last Name] K Over/Under [line]' e.g. {"bet":"Strider K Over 6.5","odds":-115,"units":0.5}
+Nicknames: Diamondbacks, Orioles, Red Sox, Cubs, White Sox, Reds, Guardians, Rockies, Tigers, Astros, Royals, Angels, Dodgers, Marlins, Brewers, Twins, Mets, Yankees, A's, Phillies, Pirates, Padres, Giants, Mariners, Cardinals, Rays, Rangers, Blue Jays, Nationals, Braves
+
+---
+
+STEP 10 - COMMIT AND PUSH (this is what delivers your Telegram message):
+
+1. Always send a message. If at least one pick qualified, use the formatted
+   output from STEP 8. If nothing qualified, use:
+   "MLB Afternoon - [Month Day] - No new plays. Morning card covers the slate."
+
+2. Use the Write tool to save it to /home/user/mlb-relay/dispatch/TODAY-afternoon.txt
+   (separate filename so it does not clobber the morning card's message)
+
+3. Commit and push:
+cd /home/user/mlb-relay
+git add -A picks grades dispatch
+git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -m "afternoon: TODAY"
+git push origin main
+
+That push texts the message via the MLB Relay workflow and logs any new picks
+to the MLB tab (the sheets workflow dedupes against the morning card).
+If the push is rejected, run `git pull -q --rebase origin main` and retry once.
+Report the exact git error text if it still fails.
+
+DELIVERY CONTRACT (read before touching any step that writes to GitHub):
+- NEVER call api.github.com to write. The contents API and repository_dispatch
+  are both blocked by the execution proxy and always return 403 Forbidden,
+  no matter what token is used. A 403 here is NOT an expired or revoked token.
+- There is no API token in this prompt and none is needed.
+- The ONLY supported write path is `git push` over the clone's preconfigured
+  remote at /home/user/mlb-relay.
+- One push delivers everything: the relay workflow texts any changed
+  dispatch/*.txt to Telegram, and the sheets workflow logs any changed
+  picks/ and grades/ files to Google Sheets.
+- If a step fails, report the exact error text. Do not guess at a cause and do
+  not tell the user to rotate credentials.

@@ -1,0 +1,287 @@
+IMPORTANT: If any WebFetch call returns HTTP 403 or connection error, do NOT stop the analysis. Immediately switch to the fallback method specified for that step. WebSearch is the universal fallback — it routes through different infrastructure and is not affected by site-level IP blocks. Run the full analysis with whatever data is available, noting any gaps in the message.
+
+Run bash to get today's date as YYYY-MM-DD (TODAY) and yesterday's date as YYYY-MM-DD (YESTERDAY). You are an MLB betting analyst running a deep card. Budget: 15 web calls. Use WebSearch as the fallback for any WebFetch that returns 403 — WebSearch does not block from this environment.
+
+STEP 0 - GRADE YESTERDAY'S PICKS (0 web calls - local git clone, no token):
+
+Read yesterday's logged picks from the repo clone, fetch final scores, grade
+each bet, and build a results summary to prepend to the Telegram message.
+
+0a. Sync the clone and read yesterday's picks:
+cd /home/user/mlb-relay && git checkout -q main && git fetch -q origin main && git reset -q --hard origin/main
+cat picks/YESTERDAY.json 2>/dev/null || echo NO_PICKS_FILE
+
+If the output is NO_PICKS_FILE, skip to STEP 1 (nothing was logged yesterday -
+note that in the message). Otherwise save the picks list for grading.
+
+0b. Fetch yesterday's final scores from MLB Stats API (1 web call — counts toward the 15 budget):
+WebFetch https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=YESTERDAY&hydrate=linescore,team&gameType=R,F,D,L,W
+Extract final scores for every completed game. Note any games not yet final (status != "Final").
+
+0c. Grade each pick from 0a against scores from 0b:
+
+Bets use nickname-only format. Nickname-to-team mapping:
+Diamondbacks, Orioles, Red Sox, Cubs, White Sox, Reds, Guardians, Rockies, Tigers, Astros, Royals, Angels, Dodgers, Marlins, Brewers, Twins, Mets, Yankees, A's, Phillies, Pirates, Padres, Giants, Mariners, Cardinals, Rays, Rangers, Blue Jays, Nationals, Braves
+
+For each pick {bet, odds, units}:
+- Parse bet type:
+  "X ML" → ML bet on team X (match by nickname). WIN if X won, LOSS if X lost, PUSH if tie.
+  "X/Y Over N" or "X/Y Under N" → total bet. WIN if combined final score satisfies condition, LOSS otherwise. PUSH if score equals line exactly.
+  "X +1.5" → underdog RL. WIN if X's margin (their score - opponent) + 1.5 > 0. LOSS otherwise.
+  "X -1.5" → favorite RL. WIN if X's margin - 1.5 > 0. LOSS otherwise.
+- Calculate units result:
+  WIN with negative odds (e.g. -130): result = +units * (100 / 130)
+  WIN with positive odds (e.g. +115): result = +units * (115 / 100)
+  LOSS: result = -units
+  PUSH: result = 0
+  Round to 2dp.
+- If the game is not yet Final: mark as PENDING (leave ungraded).
+
+0d. Build results block (plain text, no emoji):
+
+Results YESTERDAY_FORMATTED:
+  W  [bet] [odds] | [units]u -> +[won]u
+  L  [bet] [odds] | [units]u -> -[units]u
+  P  [bet] [odds] | [units]u -> 0u (push)
+Day P&L: +/-Xu  (NW-NL[-NP])
+
+If all picks are PENDING: "Results [date]: games not yet final."
+If no picks file: omit the results block entirely.
+
+0e. After grading, write the grades file into the repo clone:
+
+Use the Write tool to write /home/user/mlb-relay/grades/YESTERDAY.json
+
+Grades JSON format: [{"bet": "...", "odds": ..., "units": ..., "outcome": "W/L/P/PENDING", "net": 1.23}]
+
+Do NOT commit yet - STEP 12 commits grades, picks and the message together.
+There is no separate Google Sheets step; the STEP 12 push handles it.
+
+STEP 1 - SLATE (1 call):
+WebFetch https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=TODAY&hydrate=probablePitcher(note)
+
+BEFORE any analysis, output the following verified game list. This step is mandatory — do not skip it:
+
+GAME LIST (TODAY):
+[G1] AwayNickname @ HomeNickname (H:MM ET) | Away SP: Name (hand) | Home SP: Name (hand) | Venue
+[G2] ...
+
+Rules for building the list:
+- Read teams.away.team.teamName and teams.home.team.teamName directly from each game in the API response — do not infer or guess the pairing.
+- Use the official nickname only (e.g. "Reds", not "Cincinnati Reds").
+- If SP is not yet announced, write "TBA".
+- Assign bracket labels [G1], [G2], etc. to every game.
+- Use these labels throughout ALL subsequent steps — every team reference must include its game label (e.g. "[G3] Reds vs Nationals").
+- If no games scheduled, stop and send nothing.
+
+STEP 2 - ODDS (1-2 calls):
+Primary: WebFetch https://www.oddsshark.com/mlb/odds
+If 403 or error: WebSearch "MLB moneyline odds TODAY DraftKings site:sportsbookreview.com OR site:oddsshark.com"
+Extract ML, RL, and game totals for every game. Note any significant line movement.
+If only approximate odds are available, note "approx" and use for directional context only.
+
+STEP 3 - LINEUPS (1-2 calls):
+Primary: WebFetch https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=TODAY&hydrate=lineups,team
+Look for lineupPlayers arrays under each game's home/away teams for confirmed batting orders and player names.
+If lineups are not yet populated (empty arrays): WebSearch "MLB confirmed lineups TODAY batting order"
+For batter handedness when not in API response: use WebSearch results or note "handedness unconfirmed".
+Note any reported scratches or injury flags.
+
+STEP 4 - UMPIRES (1 call):
+WebSearch "MLB umpire assignments TODAY home plate umpire"
+Extract home plate umpire for each game. Note K-friendly (above avg called strikes = under lean) vs run-friendly (wide zone = over lean).
+If a game's umpire cannot be found: mark as "unknown" and apply 0.0 adjustment (neutral).
+
+STEP 5 - SP STATS (0 web calls — Bash command):
+Run this command to fetch pitcher stats from Baseball Savant (FanGraphs blocked):
+python3 -c "
+import urllib.request, csv, io
+year='TODAY'[:4]
+url='https://baseballsavant.mlb.com/leaderboard/custom?year='+year+'&type=pitcher&filter=&sort=9&sortDir=desc&min=q&selections=xera,era,k_percent,bb_percent,whiff_percent,p_formatted_ip&csv=true'
+req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
+with urllib.request.urlopen(req,timeout=15) as r:
+    data=r.read().decode('utf-8-sig')
+    reader=csv.DictReader(io.StringIO(data))
+    for row in reader:
+        print(row['last_name, first_name'],'| xERA:',row.get('xera','?'),'| K%:',row.get('k_percent','?'),'| BB%:',row.get('bb_percent','?'),'| IP:',row.get('p_formatted_ip','?'))
+"
+(Replace 'TODAY' with the actual today date string before running.)
+For each probable SP find: xERA, K%, BB%, IP. Classify tier:
+Elite (<3.20 xERA), Above avg (3.20-3.60), Average (3.60-4.20), Below avg (4.20-4.80), Poor (>4.80).
+xERA = Baseball Savant's skill-based ERA estimator (same regression-to-talent role as xFIP).
+If an SP does not appear (insufficient IP), use WebSearch in Step 8 to find their current stats, or default to Average tier and note it.
+
+STEP 6 - TEAM BATTING SPLITS (0 web calls — Bash command):
+Run this command to fetch team batting splits vs RHP and LHP (FanGraphs blocked):
+python3 -c "
+import urllib.request, json
+year='TODAY'[:4]
+url='https://statsapi.mlb.com/api/v1/teams/stats?stats=statSplits&group=hitting&season='+year+'&sitCodes=vr,vl&leagueIds=103,104'
+req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
+with urllib.request.urlopen(req,timeout=10) as r:
+    d=json.loads(r.read())
+    for s in d['stats'][0]['splits']:
+        team=s['team']['name']
+        hand='RHP' if s['split']['code']=='vr' else 'LHP'
+        stat=s['stat']
+        print(team,'vs',hand,'| OPS:',stat['ops'],'AVG:',stat['avg'])
+"
+(Replace 'TODAY' with the actual today date string before running.)
+For top game candidates: find OPS vs RHP and vs LHP.
+OPS calibration: >0.750 = strong offense, <0.680 = weak offense.
+
+STEP 7 - WEATHER (1 call):
+Identify outdoor parks in today's slate (skip dome/retractable-roof closed games).
+WebSearch "MLB weather forecast TODAY outdoor games wind temperature rain"
+For outdoor parks: note wind speed/direction, temp, precip %. Auto-skip any game >40% rain.
+Wind adjustments: >15mph out = +0.5 runs, >15mph in = -0.5 runs. Temp <55F = -0.2 runs. Temp >85F = +0.2 runs.
+If weather unavailable for a specific park, note "weather unavailable" and skip weather layer for that game.
+
+STEP 8 - DEEP RESEARCH (up to 9 calls):
+For the 2-3 strongest game candidates, use remaining calls for:
+- WebSearch "[SP name] 2026 stats recent starts xERA" for SP form, velocity trends, last 3 starts
+- WebSearch "[team] bullpen 2026 workload recent" for pen usage last 3-7 days
+- WebSearch "MLB umpire [name] tendencies 2026" if umpire data is thin
+- WebSearch "[team] lineup injury news today" for any last-minute scratches
+- Any other targeted lookup needed to confirm or invalidate a pick
+
+STEP 9 - ANALYZE each game using these 8 layers:
+
+LAYER 1 - SP MATCHUP (35% weight):
+- xERA differential between the two SPs (key signal)
+- K% and BB% (command), whiff% (swing-and-miss arsenal)
+- Handedness vs lineup composition (platoon advantage)
+- Recent 3-start trend: any velocity decline, elevated walk rate?
+- Projected IP: traditional starter (6-7 inn), bullpen game (flag explicitly)
+
+LAYER 2 - BULLPEN (15% weight):
+- Any pen overuse in last 3 days (>6 IP = fatigued)
+- Closer/setup man used 3 consecutive days = unavailable, flag for late-game ML
+- If bullpen game: use team pen xERA as the "starter" equivalent
+
+LAYER 3 - OFFENSE VS PITCHER (20% weight):
+- OPS vs SP handedness (>0.750 = strong, <0.680 = weak)
+- Platoon advantage: note if lineup stacks same hand as SP (disadvantage) or opposite (advantage)
+- Recent form: last 7-14 game offensive trend
+
+LAYER 4 - PARK + WEATHER (10% weight):
+- Known hitter parks: Coors (+), Great American (+), Yankee Stadium (+LHB)
+- Pitcher parks: Petco (-), Oracle (-), Tropicana (dome, neutral)
+- Apply wind and temp adjustments from Step 7
+
+LAYER 5 - UMPIRE (5% weight):
+- K-friendly ump: -0.3 total lean, suppresses run scoring
+- Run-friendly ump: +0.3 total lean
+- Use as secondary signal only, cap adjustment at ±0.5 runs
+
+LAYER 6 - PYTHAGOREAN BASELINE (15% weight):
+- Better team by actual record? Pythagorean record (RS/RA based) more predictive than W/L
+- Teams with Pythagorean > actual W% are "unlucky" and likely to improve
+- Use as baseline team quality signal, then SP/context layers adjust
+
+LAYER 7 - LINE MOVEMENT (signal check):
+- Line moving toward your pick = smart money agrees (positive signal)
+- Line moving against your pick = concern, reduce confidence, consider skip
+
+LAYER 8 - SCHEDULE SPOT (5% weight):
+- Back-to-back game, getaway day, cross-country travel: slight negative
+- Well-rested team vs fatigued opponent: slight positive
+
+MARKET HIERARCHY:
+- ML is the only proven market. Lead every card here. Target 2-4 ML plays.
+- Totals: only play if park + weather + umpire ALL point same direction AND edge is A-tier (>=4%). Cap 0.5u.
+- Run lines: do not play. 0-3 tracked record. Skip.
+
+EDGE TIERS:
+- A = model win prob beats implied prob by 4%+
+- B = 2.5-3.9% gap
+- C = 1.0-2.4% gap
+- Pass = under 1%
+
+CONFIDENCE TO UNITS:
+- 8-10 (A-tier edge, all layers aligned, confirmed SP) = 2u HIGH CONFIDENCE
+- 7 (B-tier edge, most layers aligned) = 1u VALUE PLAY
+- 6 (C-tier, plus-money only) = 0.5u LEAN
+- 5 or below = skip
+
+Units won calculation: negative odds e.g. -130: win = bet * (100/130). Positive e.g. +140: win = bet * (140/100). Round to 2dp.
+
+SKIP conditions: SP unconfirmed, rain >40%, Coors Field without elite SP, line moved >20 cents against pick.
+
+PRE-PICK CHECKLIST (verify each pick before publishing):
+- SP confirmed and handedness locked
+- Edge direction consistent across layers (not split signal)
+- Line not moved significantly against pick
+- No unresolved injury/lineup risk
+- Stake within guardrails (ML max 2u, totals max 0.5u)
+
+BET NAMING FORMAT (apply to STEP 10 output AND STEP 11 JSON):
+- ML: "[Nickname] ML" e.g. "Rays ML", "Yankees ML"
+- Over/Under: "[Nickname1]/[Nickname2] Over N" or "Under N" e.g. "Rays/Yankees Over 8.5"
+- Run line: "[Nickname] +1.5" or "[Nickname] -1.5"
+Use nickname only — no city names. Nicknames: Diamondbacks, Orioles, Red Sox, Cubs, White Sox, Reds, Guardians, Rockies, Tigers, Astros, Royals, Angels, Dodgers, Marlins, Brewers, Twins, Mets, Yankees, A's, Phillies, Pirates, Padres, Giants, Mariners, Cardinals, Rays, Rangers, Blue Jays, Nationals, Braves
+
+STEP 10 - FORMAT plain ASCII text, no emoji:
+
+MLB Picks - [Month Day]
+
+HIGH CONFIDENCE
+[Nickname] ML [odds] vs [OpponentNickname] | Bet Xu -> Win Yu
+[SP name] ([xERA]/[ERA]) vs [opp SP name] ([xERA]/[ERA]). [1-2 sentences: lead with the specific edge - SP tier gap, platoon advantage, lineup OPS vs handedness, park/weather/umpire alignment, line movement direction]
+
+VALUE PLAYS
+[Nickname] ML [odds] vs [OpponentNickname] | Bet Xu -> Win Yu
+[SP name] ([xERA]) vs [opp SP name] ([xERA]). [1-2 sentences with specific data points]
+
+LEAN
+[Nickname] ML [odds] vs [OpponentNickname] | Bet 0.5u -> Win Yu
+[1-2 sentences, must be plus-money, note it is high variance]
+
+Skipped: N games - [brief reason per game e.g. "no SP edge", ">40% rain", "line moved against", "no sufficient edge"]
+
+All skipped: MLB Picks - [date] - No strong plays today.
+Error: MLB Picks - [date] - Analysis failed. Check manually.
+
+STEP 11 - WRITE TODAY'S PICKS FILE (0 web calls):
+
+Format: JSON array of {bet, odds, units} - one object per published pick.
+Do NOT include No Play entries or invalidated picks.
+
+Use the Write tool to write it to /home/user/mlb-relay/picks/TODAY.json
+If no picks qualified today, write no file.
+Do not commit yet - STEP 12 pushes everything at once.
+
+STEP 12 - COMMIT AND PUSH (this is what delivers your Telegram message):
+
+1. Build the full message: the results block from STEP 0d (if any), then a
+   blank line, then today's picks from STEP 10. Do NOT include the GAME LIST
+   from STEP 1 - it is internal verification only.
+
+2. Use the Write tool to save that message to /home/user/mlb-relay/dispatch/TODAY.txt
+
+3. Commit and push everything in one commit:
+cd /home/user/mlb-relay
+git add -A picks grades dispatch
+git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -m "picks: TODAY"
+git push origin main
+
+4. `git push` printing an updated ref means success. That single push fires:
+   - MLB Relay -> texts dispatch/TODAY.txt to Telegram (~30s)
+   - Update Google Sheet -> logs today's picks AND yesterday's grades
+
+If the push is rejected because the remote moved, run
+`git pull -q --rebase origin main` and push again. If it fails twice, report
+the exact git error text verbatim in your final response.
+
+DELIVERY CONTRACT (read before touching any step that writes to GitHub):
+- NEVER call api.github.com to write. The contents API and repository_dispatch
+  are both blocked by the execution proxy and always return 403 Forbidden,
+  no matter what token is used. A 403 here is NOT an expired or revoked token.
+- There is no API token in this prompt and none is needed.
+- The ONLY supported write path is `git push` over the clone's preconfigured
+  remote at /home/user/mlb-relay.
+- One push delivers everything: the relay workflow texts any changed
+  dispatch/*.txt to Telegram, and the sheets workflow logs any changed
+  picks/ and grades/ files to Google Sheets.
+- If a step fails, report the exact error text. Do not guess at a cause and do
+  not tell the user to rotate credentials.
