@@ -90,3 +90,39 @@ from the local clone instead.
 - UFC picks live under `picks/ufc/` and are deliberately not mirrored to
   Google Sheets; `sheets.yml` only matches `picks/<date>.json` and
   `picks/nba/<date>.json`.
+
+## Backfill status (as of 2026-08-01)
+
+Delivery was broken from 6/18 onward, so picks stopped being recorded. What has
+been recovered so far, from the routines' own 11am session transcripts:
+
+- **Recorded in git and logged to the sheet in date order:** 7/1–7/11, 7/16,
+  7/18, 7/20–8/1 (51 bets). Every odds/units pair was cross-checked against the
+  projected return the routine printed at the time before being written.
+- **Still missing** (no transcript supplied yet): 6/10, 6/18–6/30, 7/12–7/15
+  — 18 days. Those cards exist only in the run sessions at
+  [claude.ai/code/routines](https://claude.ai/code/routines).
+- **7/17** is a known conflict: the 11am transcript lists Yankees +105 2u,
+  Cardinals -112 1u, Red Sox -130 1u, while the repo file (pushed 1:43pm, and
+  already graded) has Red Sox -130 2u and Yankees +100 1u. The repo version
+  stands; the transcript version was not applied.
+- **51 backfilled bets are logged but ungraded** (column E empty). Grading
+  needs a verified final score per bet.
+
+Do **not** regenerate missing picks by re-running the model. Those games have
+already been played, so anything produced now is chosen with hindsight and
+would turn the tracked record into fiction. Only transcribe what the routine
+actually published at the time.
+
+## Reconciling the sheet
+
+`reconcile.yml` (Actions tab -> Reconcile Sheet -> Run workflow):
+
+- `mode: inspect` — read-only. Reports sheet shape, date range, out-of-order
+  rows, and which repo picks are missing from the sheet. Run this first.
+- `mode: apply` + `confirm: yes` — merges missing repo picks into their correct
+  date position and rebuilds the F/G/H running-total chain. Preserves columns
+  A–E and I–K per row; refuses to run if any row has a date but no bet.
+
+Commit with `[skip-sheets]` in the message to land picks in git without the
+sheets workflow appending them to the bottom, then place them with `apply`.
