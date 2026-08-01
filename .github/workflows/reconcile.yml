@@ -187,8 +187,8 @@ jobs:
               sys.exit('apply mode requires confirm: yes')
           if broken:
               sys.exit('refusing to rewrite: rows with a date but no bet (or vice versa)')
-          if not missing:
-              print('Nothing to insert.')
+          if not missing and not dupes:
+              print('Nothing to insert and nothing to clean up.')
               sys.exit(0)
 
           # Merge: keep every existing bet row verbatim, slot the missing picks
