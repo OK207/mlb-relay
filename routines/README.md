@@ -87,9 +87,12 @@ from the local clone instead.
   `break`-ed on the first match, so a commit carrying both yesterday's grades
   and today's picks only ever applied one of them.
 - `relay.yml` chunks messages at 3900 chars (Telegram's limit is 4096).
-- UFC picks live under `picks/ufc/` and are deliberately not mirrored to
-  Google Sheets; `sheets.yml` only matches `picks/<date>.json` and
-  `picks/nba/<date>.json`.
+- Each sport has its own worksheet: MLB is `sheet1`, NBA is the `NBA` tab, UFC
+  is the `UFC` tab (created automatically on first use). Running totals in
+  F/G/H are cumulative per worksheet, so the sports are tracked separately.
+- UFC pick files are `{"event":..., "picks":[...]}` rather than a bare list,
+  and UFC grades live at `picks/ufc/grades/<date>.json`. Both workflows
+  unwrap the former and special-case the latter.
 
 ## Backfill status (as of 2026-08-01)
 

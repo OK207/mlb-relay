@@ -1,0 +1,21 @@
+{
+  "event": "UFC 329: McGregor vs Holloway 2",
+  "event_date": "2026-07-11",
+  "picks": [
+    {
+      "bet": "Saint Denis ML",
+      "odds": -145,
+      "units": 1.0
+    },
+    {
+      "bet": "Sandhagen ML",
+      "odds": -145,
+      "units": 1.0
+    },
+    {
+      "bet": "Royval ML",
+      "odds": 180,
+      "units": 0.5
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "event": "UFC Belgrade",
+  "event_date": "2026-08-01",
+  "picks": [
+    {
+      "bet": "Tybura ML",
+      "odds": 285,
+      "units": 0.5
+    }
+  ]
+}

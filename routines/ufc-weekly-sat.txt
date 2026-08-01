@@ -233,8 +233,9 @@ git add -A picks dispatch
 git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -m "ufc picks: EVENT_DATE"
 git push origin main
 
-That push texts the message via the MLB Relay workflow. UFC picks are not
-mirrored to Google Sheets (the sheets workflow only tracks MLB and NBA).
+That push texts the message via the MLB Relay workflow AND logs the picks to
+the UFC tab of the Google Sheet (the sheets workflow creates that tab on first
+use). Grades written in STEP 0e land in column E of the same tab.
 If the push is rejected, run `git pull -q --rebase origin main` and retry once.
 Report the exact git error text if it still fails.
 

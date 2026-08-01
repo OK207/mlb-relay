@@ -19,6 +19,12 @@ on:
         required: false
         default: 'no'
         type: string
+      sport:
+        description: 'Which worksheet to reconcile'
+        required: true
+        default: 'mlb'
+        type: choice
+        options: [mlb, nba, ufc]
 
 jobs:
   reconcile:
@@ -33,16 +39,42 @@ jobs:
           SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
           MODE: ${{ inputs.mode }}
           CONFIRM: ${{ inputs.confirm }}
+          SPORT: ${{ inputs.sport }}
         run: |
           python3 - << 'EOF'
           import gspread, json, os, re, sys, glob
           from datetime import datetime, timedelta
 
           MODE = os.environ['MODE']
+          SPORT = os.environ.get('SPORT', 'mlb')
           GS_EPOCH = datetime(1899, 12, 30)
 
+          # Where each sport's pick files live, and which worksheet mirrors them.
+          GLOB = {'mlb': 'picks/*.json', 'nba': 'picks/nba/*.json',
+                  'ufc': 'picks/ufc/*.json'}[SPORT]
+          PATH_RE = re.compile({
+              'mlb': r'^picks/(\d{4}-\d{2}-\d{2})\.json$',
+              'nba': r'^picks/nba/(\d{4}-\d{2}-\d{2})\.json$',
+              'ufc': r'^picks/ufc/(\d{4}-\d{2}-\d{2})\.json$'}[SPORT])
+
+          def unwrap(doc):
+              # UFC files are {"event":..., "picks":[...]}; MLB/NBA are a bare list.
+              return doc['picks'] if isinstance(doc, dict) else doc
+
           gc = gspread.service_account_from_dict(json.loads(os.environ['CREDS']))
-          ws = gc.open_by_key(os.environ['SHEET_ID']).sheet1
+          wb = gc.open_by_key(os.environ['SHEET_ID'])
+          HEADER = ['Date', 'Bet', 'Odds', 'Units Played', 'Units Won/Lost',
+                    'Totals (Winnings)', 'Total Stakes', 'Yield %', '', '', '']
+          if SPORT == 'mlb':
+              ws = wb.sheet1
+          else:
+              try:
+                  ws = wb.worksheet(SPORT.upper())
+              except gspread.WorksheetNotFound:
+                  ws = wb.add_worksheet(title=SPORT.upper(), rows=500, cols=len(HEADER))
+                  ws.update('A1:K1', [HEADER], value_input_option='USER_ENTERED')
+                  print(f'created worksheet "{SPORT.upper()}"')
+          print(f'Sport: {SPORT}   picks glob: {GLOB}')
 
           def parse_row_date(cell):
               try:
@@ -113,12 +145,12 @@ jobs:
           existing = {(dates[i], data[i][1].strip())
                       for i in range(len(data)) if dates[i] and len(data[i]) > 1}
           missing = []
-          for path in sorted(glob.glob('picks/*.json')):
-              m = re.match(r'^picks/(\d{4}-\d{2}-\d{2})\.json$', path)
+          for path in sorted(glob.glob(GLOB)):
+              m = PATH_RE.match(path)
               if not m:
                   continue
               d = datetime.strptime(m.group(1), '%Y-%m-%d').date()
-              for p in json.load(open(path)):
+              for p in unwrap(json.load(open(path))):
                   if (d, p['bet']) not in existing:
                       missing.append((d, p))
           print(f'\nRepo picks missing from sheet: {len(missing)}')

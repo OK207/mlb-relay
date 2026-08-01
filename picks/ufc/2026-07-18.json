@@ -1,0 +1,21 @@
+{
+  "event": "UFC Fight Night: Du Plessis vs Usman",
+  "event_date": "2026-07-18",
+  "picks": [
+    {
+      "bet": "Usman ML",
+      "odds": 170,
+      "units": 0.75
+    },
+    {
+      "bet": "Cannonier ML",
+      "odds": 310,
+      "units": 0.5
+    },
+    {
+      "bet": "Erceg ML",
+      "odds": -115,
+      "units": 0.75
+    }
+  ]
+}

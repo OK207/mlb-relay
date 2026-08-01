@@ -6,7 +6,8 @@ on:
       - 'picks/**.json'
       - 'grades/**.json'
   repository_dispatch:
-    types: [mlb-sheets-log-picks, mlb-sheets-grade-picks, nba-sheets-log-picks, nba-sheets-grade-picks]
+    types: [mlb-sheets-log-picks, mlb-sheets-grade-picks, nba-sheets-log-picks,
+            nba-sheets-grade-picks, ufc-sheets-log-picks, ufc-sheets-grade-picks]
 
 jobs:
   update:
@@ -41,8 +42,28 @@ jobs:
           def git(*args):
               return subprocess.run(['git', *args], capture_output=True, text=True).stdout.strip()
 
-          PICKS_RE = re.compile(r'^picks/(nba/)?(\d{4}-\d{2}-\d{2})\.json$')
+          PICKS_RE = re.compile(r'^picks/(nba/|ufc/)?(\d{4}-\d{2}-\d{2})\.json$')
           GRADES_RE = re.compile(r'^grades/(nba/)?(\d{4}-\d{2}-\d{2})\.json$')
+          # UFC grades live under picks/ufc/grades/ rather than grades/ufc/.
+          UFC_GRADES_RE = re.compile(r'^picks/ufc/grades/(\d{4}-\d{2}-\d{2})\.json$')
+
+          HEADER = ['Date', 'Bet', 'Odds', 'Units Played', 'Units Won/Lost',
+                    'Totals (Winnings)', 'Total Stakes', 'Yield %', '', '', '']
+
+          def sport_of(prefix):
+              return {'nba/': 'nba', 'ufc/': 'ufc'}.get(prefix or '', 'mlb')
+
+          def picks_path(sport, d):
+              return {'mlb': f'picks/{d}.json', 'nba': f'picks/nba/{d}.json',
+                      'ufc': f'picks/ufc/{d}.json'}[sport]
+
+          def grades_path(sport, d):
+              return {'mlb': f'grades/{d}.json', 'nba': f'grades/nba/{d}.json',
+                      'ufc': f'picks/ufc/grades/{d}.json'}[sport]
+
+          def unwrap(doc):
+              # UFC files are {"event":..., "picks":[...]}; MLB/NBA are a bare list.
+              return doc['picks'] if isinstance(doc, dict) else doc
 
           jobs = []  # (event, date_str)
 
@@ -58,13 +79,17 @@ jobs:
               )
               rng = f'{before}..{after}' if have_before else 'HEAD~1..HEAD'
               for f in git('diff', '--name-only', '--diff-filter=d', rng).split('\n'):
+                  m = UFC_GRADES_RE.match(f)
+                  if m:
+                      jobs.append(('ufc-sheets-grade-picks', m.group(1)))
+                      continue
                   m = PICKS_RE.match(f)
                   if m:
-                      jobs.append((('nba' if m.group(1) else 'mlb') + '-sheets-log-picks', m.group(2)))
+                      jobs.append((sport_of(m.group(1)) + '-sheets-log-picks', m.group(2)))
                       continue
                   m = GRADES_RE.match(f)
                   if m:
-                      jobs.append((('nba' if m.group(1) else 'mlb') + '-sheets-grade-picks', m.group(2)))
+                      jobs.append((sport_of(m.group(1)) + '-sheets-grade-picks', m.group(2)))
               if not jobs:
                   print(f'No picks/grades files changed in {rng}')
                   sys.exit(0)
@@ -81,6 +106,18 @@ jobs:
 
           gc = gspread.service_account_from_dict(json.loads(os.environ['CREDS']))
           wb = gc.open_by_key(os.environ['SHEET_ID'])
+
+          def worksheet_for(sport):
+              if sport == 'mlb':
+                  return wb.sheet1
+              title = sport.upper()
+              try:
+                  return wb.worksheet(title)
+              except gspread.WorksheetNotFound:
+                  ws = wb.add_worksheet(title=title, rows=500, cols=len(HEADER))
+                  ws.update(f'A1:K1', [HEADER], value_input_option='USER_ENTERED')
+                  print(f'created worksheet "{title}"')
+                  return ws
 
           GS_EPOCH = datetime(1899, 12, 30)
 
@@ -99,12 +136,12 @@ jobs:
                           pass
               return None
 
-          def log_picks(ws, date_str, is_nba):
+          def log_picks(ws, date_str, sport):
               target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-              path = f'picks/nba/{date_str}.json' if is_nba else f'picks/{date_str}.json'
+              path = picks_path(sport, date_str)
               try:
                   with open(path) as f:
-                      picks = json.load(f)
+                      picks = unwrap(json.load(f))
               except FileNotFoundError:
                   print(f'No picks file for {date_str}')
                   return
@@ -138,12 +175,12 @@ jobs:
               print(f'Logged {len(rows)} new pick(s) for {date_str} '
                     f'(skipped {len(picks)-len(new_picks)} duplicates)')
 
-          def grade_picks(ws, date_str, is_nba):
+          def grade_picks(ws, date_str, sport):
               target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-              path = f'grades/nba/{date_str}.json' if is_nba else f'grades/{date_str}.json'
+              path = grades_path(sport, date_str)
               try:
                   with open(path) as f:
-                      raw = json.load(f)
+                      raw = unwrap(json.load(f))
               except FileNotFoundError:
                   print(f'No grades file for {date_str}')
                   return
@@ -170,12 +207,15 @@ jobs:
 
           for event, date_str in jobs:
               print(f'--- Event: {event}  Date: {date_str}')
-              is_nba = event.startswith('nba-')
-              ws = wb.worksheet('NBA') if is_nba else wb.sheet1
+              sport = event.split('-')[0]
+              if sport not in ('mlb', 'nba', 'ufc'):
+                  print(f'Unknown sport in {event}, skipping')
+                  continue
+              ws = worksheet_for(sport)
               if event.endswith('-sheets-log-picks'):
-                  log_picks(ws, date_str, is_nba)
+                  log_picks(ws, date_str, sport)
               elif event.endswith('-sheets-grade-picks'):
-                  grade_picks(ws, date_str, is_nba)
+                  grade_picks(ws, date_str, sport)
               else:
                   print(f'Unknown event {event}, skipping')
           EOF
