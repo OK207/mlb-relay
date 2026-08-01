@@ -1,0 +1,138 @@
+name: Reconcile Sheet
+
+# One-off maintenance workflow. Run from the Actions tab.
+#   mode: inspect  -> read-only dump of the sheet's current shape
+#   mode: apply    -> merge any repo picks missing from the sheet into their
+#                     correct date position, then rebuild the running-total
+#                     formula chain. Requires confirm: "yes".
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'inspect (read-only) or apply (writes to the sheet)'
+        required: true
+        default: 'inspect'
+        type: choice
+        options: [inspect, apply]
+      confirm:
+        description: 'Type yes to allow apply mode to write'
+        required: false
+        default: 'no'
+        type: string
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install gspread
+
+      - name: Reconcile
+        env:
+          CREDS: ${{ secrets.GOOGLE_SHEETS_CREDS }}
+          SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          MODE: ${{ inputs.mode }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          python3 - << 'EOF'
+          import gspread, json, os, re, sys, glob
+          from datetime import datetime, timedelta
+
+          MODE = os.environ['MODE']
+          GS_EPOCH = datetime(1899, 12, 30)
+
+          gc = gspread.service_account_from_dict(json.loads(os.environ['CREDS']))
+          ws = gc.open_by_key(os.environ['SHEET_ID']).sheet1
+
+          def parse_row_date(cell):
+              try:
+                  return (GS_EPOCH + timedelta(days=float(cell))).date()
+              except Exception:
+                  for fmt in ('%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y'):
+                      try:
+                          return datetime.strptime(str(cell).strip(), fmt).date()
+                      except Exception:
+                          pass
+              return None
+
+          def to_display_date(d):
+              return f'{d.month}/{d.day}/{str(d.year)[2:]}'
+
+          rows = ws.get_all_values()
+          header, data = rows[0], [r for r in rows[1:] if any(c.strip() for c in r)]
+          width = max(len(r) for r in rows)
+
+          print(f'Worksheet : {ws.title}')
+          print(f'Dimensions: {ws.row_count} rows x {ws.col_count} cols, '
+                f'{len(data)} populated data rows, widest row {width} cols')
+          print(f'Header    : {header}')
+          print('\nFirst 3 data rows:')
+          for r in data[:3]:
+              print('   ', r)
+          print('Last 5 data rows:')
+          for r in data[-5:]:
+              print('   ', r)
+
+          # Chronological ordering check
+          dates = [parse_row_date(r[0]) for r in data]
+          unparsed = [i for i, d in enumerate(dates) if d is None]
+          print(f'\nUnparseable date cells: {len(unparsed)}'
+                + (f' at data rows {unparsed[:10]}' if unparsed else ''))
+          ooo = [i for i in range(1, len(dates))
+                 if dates[i] and dates[i-1] and dates[i] < dates[i-1]]
+          print(f'Out-of-order boundaries: {len(ooo)}'
+                + (f' at data rows {ooo[:10]}' if ooo else ''))
+          if dates and dates[0] and dates[-1]:
+              print(f'Date range: {dates[0]} .. {dates[-1]}')
+
+          # What does the repo have that the sheet does not?
+          existing = {(dates[i], data[i][1].strip())
+                      for i in range(len(data)) if dates[i] and len(data[i]) > 1}
+          missing = []
+          for path in sorted(glob.glob('picks/*.json')):
+              m = re.match(r'^picks/(\d{4}-\d{2}-\d{2})\.json$', path)
+              if not m:
+                  continue
+              d = datetime.strptime(m.group(1), '%Y-%m-%d').date()
+              for p in json.load(open(path)):
+                  if (d, p['bet']) not in existing:
+                      missing.append((d, p))
+          print(f'\nRepo picks missing from sheet: {len(missing)}')
+          for d, p in missing[:60]:
+              print(f'   {d}  {p["bet"]:<26} {p["odds"]:>5}  {p["units"]}u')
+
+          if MODE != 'apply':
+              print('\ninspect mode - nothing written.')
+              sys.exit(0)
+
+          if os.environ.get('CONFIRM','').lower() != 'yes':
+              sys.exit('apply mode requires confirm: yes')
+          if unparsed:
+              sys.exit('refusing to rewrite: some date cells could not be parsed')
+          if not missing:
+              print('Nothing to insert.')
+              sys.exit(0)
+
+          # Merge: keep every existing row verbatim, slot missing picks into
+          # date order, then rebuild F/G/H so the running chain stays contiguous.
+          merged = [(dates[i], data[i] + [''] * (10 - len(data[i])))
+                    for i in range(len(data))]
+          for d, p in missing:
+              merged.append((d, [to_display_date(d), p['bet'], p['odds'],
+                                 p['units'], '', '', '', '', '', 'ccr-backfill']))
+          merged.sort(key=lambda t: t[0])   # stable: existing order kept within a date
+
+          out = []
+          for idx, (d, r) in enumerate(merged):
+              n = idx + 2                     # sheet row number
+              prev = n - 1
+              r = list(r[:10])
+              r[5] = f'=E{n}' if n == 2 else f'=F{prev}+E{n}'
+              r[6] = f'=D{n}' if n == 2 else f'=D{n}+G{prev}'
+              r[7] = f'=(F{n}/G{n})*100'
+              out.append(r)
+
+          print(f'\nWriting {len(out)} rows (was {len(data)}, adding {len(missing)})')
+          ws.update(f'A2:J{len(out)+1}', out, value_input_option='USER_ENTERED')
+          print('Done. Columns A-E, I, J preserved per row; F/G/H rebuilt.')
+          EOF

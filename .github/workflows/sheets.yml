@@ -11,6 +11,10 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
+    # Escape hatch for backfills: a commit tagged [skip-sheets] lands in git
+    # without appending to the sheet, so rows can be placed in date order by
+    # the reconcile workflow instead of being tacked onto the bottom.
+    if: "!contains(github.event.head_commit.message, '[skip-sheets]')"
     steps:
       - uses: actions/checkout@v4
         with:
