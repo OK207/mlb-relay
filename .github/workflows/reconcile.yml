@@ -58,9 +58,30 @@ jobs:
           def to_display_date(d):
               return f'{d.month}/{d.day}/{str(d.year)[2:]}'
 
+          WIDTH = 11   # A..K -- K carries a legend note that must survive
+
           rows = ws.get_all_values()
-          header, data = rows[0], [r for r in rows[1:] if any(c.strip() for c in r)]
+          header = rows[0]
+          populated = [r for r in rows[1:] if any(c.strip() for c in r)]
+          last_populated_row = 1 + len(populated)
           width = max(len(r) for r in rows)
+
+          # Rows whose A and B are both blank are dragged-formula artifacts
+          # (F/G/H filled down past the real data); they are not bets.
+          def pad(r): return (list(r) + [''] * WIDTH)[:WIDTH]
+          real, artifacts, broken = [], 0, []
+          for r in populated:
+              r = pad(r)
+              has_date, has_bet = r[0].strip(), r[1].strip()
+              if not has_date and not has_bet:
+                  artifacts += 1
+                  continue
+              d = parse_row_date(r[0])
+              if d is None or not has_bet:
+                  broken.append(r[:4])
+                  continue
+              real.append((d, r))
+          data = [r for _, r in real]
 
           print(f'Worksheet : {ws.title}')
           print(f'Dimensions: {ws.row_count} rows x {ws.col_count} cols, '
@@ -73,11 +94,14 @@ jobs:
           for r in data[-5:]:
               print('   ', r)
 
+          print(f'\nReal bet rows: {len(real)}   '
+                f'dragged-formula artifact rows ignored: {artifacts}   '
+                f'malformed: {len(broken)}')
+          for b in broken[:10]:
+              print('    malformed:', b)
+
           # Chronological ordering check
-          dates = [parse_row_date(r[0]) for r in data]
-          unparsed = [i for i, d in enumerate(dates) if d is None]
-          print(f'\nUnparseable date cells: {len(unparsed)}'
-                + (f' at data rows {unparsed[:10]}' if unparsed else ''))
+          dates = [d for d, _ in real]
           ooo = [i for i in range(1, len(dates))
                  if dates[i] and dates[i-1] and dates[i] < dates[i-1]]
           print(f'Out-of-order boundaries: {len(ooo)}'
@@ -107,32 +131,45 @@ jobs:
 
           if os.environ.get('CONFIRM','').lower() != 'yes':
               sys.exit('apply mode requires confirm: yes')
-          if unparsed:
-              sys.exit('refusing to rewrite: some date cells could not be parsed')
+          if broken:
+              sys.exit('refusing to rewrite: rows with a date but no bet (or vice versa)')
           if not missing:
               print('Nothing to insert.')
               sys.exit(0)
 
-          # Merge: keep every existing row verbatim, slot missing picks into
-          # date order, then rebuild F/G/H so the running chain stays contiguous.
-          merged = [(dates[i], data[i] + [''] * (10 - len(data[i])))
-                    for i in range(len(data))]
+          # Merge: keep every existing bet row verbatim, slot the missing picks
+          # into date order, then rebuild F/G/H so the running chain is contiguous.
+          merged = list(real)
           for d, p in missing:
-              merged.append((d, [to_display_date(d), p['bet'], p['odds'],
-                                 p['units'], '', '', '', '', '', 'ccr-backfill']))
+              r = [''] * WIDTH
+              r[0], r[1], r[2], r[3] = to_display_date(d), p['bet'], p['odds'], p['units']
+              r[9] = 'ccr-backfill'
+              merged.append((d, r))
           merged.sort(key=lambda t: t[0])   # stable: existing order kept within a date
 
           out = []
           for idx, (d, r) in enumerate(merged):
               n = idx + 2                     # sheet row number
               prev = n - 1
-              r = list(r[:10])
+              r = pad(r)
               r[5] = f'=E{n}' if n == 2 else f'=F{prev}+E{n}'
               r[6] = f'=D{n}' if n == 2 else f'=D{n}+G{prev}'
               r[7] = f'=(F{n}/G{n})*100'
               out.append(r)
 
-          print(f'\nWriting {len(out)} rows (was {len(data)}, adding {len(missing)})')
-          ws.update(f'A2:J{len(out)+1}', out, value_input_option='USER_ENTERED')
-          print('Done. Columns A-E, I, J preserved per row; F/G/H rebuilt.')
+          new_last = len(out) + 1
+          print(f'\nRows: {len(data)} existing bets + {len(missing)} backfilled = {len(out)}')
+          print(f'Writing A2:K{new_last}')
+          print('  first:', out[0][:5])
+          print('  last :', out[-1][:5])
+          ws.update(f'A2:K{new_last}', out, value_input_option='USER_ENTERED')
+
+          # Drop any leftover artifact rows below the new data so stale
+          # dragged formulas do not linger pointing at shifted cells.
+          if last_populated_row > new_last:
+              rng = f'A{new_last+1}:K{last_populated_row}'
+              ws.batch_clear([rng])
+              print(f'Cleared stale rows {rng}')
+
+          print('Done. A-E and I-K preserved per row; F/G/H rebuilt as formulas.')
           EOF
