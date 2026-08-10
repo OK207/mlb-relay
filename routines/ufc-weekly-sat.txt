@@ -226,12 +226,57 @@ STEP 9 - COMMIT AND PUSH (delivers your Telegram message)
 
 Always send a message.
 1. Use the Write tool to save the STEP 7 output to
+   /home/user/mlb-relay/messages/EVENT_DATE-ufc.txt
+
+3. Send it to Telegram directly. The token comes from this environment's
+   variables, never from this prompt:
+
+python3 - <<'TG'
+import json, os, urllib.parse, urllib.request
+tok  = os.environ.get('TELEGRAM_TOKEN')
+chat = os.environ.get('TELEGRAM_CHAT_ID', '8644528540')
+msg  = open('/home/user/mlb-relay/messages/EVENT_DATE-ufc.txt').read().strip()
+if not tok:
+    print('SEND_FAILED: TELEGRAM_TOKEN is not set in this environment')
+    raise SystemExit(1)
+ok_all = bool(msg)
+while msg:
+    cut = msg.rfind(chr(10), 0, 3900) if len(msg) > 3900 else len(msg)
+    if cut <= 0:
+        cut = min(3900, len(msg))
+    part, msg = msg[:cut], msg[cut:].lstrip(chr(10))
+    data = urllib.parse.urlencode({'chat_id': chat, 'text': part}).encode()
+    req  = urllib.request.Request(
+        'https://api.telegram.org/bot' + tok + '/sendMessage', data=data)
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            ok = json.loads(r.read()).get('ok')
+            print('chunk ok=', ok)
+            ok_all = ok_all and bool(ok)
+    except Exception as e:
+        print('chunk failed:', e)
+        ok_all = False
+print('SEND_OK' if ok_all else 'SEND_FAILED')
+TG
+
+4. If that printed SEND_OK the text is delivered - go to step 6.
+
+5. Only if it printed SEND_FAILED or errored, fall back to the GitHub relay:
+   use the Write tool to copy the same message to
    /home/user/mlb-relay/dispatch/EVENT_DATE-ufc.txt
-2. Commit and push:
+   The relay workflow sends any changed dispatch/*.txt. Do NOT write this file
+   when the direct send worked, or the message goes out twice.
+
+6. Record everything in git. The text is already sent, so a git failure costs
+   the record but not the message:
 cd /home/user/mlb-relay
-git add -A picks dispatch
+git add -A picks grades dispatch messages
 git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -m "ufc picks: EVENT_DATE"
 git push origin main || git push origin HEAD:claude/auto
+
+7. In your final response state: whether the text went directly or via the
+   relay fallback, whether the push succeeded and to which branch, and quote
+   any git error verbatim.
 
 Routine sessions are only guaranteed push access to claude/-prefixed branches,
 so if the push to main is refused the fallback lands the same commit on
@@ -252,8 +297,11 @@ DELIVERY CONTRACT (read before touching any step that writes to GitHub):
 - There is no API token in this prompt and none is needed.
 - The ONLY supported write path is `git push` over the clone's preconfigured
   remote at /home/user/mlb-relay.
-- One push delivers everything: the relay workflow texts any changed
-  dispatch/*.txt to Telegram, and the sheets workflow logs any changed
+- The Telegram message does NOT depend on GitHub. It is sent directly from
+  this session using TELEGRAM_TOKEN from the environment, before any git
+  command runs, so a push failure can never cost you the text. Writing a
+  dispatch/*.txt file is only a fallback for when that direct send fails.
+- The push still matters for the record: the sheets workflow logs any changed
   picks/ and grades/ files to Google Sheets.
 - If a step fails, report the exact error text. Do not guess at a cause and do
   not tell the user to rotate credentials.
