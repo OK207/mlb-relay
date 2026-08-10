@@ -211,7 +211,13 @@ STEP 11 - COMMIT AND PUSH (this is what delivers your Telegram message):
 cd /home/user/mlb-relay
 git add -A picks grades dispatch
 git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -m "nba picks: TODAY"
-git push origin main
+git push origin main || git push origin HEAD:claude/auto
+
+Routine sessions are only guaranteed push access to claude/-prefixed branches,
+so if the push to main is refused the fallback lands the same commit on
+claude/auto. Delivery is unaffected either way: the relay and sheets workflows
+have no branch filter and fire on whichever branch received the push. Say in
+your final response which of the two succeeded, and quote any git error.
 
 That single push texts the message via the MLB Relay workflow and updates the
 NBA tab with today's picks and yesterday's grades.
