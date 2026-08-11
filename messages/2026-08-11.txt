@@ -1,0 +1,16 @@
+MLB Picks - August 11
+
+HIGH CONFIDENCE
+Pirates ML -120 vs Marlins | Bet 2u -> Win 1.67u
+Skenes (elite, swing-and-miss ace) vs E. Perez (average, injury-prone). Market prices Pittsburgh as only a modest road favorite despite a real SP-quality gap; the run line (Marlins +2.5 heavily favored to cover) signals books expect a tight, low-scoring game, which plays into Skenes's strikeout-heavy profile. loanDepot Park roof closed, weather neutral.
+
+VALUE PLAYS
+Cubs ML -160 vs Nationals | Bet 1u -> Win 0.63u
+Imanaga (steady, average-plus lefty) vs Irvin (below-average, rough season). Contender vs rebuilder with a real pitching and lineup-quality gap. Trimmed off high confidence because the line has drifted from -171 to -160 (mild move toward Washington) and Nationals Park carries a 30% storm chance tonight.
+
+Yankees ML -126 vs Mariners | Bet 1u -> Win 0.79u
+Weathers (3.79 ERA) at home vs Woo (4.31 ERA) for Seattle. Yankees carry a fresh, low-fatigue bullpen (Bednar closing) while the Mariners are missing J.P. Crawford (wrist) and Luke Raley (elbow), and just lost RHP Logan Evans for the season, thinning both their lineup and pen depth.
+
+Skipped: 12 games - Guardians/Tigers, Orioles/Twins: odds too close, no edge. Reds/White Sox, Red Sox/Blue Jays, Phillies/Cardinals, Royals/Dodgers, Rangers/Angels, Astros/Giants, Rays/Athletics, Brewers/Padres, Rockies/Diamondbacks: one or both starters unconfirmed. Mets/Braves: strong pitching matchup (McLean vs M. Perez) but no market odds found to grade an edge.
+
+Note: statsapi.mlb.com and baseballsavant.mlb.com were blocked at the network level all session (no WebFetch or curl access), so xERA, confirmed lineups, batting splits, and umpire assignments were unavailable. Picks above rely on moneylines/run lines, season ERA context, and confirmed injury/bullpen reports found via web search only.
