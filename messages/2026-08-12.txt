@@ -1,0 +1,8 @@
+Results Aug 11:
+L  Pirates ML -120 | 2u -> -2.00u
+W  Cubs ML -160 | 1u -> +0.63u
+W  Yankees ML -126 | 1u -> +0.79u
+Day P&L: -0.58u (2W-1L)
+
+Error: MLB Picks - August 12 - Analysis failed. Check manually.
+Reason: primary data sources (statsapi.mlb.com, espn.com, mlb.com, fangraphs.com, baseball-reference.com, rotowire.com) all returned network egress errors this run, and WebSearch fallback only returned link snippets without verifiable team pairings, odds, lineups, or pitcher stats. Could not build a verified game list, so no picks were generated to avoid guessing.

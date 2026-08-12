@@ -1,0 +1,5 @@
+[
+  {"bet": "Pirates ML", "odds": -120, "units": 2, "outcome": "L", "net": -2.00},
+  {"bet": "Cubs ML", "odds": -160, "units": 1, "outcome": "W", "net": 0.63},
+  {"bet": "Yankees ML", "odds": -126, "units": 1, "outcome": "W", "net": 0.79}
+]
