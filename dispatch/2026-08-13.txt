@@ -1,0 +1,4 @@
+Results Aug 12: no picks logged (prior run failed before generating any).
+
+Error: MLB Picks - August 13 - Analysis failed. Check manually.
+Reason: primary data sources (statsapi.mlb.com, espn.com, mlb.com, cbssports.com, baseball-reference.com, fantasypros.com, covers.com, rotowire.com, fanduel.com) all returned network egress blocks this run (CONNECT tunnel failed, 403 via proxy policy), and WebSearch fallback only returned a bare schedule of times (9 games: Guardians@Tigers 1:10p, Pirates@Marlins 1:10p, Mariners@Yankees 1:35p, Reds@White Sox 2:10p, Red Sox@Blue Jays 3:07p, Cubs@Nationals 4:05p, Phillies@Twins 7:30p, Rangers@Angels 10:07p, Brewers@Dodgers 10:10p) with no confirmed pitchers, lineups, umpires, or verifiable odds. Could not build a verified game list or run the required analysis layers, so no picks were generated to avoid guessing.
