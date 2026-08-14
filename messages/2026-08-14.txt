@@ -1,0 +1,7 @@
+Results Aug 13: no picks logged (prior run failed before generating any).
+
+MLB Picks - August 14 - No strong plays today.
+
+Skipped: 14 games - Rockies/Giants and Red Sox/Pirates had confirmed SPs and a real ERA edge (Roupp 4.22 over Freeland 6.63; Bennett 3.17 over Chandler 4.26) but no bullpen, offense-split, umpire, weather, or line-movement data was available to confirm the edge across layers, so both were passed rather than played on SP data alone. Diamondbacks/Braves, Astros/Mariners, Padres/Guardians, Yankees/Blue Jays, Royals/Angels, Rangers/Athletics, Brewers/Dodgers had approximate odds but no confirmed starting pitchers. Cardinals/Cubs, Marlins/Reds, White Sox/Tigers, Nationals/Mets, Orioles/Rays had no verified odds or confirmed SPs.
+
+Reason: statsapi.mlb.com, baseball-reference.com, mlb.com, espn.com, oddsshark.com, fanduel.com, and covers.com all returned network egress blocks this run (proxy CONNECT tunnel 403), including the direct Python fetch to statsapi in Step 5/6. WebSearch was used as the fallback for the full slate, umpires, and odds, and returned a usable game list and odds for about half the card plus two solid SP matchups, but could not surface bullpen usage, team OPS splits, umpire assignments, or confirmed line movement, so no pick cleared the confidence bar.
