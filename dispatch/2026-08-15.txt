@@ -1,0 +1,5 @@
+Results Aug 14: no picks logged.
+
+MLB Picks - August 15 - No strong plays today.
+
+Skipped: 15 games - White Sox/Tigers, Cardinals/Cubs, Yankees/Blue Jays, Rockies/Giants, Nationals/Mets, Orioles/Rays, Marlins/Reds, Mariners/Astros, Phillies/Twins, Red Sox/Pirates, Diamondbacks/Braves, Brewers/Dodgers, Padres/Guardians, Royals/Angels, Rangers/Athletics. MLB Stats API and every bookmaker/stats site (mlb.com, espn.com, fangraphs.com, fanduel.com, cbssports.com, rotowire.com, baseballsavant.mlb.com) returned network egress blocks this run, including the direct Python fetch to Baseball Savant. WebSearch fallback surfaced a probable slate and partial odds/pitcher data for a few games (Tigers/White Sox, Cubs/Cardinals, Padres/Guardians) but gave internally contradictory matchups and times on repeat queries, so even the game list could not be verified to a safe standard. No lineups, bullpen usage, umpire assignments, team batting splits, or weather data were obtainable for any game. No pick could clear the multi-layer confirmation bar under these conditions.
