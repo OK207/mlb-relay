@@ -1,0 +1,5 @@
+Results Aug 15: no picks logged.
+
+MLB Picks - August 16 - No strong plays today.
+
+Skipped: 15 games - Orioles/Rays, Red Sox/Pirates, Diamondbacks/Braves, Yankees/Blue Jays, Nationals/Mets, Padres/Guardians, White Sox/Tigers, Marlins/Reds, Phillies/Twins, Cardinals/Cubs, Rockies/Giants, Rangers/Athletics, Royals/Angels, Brewers/Dodgers, Mariners/Astros. MLB Stats API, Baseball Savant, ESPN, CBS Sports, FantasyPros and OddsGuy all returned network egress blocks this run, including the direct Python fetch to Baseball Savant. WebSearch fallback surfaced the full schedule and partial odds/pitcher data but returned internally contradictory numbers on every game checked: Yankees/Blue Jays moneyline ranged from Yankees -175 to Blue Jays -124 depending on source, Marlins/Reds win-probability models split 54% Reds vs 66% Marlins, weather results referenced team pairings not on today's slate, and a reported Cardinals/Cubs starter pairing could not be corroborated. No lineups, bullpen usage, umpire assignments, team batting splits, or verified weather were obtainable for any game. No pick could clear the multi-layer confirmation bar under these conditions.
