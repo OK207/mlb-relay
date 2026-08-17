@@ -1,0 +1,5 @@
+Results Aug 16: no picks logged.
+
+MLB Picks - August 17 - No strong plays today.
+
+Skipped: all games - MLB Stats API, MLB.com, ESPN, CBS Sports, Baseball-Reference, Yahoo Sports, FantasyPros, and SportsBookReview/OddsShark all returned network egress blocks on every direct WebFetch this run. WebSearch fallback returned only page-description snippets (site summaries, "visit this site for scores") with no actual matchup, pitcher, odds, or lineup data for August 17 for any source tried. A search-engine summary indicated roughly 15 games are scheduled today, but without a verified team pairing from a primary source, no game list could be built and no pick could clear the multi-layer confirmation bar under these conditions.
