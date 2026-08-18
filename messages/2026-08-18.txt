@@ -1,0 +1,5 @@
+Results Aug 17: no picks logged.
+
+MLB Picks - August 18 - No strong plays today.
+
+Skipped: all games - MLB Stats API and all other primary sources (ESPN, FantasyPros, Deep Metric Analytics, site.api.espn.com) returned network egress blocks on every direct WebFetch this run. WebSearch fallback returned only fragmentary schedule data - roughly 11-15 games were reported to be on the slate, but only about 4 matchups with start times could be surfaced, and pitcher/team pairings required manual cross-checking against transaction news to rule out stale or conflicting data. This did not meet the bar for a verified game list (exact teamName/home/away fields from a primary source) required before any analysis layer runs, so no game list could be built and no pick could clear the multi-layer confirmation bar under these conditions.
