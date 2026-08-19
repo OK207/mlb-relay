@@ -1,0 +1,11 @@
+MLB Picks - August 19
+
+HIGH CONFIDENCE
+Reds ML -148 vs Cardinals | Bet 2u -> Win 1.35u
+Chase Burns (2.47 ERA, 10.37 K/9) vs Matthew Liberatore (5.07 ERA, 1.48 WHIP). Full pitching-tier gap plus a weak Cardinals lineup (.698 team OPS) against Burns' swing-and-miss stuff; Reds price at -148 undersells the mismatch.
+
+VALUE PLAYS
+Padres ML +125 vs Mets | Bet 1u -> Win 1.25u
+Michael King (3.37 ERA) is a real rotation arm off a strong start vs Houston, facing Robert Stock (6.57 ERA), an emergency fill-in rocked for 8 ER over 3 IP three starts back. Padres (67-58) are the better team by record yet priced as dogs vs a sub-.500 Mets club - line looks mispriced.
+
+Skipped: 13 games - Guardians/Giants (Guardians -220 too short, opposing SP Wilkinson has a 0-start sample, contrarian trend flags Cleveland vs RHP this year), Yankees/Orioles (model win prob roughly matches the -121 implied price, no edge), Tigers/Pirates (Pirates -148 is a similar short-favorite profile to the Reds play, Skenes recently scuffling with his start pushed back, no clean edge), Dodgers/Rockies (Coors Field total-run risk, conflicting reports on which Rockies SP starts), remaining 9 games (primary sources - MLB Stats API, ESPN, FanGraphs, MLB.com, Covers, OddsShark - all returned network egress blocks on every direct WebFetch this run; WebSearch fallback could not surface verified odds/lineups/pitcher data for these games within the confirmation bar).
