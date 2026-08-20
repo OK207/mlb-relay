@@ -1,0 +1,23 @@
+MLB Picks - August 20
+
+No picks were logged for 2026-08-19, so there is nothing to grade today.
+
+Data note: MLB Stats API, Baseball Savant, and the odds aggregators were all
+blocked by the network egress policy this run. Card built from WebSearch only,
+so pitcher stats (xERA/K%), team splits, umpires, and weather could not be
+verified. Odds are approximate and directional. Sizing kept conservative.
+
+VALUE PLAYS
+Rays ML -170 vs Blue Jays | Bet 1u -> Win 0.59u
+Tampa Bay (76-50, AL East leader) hosts Toronto (62-66) with Ian Seymour (9-3)
+on the mound. Aggregated model win prob ~72% vs market-implied ~63% is a clear
+edge on team quality and home field. Downgraded from high confidence to 1u
+because SP handedness, splits, and park/umpire layers could not be confirmed
+this run.
+
+Skipped: Yankees @ Orioles - Cole vs Bradish, model ~55% vs -125 implied, no
+edge. Nationals @ Rangers - deGrom favored but split signal (workload concern,
+slumping TEX offense, sharp lean on the dog), pass. Angels @ Astros - SP
+identities and odds inconsistent across sources, unconfirmed. A's @ Royals,
+Mariners @ Brewers, Braves @ White Sox and remaining games - insufficient
+verifiable data to price an edge.
