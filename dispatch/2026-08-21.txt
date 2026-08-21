@@ -1,0 +1,11 @@
+Results Aug 20:
+L  Rays ML -170 | 1u -> -1u
+Day P&L: -1u (0W-1L)
+
+MLB Picks - August 21
+
+All skipped: MLB Picks - Aug 21 - No strong plays today.
+
+Skipped: 5 games - Braves/Brewers (SP unconfirmed: conflicting reports whether Misiorowski starts today vs Saturday), Giants/Red Sox (Fenway - active rain/thunderstorms in forecast), Rays/Orioles (50% rain Baltimore), Mets/White Sox (50% thunderstorm risk Chicago, highest weather risk on slate), Tigers/Royals (insufficient data to grade - see note)
+
+Note: statsapi.mlb.com and most other sports sites were blocked by this environment's network policy this run (WebFetch and direct HTTP both returned EGRESS_BLOCKED/403). All data came from WebSearch synthesis instead of direct API/page fetches, so lineups, umpire assignments, batting splits, and a full 15-game slate confirmation were not reliably obtainable. Only 5 of the day's games could be researched with any confidence; the rest of the slate is unaccounted for. Treat today's skip as a data-availability gap, not a clean "no edges" read.
