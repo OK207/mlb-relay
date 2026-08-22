@@ -1,0 +1,5 @@
+MLB Picks - August 22 - No strong plays today.
+
+Skipped: 15 games - core data sources were blocked by network egress policy this session (statsapi.mlb.com, mlb.com, espn.com, oddsshark.com, baseballsavant.mlb.com, rotowire.com, breakawaystats.com all returned egress-blocked/403 on direct fetch). Only fragmentary, sometimes conflicting snippets were available via search - not enough to confirm odds, bullpen usage, park/weather, or umpire assignments across the slate, so no picks were published rather than force a low-confidence bet.
+
+Note: no picks were logged yesterday (2026-08-21), so no results to grade.
