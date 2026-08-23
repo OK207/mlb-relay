@@ -1,0 +1,7 @@
+MLB Picks - August 23 - No strong plays today.
+
+Skipped: 15 games - direct data fetch was blocked again this session (statsapi.mlb.com, baseball-reference.com, espn.com, mlbschedule.net, fantasypros.com, fanduel.com all returned egress-blocked on WebFetch, and a direct urllib test to statsapi.mlb.com also failed with a 403 from the network proxy). WebSearch fallback only surfaced a partial, low-confidence slate: matchups for roughly 13 of 15 games were identified (Diamondbacks/Reds, A's/Astros, Mariners/Cubs, Padres/Twins, Rockies/Guardians, Dodgers/Pirates, Brewers/Braves, Rangers/Angels, Mets/White Sox, Rays/Orioles, Blue Jays/Yankees, Nationals/Marlins, Tigers/Royals), with real moneylines found for only 3 games (Nationals/Marlins, Rays/Orioles, Blue Jays/Yankees) and no lineups, bullpen usage, park/weather, or umpire data confirmed for any game.
+
+The one candidate with a real edge signal (Nationals @ Marlins, Perez 3.23 ERA vs Irvin 5.56 ERA, MIA -163/WSH +135) had to be dropped: a follow-up search returned conflicting probable starters for the same game (Janson Junk/Jackson Kent instead of Perez/Irvin), so the SP matchup could not be confirmed - an unconfirmed SP is an automatic skip.
+
+Note: no picks were logged yesterday (2026-08-22), so no results to grade.
