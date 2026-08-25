@@ -1,0 +1,14 @@
+MLB Picks - August 25
+
+All skipped: MLB Picks - August 25 - No strong plays today.
+
+Reason: data outage this session. MLB Stats API, sportsbook odds pages,
+lineup/umpire/weather sources, and Baseball Savant were all unreachable
+(full network egress block, not a site-specific issue). Web search only
+surfaced fragmentary odds and plain ERA for 3 of today's games (Rays at
+Tigers, Red Sox at Marlins, Rockies at Nationals), with no confirmed
+lineups, batting splits, bullpen usage, umpire assignment, or weather for
+any game, and no way to verify the rest of the slate. That fails the
+SP-confirmed / no-unresolved-risk checklist this card requires, so no
+bets are being logged today rather than publishing picks built on
+unverified fragments.
