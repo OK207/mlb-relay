@@ -1,0 +1,18 @@
+MLB Picks - August 26
+
+All skipped: MLB Picks - August 26 - No strong plays today.
+
+Reason: network egress block again today. statsapi.mlb.com, mlb.com, espn.com,
+fanduel.com, and oddsshopper.com all returned EGRESS_BLOCKED on WebFetch, and
+a direct Bash urllib call to statsapi.mlb.com also failed (403 tunnel), so
+Steps 1, 2, 3, 5, and 6 could not run as designed. WebSearch fallback surfaced
+only fragments: partial pitcher pairings for roughly 10 of an estimated
+15-game slate with no confirmed home/away for several, and usable detail for
+just one game (Cubs at Diamondbacks: Boyd 4.15 ERA vs E-Rod 2.71 ERA,
+DK line Cubs -144 / Diamondbacks +120, total 9 - but Arizona is without 2B
+Ketel Marte, an unresolved offense risk, and no umpire, weather, bullpen
+usage, or line-movement data was reachable for it). No lineups, umpire
+assignments, or weather were confirmed for any game on the slate. That fails
+the SP-confirmed / no-unresolved-risk checklist this card requires, so no
+bets are being logged today rather than publishing picks built on
+unverified fragments.
