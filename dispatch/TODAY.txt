@@ -1,0 +1,12 @@
+Error: MLB Picks - August 27 - Analysis failed. Check manually.
+
+Reason: Live data sources unavailable this run. WebFetch was blocked at the
+network egress layer for every sports data domain tried (statsapi.mlb.com,
+espn.com, cbssports.com, baseball-reference.com, mlb.com - all returned
+EGRESS_BLOCKED; confirmed via curl too, 403 on the proxy CONNECT tunnel).
+WebSearch fallback returned inconsistent, unverifiable results for today's
+slate (two queries produced contradictory game lists), so no game list could
+be confirmed as real. No picks were generated rather than risk publishing
+fabricated matchups/odds.
+
+No picks logged yesterday (2026-08-26), so no results to grade.
