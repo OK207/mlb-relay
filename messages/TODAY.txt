@@ -1,7 +1,14 @@
-MLB Picks - August 28
+Results August 28:
+  W  Yankees ML -165 | 1u -> +0.61u
+Day P&L: +0.61u (1W-0L-0P)
 
-VALUE PLAYS
-Yankees ML -165 vs Red Sox | Bet 1u -> Win 0.61u
-Cam Schlittler (2.16 ERA, 11-6) vs Patrick Sandoval (4.54 ERA, 1-2). Large SP tier gap (Elite vs Below Avg) is the whole basis for this pick - lineups, bullpen usage, park/weather, and umpire data were unavailable this run (network egress to MLB Stats API, Baseball Savant, and odds sites was blocked), so this is graded on the starting pitcher layer only and sized down accordingly.
+Error: MLB Picks - August 29 - Analysis failed. Check manually.
 
-Skipped: 6 games - Mariners/Blue Jays (opposing SP unconfirmed), Rockies/Braves (Braves -238 already prices in most of the SP edge, secondary layers unverified), Padres/Rays, Rangers/Brewers, Diamondbacks/Giants, Orioles/Athletics (no odds found). Additional slate games (Reds/Cubs, Dodgers/Tigers, Marlins/Nationals, possibly others) could not be confirmed within the web budget due to network blocks on primary sports-data sources - today's game list should be treated as incomplete.
+Reason: Live data sources unavailable this run. WebFetch returned
+EGRESS_BLOCKED for every sports data domain tried (statsapi.mlb.com,
+espn.com, mlb.com, fantasypros.com, baseball-reference.com, cbssports.com,
+rotowire.com, sports.yahoo.com). WebSearch fallback returned only link
+titles/summaries, not structured game data - no probable pitchers, odds, or
+a verified game list could be extracted for today's slate within the web
+call budget. No picks were generated rather than risk publishing fabricated
+matchups/odds.
