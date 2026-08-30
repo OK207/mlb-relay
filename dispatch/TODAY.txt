@@ -1,14 +1,16 @@
-Results August 28:
-  W  Yankees ML -165 | 1u -> +0.61u
-Day P&L: +0.61u (1W-0L-0P)
-
-Error: MLB Picks - August 29 - Analysis failed. Check manually.
+Error: MLB Picks - August 30 - Analysis failed. Check manually.
 
 Reason: Live data sources unavailable this run. WebFetch returned
-EGRESS_BLOCKED for every sports data domain tried (statsapi.mlb.com,
-espn.com, mlb.com, fantasypros.com, baseball-reference.com, cbssports.com,
-rotowire.com, sports.yahoo.com). WebSearch fallback returned only link
-titles/summaries, not structured game data - no probable pitchers, odds, or
-a verified game list could be extracted for today's slate within the web
-call budget. No picks were generated rather than risk publishing fabricated
-matchups/odds.
+EGRESS_BLOCKED (network egress proxy, org policy) for every sports/data
+domain tried: statsapi.mlb.com, www.mlb.com, www.fangraphs.com,
+www.espn.com, www.vegasinsider.com, en.wikipedia.org. Direct curl/python3
+requests from Bash to statsapi.mlb.com were also rejected at the proxy
+(CONNECT tunnel failed, 403, policy denial) so Steps 5/6 stat pulls could
+not run either. WebSearch fallback returned only link titles and a generic
+summary, not structured page content, so no verified game list, odds,
+lineups, SP stats, weather, or umpire assignments could be extracted for
+today's slate. No picks were generated rather than risk publishing
+fabricated matchups/odds.
+
+Note: no picks were logged for August 29 (also an analysis-failed day), so
+there is nothing to grade today.
