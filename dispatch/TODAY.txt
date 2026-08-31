@@ -1,16 +1,7 @@
-Error: MLB Picks - August 30 - Analysis failed. Check manually.
+MLB Picks - August 31
 
-Reason: Live data sources unavailable this run. WebFetch returned
-EGRESS_BLOCKED (network egress proxy, org policy) for every sports/data
-domain tried: statsapi.mlb.com, www.mlb.com, www.fangraphs.com,
-www.espn.com, www.vegasinsider.com, en.wikipedia.org. Direct curl/python3
-requests from Bash to statsapi.mlb.com were also rejected at the proxy
-(CONNECT tunnel failed, 403, policy denial) so Steps 5/6 stat pulls could
-not run either. WebSearch fallback returned only link titles and a generic
-summary, not structured page content, so no verified game list, odds,
-lineups, SP stats, weather, or umpire assignments could be extracted for
-today's slate. No picks were generated rather than risk publishing
-fabricated matchups/odds.
+VALUE PLAYS
+Braves ML -163 vs Giants | Bet 1u -> Win 0.61u
+Elder (8-7, 3.95 ERA, full rotation starter) vs Molina (2.89 ERA over 9.1 IP, pitching as an opener - Giants pushed ace Logan Webb back to Tuesday's opener at Pittsburgh instead, flag as a bullpen game for SF). Braves are 48-23 at home this season; Giants are 23-45 on the road with a season that is effectively over.
 
-Note: no picks were logged for August 29 (also an analysis-failed day), so
-there is nothing to grade today.
+Skipped: remainder of today's slate - statsapi.mlb.com, mlb.com, espn.com, oddsshark.com, covers.com, and baseball-reference.com all returned EGRESS_BLOCKED via WebFetch (proxy policy) again today, and a direct Bash/python request to Baseball Savant also hit a 403 at the proxy, so Steps 1/2/3/4/5/6/7 could not run as designed. WebSearch fallback only returned reliable, corroborated pitcher-and-odds data for Giants @ Braves before the 15-call budget was exhausted; Brewers @ Cubs was dropped for conflicting odds across sources, Marlins @ Nationals for a line too thin to clear the edge threshold, and the rest of the slate (Padres/Reds, Mets/Rays, Mariners/Red Sox, and others) could not be confirmed at all.
