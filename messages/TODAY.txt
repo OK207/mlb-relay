@@ -1,7 +1,19 @@
-MLB Picks - August 31
+Results 2026-08-31:
+  L  Braves ML -163 | 1u -> -1u
+Day P&L: -1u (0W-1L-0P)
+
+MLB Picks - September 1
 
 VALUE PLAYS
-Braves ML -163 vs Giants | Bet 1u -> Win 0.61u
-Elder (8-7, 3.95 ERA, full rotation starter) vs Molina (2.89 ERA over 9.1 IP, pitching as an opener - Giants pushed ace Logan Webb back to Tuesday's opener at Pittsburgh instead, flag as a bullpen game for SF). Braves are 48-23 at home this season; Giants are 23-45 on the road with a season that is effectively over.
+Guardians ML -180 vs Blue Jays | Bet 1u -> Win 0.56u
+Williams (3.98 ERA, 204 K) vs Arrighetti (4.81 ERA, 95 K) is a clear SP tier gap at home for Cleveland. Blue Jays counter with a below-average arm on the road while Williams brings a big strikeout rate to a neutral park.
 
-Skipped: remainder of today's slate - statsapi.mlb.com, mlb.com, espn.com, oddsshark.com, covers.com, and baseball-reference.com all returned EGRESS_BLOCKED via WebFetch (proxy policy) again today, and a direct Bash/python request to Baseball Savant also hit a 403 at the proxy, so Steps 1/2/3/4/5/6/7 could not run as designed. WebSearch fallback only returned reliable, corroborated pitcher-and-odds data for Giants @ Braves before the 15-call budget was exhausted; Brewers @ Cubs was dropped for conflicting odds across sources, Marlins @ Nationals for a line too thin to clear the edge threshold, and the rest of the slate (Padres/Reds, Mets/Rays, Mariners/Red Sox, and others) could not be confirmed at all.
+Marlins ML -160 vs Royals | Bet 1u -> Win 0.63u
+Miami (69-68, 3.90 team ERA) has the deeper pitching staff against a rebuilding Kansas City club (62-76) turning to journeyman Dobnak. Offenses grade out even, so the pitching-staff gap is the deciding edge.
+
+Rangers ML -152 vs Athletics | Bet 1u -> Win 0.66u
+deGrom (4.21 ERA) and Jump (4.29 ERA) are close to even on paper, but Oakland is hitting just .225/.298 OBP on the road this season and Texas holds the better-form bullpen, giving the home favorite the late-game cushion.
+
+Skipped: 12 games - Cubs/Brewers (similar-tier LHP, no edge), Giants/Pirates (Skenes elite, no value side), Tigers/Twins, Padres/Reds, Cardinals/Dodgers (insufficient data depth), Mariners/Red Sox, Yankees/Angels, Mets/Rays, Braves/Nationals, White Sox/Astros (SP unconfirmed), Phillies/Diamondbacks (elite vs elite SP, no edge), Orioles/Rockies (Coors Field without elite SP)
+
+Data note: MLB Stats API and Baseball Savant are both blocked in this environment (network egress denied), so the slate, SP tiers, and splits were built entirely from WebSearch (ERA used in place of xERA). Umpire assignments for today were not found and were treated as neutral for all games. Run lines and totals were skipped per market hierarchy.
