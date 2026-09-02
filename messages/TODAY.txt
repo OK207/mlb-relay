@@ -1,19 +1,13 @@
-Results 2026-08-31:
-  L  Braves ML -163 | 1u -> -1u
-Day P&L: -1u (0W-1L-0P)
+Results 2026-09-01:
+  W  Guardians ML -180 | 1u -> +0.56u
+  W  Marlins ML -160 | 1u -> +0.63u
+  W  Rangers ML -152 | 1u -> +0.66u
+Day P&L: +1.85u (3W-0L)
 
-MLB Picks - September 1
+MLB Picks - September 2
 
 VALUE PLAYS
-Guardians ML -180 vs Blue Jays | Bet 1u -> Win 0.56u
-Williams (3.98 ERA, 204 K) vs Arrighetti (4.81 ERA, 95 K) is a clear SP tier gap at home for Cleveland. Blue Jays counter with a below-average arm on the road while Williams brings a big strikeout rate to a neutral park.
+Blue Jays ML +110 (approx) vs Guardians | Bet 1u -> Win 1.10u
+Dylan Cease (2.33 ERA, elite tier, 1.71 ERA over last 7 starts, AL K leader) vs Joey Cantillo (3.80 ERA, average tier). Clear SP quality gap for a plus-money price; Progressive Field is neutral, mild temp, low wind, no rain risk.
 
-Marlins ML -160 vs Royals | Bet 1u -> Win 0.63u
-Miami (69-68, 3.90 team ERA) has the deeper pitching staff against a rebuilding Kansas City club (62-76) turning to journeyman Dobnak. Offenses grade out even, so the pitching-staff gap is the deciding edge.
-
-Rangers ML -152 vs Athletics | Bet 1u -> Win 0.66u
-deGrom (4.21 ERA) and Jump (4.29 ERA) are close to even on paper, but Oakland is hitting just .225/.298 OBP on the road this season and Texas holds the better-form bullpen, giving the home favorite the late-game cushion.
-
-Skipped: 12 games - Cubs/Brewers (similar-tier LHP, no edge), Giants/Pirates (Skenes elite, no value side), Tigers/Twins, Padres/Reds, Cardinals/Dodgers (insufficient data depth), Mariners/Red Sox, Yankees/Angels, Mets/Rays, Braves/Nationals, White Sox/Astros (SP unconfirmed), Phillies/Diamondbacks (elite vs elite SP, no edge), Orioles/Rockies (Coors Field without elite SP)
-
-Data note: MLB Stats API and Baseball Savant are both blocked in this environment (network egress denied), so the slate, SP tiers, and splits were built entirely from WebSearch (ERA used in place of xERA). Umpire assignments for today were not found and were treated as neutral for all games. Run lines and totals were skipped per market hierarchy.
+Skipped: 14 games - Orioles/Rockies (Coors Field, neither starter elite tier - Rogers 4.38 ERA, Sugano 5.23 ERA, hard skip per park rule), Mariners/Red Sox (58% rain risk at Fenway). Remaining ~12 games on the slate (Padres/Reds, Braves/Nationals, A's/Rangers, Phillies/Diamondbacks, Giants/Pirates, Mets/Rays, Tigers/Twins, Brewers/Cubs, Marlins/Royals, and others) could not be graded to a confident edge - statsapi.mlb.com, espn.com, mlb.com, rotowire.com, and baseball-reference.com were all blocked by this session's network egress policy, so odds/lineup/SP-stat data for those games came only from inconsistent WebSearch synthesis and was not reliable enough to publish.
