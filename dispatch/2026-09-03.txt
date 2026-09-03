@@ -1,0 +1,15 @@
+Results September 2:
+  W  Blue Jays ML 110 | 1u -> +1.10u
+Day P&L: +1.10u (1W-0L)
+
+MLB Picks - September 3
+
+HIGH CONFIDENCE
+Rays ML -130 vs Rangers | Bet 2u -> Win 1.54u
+McClanahan (3.19 ERA, 10-6) vs Quantrill. Tampa Bay is the far stronger club (83-56) with a clear starter tier edge, and the market agrees - 99% of moneyline handle is on the Rays despite roughly even bet counts, a strong sharp signal.
+
+VALUE PLAYS
+Marlins ML -116 vs Royals | Bet 1u -> Win 0.86u
+Alcantara vs Wacha (8-8, 3.32 ERA) is a fair pitching matchup, but Miami has won 3 of 4 while Kansas City is mired in a 3-game skid. Modest favorite price with recent form on Miami's side, plus a live sharp signal on the game total.
+
+Skipped: 6 games - Brewers/Cubs (57% rain chance with severe storm risk in Chicago, overriding a strong SP edge), Yankees/Angels (today's SP matchup could not be confirmed), White Sox/Astros, Cardinals/Dodgers, Red Sox/Orioles, Athletics/Mariners (insufficient data - MLB Stats API and Baseball Savant were both blocked all session, so these went unreviewed)
