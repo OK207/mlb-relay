@@ -1,0 +1,10 @@
+Results 2026-09-03:
+  L  Rays ML -130 | 2u -> -2u
+  L  Marlins ML -116 | 1u -> -1u
+Day P&L: -3u (0W-2L)
+
+MLB Picks - Sep 4
+
+Skipped: 16 games - data sources blocked. statsapi.mlb.com, espn.com, mlb.com, baseball-reference.com, fantasypros.com, oddsshark.com and breakawaystats.com all returned network egress blocks today, so lineups, umpires, weather, team splits and line movement could not be confirmed for any game. The one game with any odds found (Braves at Phillies, Sale vs Sanchez) had sharply conflicting lines across sources (-109/-110 vs -152/+126 depending on source), too unreliable to size an edge against.
+
+No strong plays today.
