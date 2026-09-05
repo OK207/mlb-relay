@@ -1,0 +1,5 @@
+MLB Picks - September 5
+
+Skipped: full slate - every primary data source returned a network egress block this session: statsapi.mlb.com, baseball-reference.com, fantasypros.com, baseballsavant.mlb.com, rotowire.com, espn.com, and covers.com all refused the connection outright (not a 403 from the site itself), matching the pattern from 9/1-9/4. WebSearch (the fallback) confirmed several real matchups directly - Red Sox (Sonny Gray) at Orioles, Red Sox -149/Orioles +123; Rays -110 at Rangers (deGrom, plus-money home dog); Tigers at Guardians (Messick); Blue Jays at Royals; Braves at Phillies; Cubs at Marlins; Cardinals at Rockies (hard skip regardless - Coors Field without an elite-tier starter). But third-party prediction sites did not confirm the opposing starter's identity/handedness, lineups, bullpen usage, umpire assignment, weather, or line movement for any of them, so none could clear the pre-pick checklist (SP confirmed both sides, no unresolved risk).
+
+No strong plays today.
