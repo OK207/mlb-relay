@@ -1,0 +1,5 @@
+MLB Picks - September 6
+
+Skipped: full slate - every primary data source returned a network egress block again this session (MLB Stats API, Baseball-Reference, Baseball Savant, ESPN, MLB.com, Yahoo Sports, justjared), including direct bash network access for pitcher/team stats (403 Forbidden), matching the pattern from 9/1-9/5. WebSearch (the fallback) confirmed several real matchups: Yankees @ Padres (Petco Park, 4:10pm ET, near-even -110/-110) but probable-pitcher reports directly conflicted for the Yankees side (Will Warren in one source, Gerrit Cole in another) so SP could not be confirmed; Cardinals @ Rockies (Coors Field, 3:10pm ET, Cardinals -135/Rockies +109) - hard skip regardless per the Coors rule; Nationals @ Dodgers (Dodger Stadium, 10:10pm ET); Athletics @ Mariners (T-Mobile Park, 4:10pm ET); Angels @ Pirates; Brewers @ Reds. None of these could clear the pre-pick checklist - no confirmed lineups, no umpire assignments, no weather data, and no SP xERA/K%/BB% or team batting-split stats since both Baseball Savant and the MLB Stats API were unreachable at the network layer.
+
+No strong plays today.
