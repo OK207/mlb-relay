@@ -1,0 +1,5 @@
+MLB Picks - September 9
+
+Skipped: full slate - Primary data pipeline remained blocked at the network egress layer for a 9th consecutive session: statsapi.mlb.com, fantasypros.com, espn.com, cbssports.com, oddsshark.com, rotowire.com, and covers.com all returned EGRESS_BLOCKED on WebFetch, and the Baseball Savant bash pull for SP xERA failed the same way (403 at the proxy tunnel). Falling back to WebSearch, general schedule/odds queries returned only source links with no usable game data. A single team-specific search confirmed one matchup with real data: Yankees vs Rockies, 7:05pm ET at Yankee Stadium, Cam Schlittler (12-6, 2.04 ERA) vs Gabriel Hughes (0-6, 6.19 ERA) - but one confirmed game out of a full slate is not enough to build the mandatory verified game list, odds board, lineups, or umpire/weather layers, and the remaining call budget was exhausted reconstructing it. No game passes the pre-pick checklist.
+
+No strong plays today.
