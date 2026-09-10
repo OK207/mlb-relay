@@ -1,0 +1,16 @@
+MLB Picks - September 10
+
+VALUE PLAYS
+Phillies ML -180 (approx) vs Astros | Bet 1u -> Win 0.56u
+Zack Wheeler (3.23 ERA, 12-5) vs Cristian Javier (5.98 ERA, 2-5). Wide SP quality gap - Javier has been one of the league's worst starters this year while Wheeler is a top-of-rotation arm at home; price already reflects some of this but the ERA gap looks underpriced given Javier's current form.
+
+Rangers ML +106 vs Mariners | Bet 1u -> Win 1.06u
+Jacob deGrom (3.96 ERA, 10-9) vs Logan Gilbert (11-9, but has allowed 3+ runs in 3 of last 5 starts and just gave up 4 homers in one inning against Oakland). Gilbert's recent form has cratered while deGrom brings a more stable track record; getting plus money on the more established arm.
+
+LEAN
+Rays ML +100 vs Braves | Bet 0.5u -> Win 0.50u
+Nick Martinez (3.04 ERA, 14-4, 2.48 ERA over his last 7 starts) is a step ahead of Martin Perez (3.25 ERA) on paper, but Martinez also allowed 6 runs on 4 homers two starts ago - high variance both ways, taking the plus money as a coinflip lean.
+
+Skipped: 2 games - Rockies/Yankees (Yankees -334, heavily overpriced favorite with no edge), Pirates/White Sox (Hagen Smith making his MLB debut for Chicago, no track record to evaluate)
+
+Data note: statsapi.mlb.com, mlb.com, espn.com, and fantasypros.com were all blocked at the network egress layer again today, and the Baseball Savant/team-splits bash pulls also failed with 403 at the proxy tunnel. The game list, odds, and starter info above came from WebSearch fallback. Bullpen workload, confirmed lineups/handedness splits, team offensive splits, umpire assignments, and park/weather data were not obtainable this session, so those layers were not applied - picks rest on starting pitcher season/recent form and market price only, sized down accordingly.
