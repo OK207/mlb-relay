@@ -1,0 +1,9 @@
+Results 2026-09-10:
+  L  Phillies ML -180 | 1u -> -1.00u
+  L  Rangers ML +106 | 1u -> -1.00u
+  L  Rays ML +100 | 0.5u -> -0.50u
+Day P&L: -2.50u (0W-3L)
+
+MLB Picks - September 11 - No strong plays today.
+
+Skipped: 15 games - statsapi.mlb.com, mlb.com, espn.com, fantasypros.com and oddsshopper.com were all blocked by this session's network egress policy (WebFetch returned EGRESS_BLOCKED on every one), so the required layers (SP xERA/K%/BB%, bullpen usage, batting splits, umpire, weather) could not be sourced. WebSearch fallback only surfaced a partial, unverifiable slate: game times for all 15 games, confirmed SP for 2 (Dotel/Imanaga at CHC, Ray/Molina at SF), and moneyline odds for 2 (Yankees/Mets, Braves/Phillies). That is short of what the checklist requires to confirm an edge on any game, so no bets are logged today rather than publishing picks built on guessed stats.
