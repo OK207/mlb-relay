@@ -1,13 +1,5 @@
-Results 2026-09-01:
-  W  Guardians ML -180 | 1u -> +0.56u
-  W  Marlins ML -160 | 1u -> +0.63u
-  W  Rangers ML -152 | 1u -> +0.66u
-Day P&L: +1.85u (3W-0L)
+MLB Picks - September 12 - No strong plays today.
 
-MLB Picks - September 2
+Data outage: this session's network blocked direct access to every stats/odds source (MLB Stats API, Baseball Savant, sportsbook odds pages, RotoWire, Covers, ESPN) - all returned egress-blocked errors, including plain WebFetch to non-sports sites. Only WebSearch worked, and it returned partial, sometimes conflicting snippets - not enough to confirm SPs, live odds, lineups, splits, or umpires across the slate to the standard this card requires. Publishing picks on that basis would be a guess, not an edge, so nothing is going out today.
 
-VALUE PLAYS
-Blue Jays ML +110 (approx) vs Guardians | Bet 1u -> Win 1.10u
-Dylan Cease (2.33 ERA, elite tier, 1.71 ERA over last 7 starts, AL K leader) vs Joey Cantillo (3.80 ERA, average tier). Clear SP quality gap for a plus-money price; Progressive Field is neutral, mild temp, low wind, no rain risk.
-
-Skipped: 14 games - Orioles/Rockies (Coors Field, neither starter elite tier - Rogers 4.38 ERA, Sugano 5.23 ERA, hard skip per park rule), Mariners/Red Sox (58% rain risk at Fenway). Remaining ~12 games on the slate (Padres/Reds, Braves/Nationals, A's/Rangers, Phillies/Diamondbacks, Giants/Pirates, Mets/Rays, Tigers/Twins, Brewers/Cubs, Marlins/Royals, and others) could not be graded to a confident edge - statsapi.mlb.com, espn.com, mlb.com, rotowire.com, and baseball-reference.com were all blocked by this session's network egress policy, so odds/lineup/SP-stat data for those games came only from inconsistent WebSearch synthesis and was not reliable enough to publish.
+Partial info gathered via search (unverified, not actioned): Reds @ Brewers 7:10pm ET (Singer vs Harrison, Brewers -190/Reds +160 per one source); A's @ Mariners (Jump vs Woo); Pirates @ Cubs 2:20pm; Rockies @ Tigers 6:40pm; Angels @ Nationals 6:45pm; Mets @ Yankees 7:05pm; Orioles @ Blue Jays 7:07pm; Dodgers @ Marlins 7:10pm; Padres @ Giants 10:15pm.
