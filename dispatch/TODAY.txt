@@ -1,5 +1,9 @@
-MLB Picks - September 12 - No strong plays today.
+Results 2026-09-12: no picks logged, nothing to grade.
 
-Data outage: this session's network blocked direct access to every stats/odds source (MLB Stats API, Baseball Savant, sportsbook odds pages, RotoWire, Covers, ESPN) - all returned egress-blocked errors, including plain WebFetch to non-sports sites. Only WebSearch worked, and it returned partial, sometimes conflicting snippets - not enough to confirm SPs, live odds, lineups, splits, or umpires across the slate to the standard this card requires. Publishing picks on that basis would be a guess, not an edge, so nothing is going out today.
+MLB Picks - September 13
 
-Partial info gathered via search (unverified, not actioned): Reds @ Brewers 7:10pm ET (Singer vs Harrison, Brewers -190/Reds +160 per one source); A's @ Mariners (Jump vs Woo); Pirates @ Cubs 2:20pm; Rockies @ Tigers 6:40pm; Angels @ Nationals 6:45pm; Mets @ Yankees 7:05pm; Orioles @ Blue Jays 7:07pm; Dodgers @ Marlins 7:10pm; Padres @ Giants 10:15pm.
+VALUE PLAYS
+Blue Jays ML -150 vs Orioles | Bet 1u -> Win 0.67u
+Cease (2.40 ERA, 10-5) vs Rogers (4.15 ERA, 10-9). Cease is an elite-tier arm against a below-average one, a roughly 1.75-run ERA gap. Line has drifted from -160 to -149 on money against the 81% public side (Baltimore), which tempers this to a value play rather than a lean.
+
+Skipped: 14 games - Yankees ML skipped despite Schlittler's 2.01 ERA/220K season: 100% rain chance and possible thunderstorms at outdoor Yankee Stadium today, plus reverse line movement toward the Mets (Yankees -185 to -179 against 88-90% public backing). Astros/Rays skipped, conflicting probable-pitcher reports could not be resolved. Dodgers/Marlins and the remaining slate skipped - MLB Stats API and Baseball Savant are both blocked by this session's network egress policy, so lineups, umpire assignments, bullpen workload, and batting splits could not be verified for any other game today.
