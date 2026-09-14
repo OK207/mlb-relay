@@ -1,9 +1,26 @@
-Results 2026-09-12: no picks logged, nothing to grade.
+MLB Picks - September 14
 
-MLB Picks - September 13
+No strong plays today - no games cleared the edge threshold.
 
-VALUE PLAYS
-Blue Jays ML -150 vs Orioles | Bet 1u -> Win 0.67u
-Cease (2.40 ERA, 10-5) vs Rogers (4.15 ERA, 10-9). Cease is an elite-tier arm against a below-average one, a roughly 1.75-run ERA gap. Line has drifted from -160 to -149 on money against the 81% public side (Baltimore), which tempers this to a value play rather than a lean.
+Data note: statsapi.mlb.com, mlb.com and espn.com were all blocked by this
+session's network egress policy (WebFetch returned EGRESS_BLOCKED and a
+direct Python/urllib call to statsapi.mlb.com also failed with a 403 tunnel
+error), so the slate had to be reconstructed from WebSearch snippets only -
+no direct box scores, lineups, or umpire feeds were reachable.
 
-Skipped: 14 games - Yankees ML skipped despite Schlittler's 2.01 ERA/220K season: 100% rain chance and possible thunderstorms at outdoor Yankee Stadium today, plus reverse line movement toward the Mets (Yankees -185 to -179 against 88-90% public backing). Astros/Rays skipped, conflicting probable-pitcher reports could not be resolved. Dodgers/Marlins and the remaining slate skipped - MLB Stats API and Baseball Savant are both blocked by this session's network egress policy, so lineups, umpire assignments, bullpen workload, and batting splits could not be verified for any other game today.
+Verified via WebSearch: 10-game slate today. Full SP + odds confirmed for 3
+games:
+- Yankees ML -140 vs Twins +115 (Warren vs Kremer): model edge ~0.9%, under
+  the 1% pass line - no play.
+- Cubs ML -140 vs Braves +115 (Peterson vs Lopez): model win prob (57.1%)
+  is actually below the -140 implied prob (58.3%) - negative edge, no play.
+- Diamondbacks ML -140 vs Marlins +115 (Burnes vs Alcantara): skipped, Burnes
+  is in his first start back from injury (0-0, 0.00 ERA, 2 K on the season) -
+  SP form unconfirmed.
+
+Remaining 7 games (Dodgers/Reds, White Sox/Guardians, Tigers/Blue Jays,
+Orioles/Mets, Cardinals/Giants, Padres/Rockies, Mariners/Angels) skipped -
+could not confirm lineups, umpire, or reliable odds data within this
+session's tool budget and network restrictions.
+
+Skipped: 10 games - no edge clearing threshold / SP or data unconfirmed.
