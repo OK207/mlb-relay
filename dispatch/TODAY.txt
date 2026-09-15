@@ -1,26 +1,34 @@
-MLB Picks - September 14
+Results 2026-09-13 (delayed grade - missed by prior day's run):
+  W  Blue Jays ML -150 | 1u -> +0.67u
+Day P&L: +0.67u (1W-0L)
+
+Results 2026-09-14: no picks logged, nothing to grade.
+
+MLB Picks - September 15
 
 No strong plays today - no games cleared the edge threshold.
 
-Data note: statsapi.mlb.com, mlb.com and espn.com were all blocked by this
-session's network egress policy (WebFetch returned EGRESS_BLOCKED and a
-direct Python/urllib call to statsapi.mlb.com also failed with a 403 tunnel
-error), so the slate had to be reconstructed from WebSearch snippets only -
-no direct box scores, lineups, or umpire feeds were reachable.
+Data note: statsapi.mlb.com, mlb.com, espn.com, fantasypros.com, rotowire.com,
+cbssports.com, and Baseball Savant were all blocked by this session's network
+egress policy (WebFetch returned EGRESS_BLOCKED for every one, and direct
+Python/urllib calls to statsapi.mlb.com and Baseball Savant also failed with
+403 tunnel errors), so the slate had to be reconstructed from WebSearch
+snippets only - no SP stats, lineups, umpire assignments, or weather data
+were reachable.
 
-Verified via WebSearch: 10-game slate today. Full SP + odds confirmed for 3
-games:
-- Yankees ML -140 vs Twins +115 (Warren vs Kremer): model edge ~0.9%, under
-  the 1% pass line - no play.
-- Cubs ML -140 vs Braves +115 (Peterson vs Lopez): model win prob (57.1%)
-  is actually below the -140 implied prob (58.3%) - negative edge, no play.
-- Diamondbacks ML -140 vs Marlins +115 (Burnes vs Alcantara): skipped, Burnes
-  is in his first start back from injury (0-0, 0.00 ERA, 2 K on the season) -
-  SP form unconfirmed.
+Verified via WebSearch: at least 15 games on the slate today. Partial
+matchups/pitchers confirmed for 5 games:
+- Phillies ML -215 vs Nationals +180 (Sanchez vs Kent)
+- Dodgers ML -220 vs Reds +184 (starters unconfirmed)
+- Tigers @ Blue Jays (Anderson vs Fisher)
+- Orioles @ Mets (Baz vs Manaea)
+- Marlins @ Diamondbacks (Junk vs Soroka)
+Also on the slate: Brewers/Pirates, Guardians/White Sox, and other games not
+confirmed within this session's tool budget.
 
-Remaining 7 games (Dodgers/Reds, White Sox/Guardians, Tigers/Blue Jays,
-Orioles/Mets, Cardinals/Giants, Padres/Rockies, Mariners/Angels) skipped -
-could not confirm lineups, umpire, or reliable odds data within this
-session's tool budget and network restrictions.
+No pitcher quality metrics (xERA/ERA), confirmed lineups, umpire assignment,
+or weather data were reachable for any game, so no edge could be computed
+with confidence for any matchup.
 
-Skipped: 10 games - no edge clearing threshold / SP or data unconfirmed.
+Skipped: 15 games - no SP/lineup/umpire/weather data reachable to compute an
+edge.
