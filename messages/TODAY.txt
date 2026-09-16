@@ -1,34 +1,20 @@
-Results 2026-09-13 (delayed grade - missed by prior day's run):
-  W  Blue Jays ML -150 | 1u -> +0.67u
-Day P&L: +0.67u (1W-0L)
+MLB Picks - September 16 - No strong plays today.
 
-Results 2026-09-14: no picks logged, nothing to grade.
+Data note: statsapi.mlb.com (WebFetch and direct Python/urllib), baseballsavant.mlb.com,
+fantasypros.com, and baseball-reference.com were all blocked this session (WebFetch
+EGRESS_BLOCKED, direct API calls 403 tunnel errors). Slate reconstruction relied on
+WebSearch snippets only, which gave partial and at points contradictory results (e.g.
+conflicting reports of Orioles' opponent as both Mets and Brewers) - no reliable odds,
+confirmed lineups, umpire assignments, or weather data were reachable for any game.
 
-MLB Picks - September 15
+Partial/unverified matchups surfaced via WebSearch: Tigers @ Blue Jays (Montero vs
+Scherzer), Dodgers @ Reds (Snell vs Abbott), A's @ Rays, White Sox @ Guardians (Kay vs
+Messick), Marlins @ Diamondbacks (Gusto vs Kelly), Astros vs Royals, Rangers vs Red Sox,
+Cubs vs Braves, Phillies vs Nationals, Yankees @ Twins, plus an Orioles game (opponent
+unconfirmed) and games involving Cardinals/Pirates/Brewers not fully resolved. ~15 games
+on the slate total per search summaries.
 
-No strong plays today - no games cleared the edge threshold.
+No moneyline odds, SP xERA/ERA splits, confirmed batting orders, umpire assignments, or
+weather were confirmed for any game, so no edge could be computed with confidence.
 
-Data note: statsapi.mlb.com, mlb.com, espn.com, fantasypros.com, rotowire.com,
-cbssports.com, and Baseball Savant were all blocked by this session's network
-egress policy (WebFetch returned EGRESS_BLOCKED for every one, and direct
-Python/urllib calls to statsapi.mlb.com and Baseball Savant also failed with
-403 tunnel errors), so the slate had to be reconstructed from WebSearch
-snippets only - no SP stats, lineups, umpire assignments, or weather data
-were reachable.
-
-Verified via WebSearch: at least 15 games on the slate today. Partial
-matchups/pitchers confirmed for 5 games:
-- Phillies ML -215 vs Nationals +180 (Sanchez vs Kent)
-- Dodgers ML -220 vs Reds +184 (starters unconfirmed)
-- Tigers @ Blue Jays (Anderson vs Fisher)
-- Orioles @ Mets (Baz vs Manaea)
-- Marlins @ Diamondbacks (Junk vs Soroka)
-Also on the slate: Brewers/Pirates, Guardians/White Sox, and other games not
-confirmed within this session's tool budget.
-
-No pitcher quality metrics (xERA/ERA), confirmed lineups, umpire assignment,
-or weather data were reachable for any game, so no edge could be computed
-with confidence for any matchup.
-
-Skipped: 15 games - no SP/lineup/umpire/weather data reachable to compute an
-edge.
+Skipped: all games - SP/odds/lineup/umpire/weather data not reachable to compute an edge.
