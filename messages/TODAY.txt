@@ -1,20 +1,3 @@
-MLB Picks - September 16 - No strong plays today.
+MLB Picks - September 17 - No strong plays today.
 
-Data note: statsapi.mlb.com (WebFetch and direct Python/urllib), baseballsavant.mlb.com,
-fantasypros.com, and baseball-reference.com were all blocked this session (WebFetch
-EGRESS_BLOCKED, direct API calls 403 tunnel errors). Slate reconstruction relied on
-WebSearch snippets only, which gave partial and at points contradictory results (e.g.
-conflicting reports of Orioles' opponent as both Mets and Brewers) - no reliable odds,
-confirmed lineups, umpire assignments, or weather data were reachable for any game.
-
-Partial/unverified matchups surfaced via WebSearch: Tigers @ Blue Jays (Montero vs
-Scherzer), Dodgers @ Reds (Snell vs Abbott), A's @ Rays, White Sox @ Guardians (Kay vs
-Messick), Marlins @ Diamondbacks (Gusto vs Kelly), Astros vs Royals, Rangers vs Red Sox,
-Cubs vs Braves, Phillies vs Nationals, Yankees @ Twins, plus an Orioles game (opponent
-unconfirmed) and games involving Cardinals/Pirates/Brewers not fully resolved. ~15 games
-on the slate total per search summaries.
-
-No moneyline odds, SP xERA/ERA splits, confirmed batting orders, umpire assignments, or
-weather were confirmed for any game, so no edge could be computed with confidence.
-
-Skipped: all games - SP/odds/lineup/umpire/weather data not reachable to compute an edge.
+Skipped: full slate - statsapi.mlb.com, mlb.com, fangraphs.com, oddsshopper.com, espn.com and en.wikipedia.org were all blocked by this session's network egress policy (WebFetch returned EGRESS_BLOCKED on every domain tried). WebSearch fallback only surfaced fragments: a partial pitcher-name list with no confirmed team pairings, one confirmed total (Padres/Rockies 10.5) and stray odds context, not a verified game list. Per the mandatory Step 1 check, pairings must be read directly from the schedule API, not guessed - so no games list, and none of the SP/bullpen/batting/umpire/weather layers could be sourced or verified for any matchup. No bets logged today rather than publishing picks built on guessed data.
