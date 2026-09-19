@@ -1,0 +1,7 @@
+MLB Picks - Sep 19
+
+Error: MLB Picks - Sep 19 - Analysis failed. Check manually.
+
+Reason: All primary data sources (statsapi.mlb.com, baseball-reference.com, fangraphs.com, espn.com, covers.com, oddschecker.com) returned EGRESS_BLOCKED from this environment's network proxy - not 403s, outright connection rejections. The WebSearch fallback only returned generic link lists and stale/unverifiable snippets, not a reliable structured game list, odds, or pitcher data. Per the pre-pick checklist, no picks were published rather than risk fabricated matchups or lines.
+
+Note: no picks file was found for yesterday (2026-09-18), so no results to grade.
