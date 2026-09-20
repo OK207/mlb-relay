@@ -1,3 +1,12 @@
-MLB Picks - September 18 - No strong plays today.
+MLB Picks - September 20
 
-Skipped: full 15-game slate - statsapi.mlb.com, mlb.com, baseballsavant.mlb.com, espn.com, rotowire.com and fangraphs.com were all blocked by this session's network egress policy (WebFetch returned EGRESS_BLOCKED on every domain tried, including the Step 5 Baseball Savant pull). WebSearch fallback only surfaced fragments: a 15-game pairing list with times (not verified against the schedule API per the mandatory Step 1 check), confirmed SP for 2 of 15 games (Blue Jays Cease vs Rangers Rocker; Yankees Cole vs Diamondbacks Gallen), and moneyline odds for only one of those (Yankees -125/-136, Diamondbacks +108/+114). No SP xERA/K%/BB%, no lineups or batting splits, no umpire assignments, no bullpen workload, and no weather data could be sourced for any matchup. With Layer 1 (SP skill, 35% weight) and Layer 3 (offense vs pitcher, 20% weight) both unverifiable, there is no basis to compute a real edge on any game. No bets logged today rather than publishing picks built on guessed data.
+VALUE PLAYS
+Phillies ML -170 vs Mets | Bet 1u -> Win 0.59u
+Cristopher Sanchez (2.93 ERA, 17-6) vs Jonah Tong (3.43 ERA, 2-1). Sanchez has been one of the best lefties in baseball this year against a rookie with a much thinner track record; market already prices in part of this gap but the quality difference still supports Philadelphia.
+
+Royals ML -120 vs Pirates | Bet 1u -> Win 0.83u
+Michael Wacha (3.34 ERA) vs Lake Bachar (3.50 ERA, rookie, 5 career starts). Modest experience and command edge for Wacha over a rookie righty, with Kansas City the deeper roster; near-even price undervalues that gap.
+
+Skipped: 13 games - Cubs/Reds had a confirmed SP matchup (Boyd 4.16 ERA vs Lodolo 5.12 ERA) but no odds could be verified, so it was passed. The other 12 games (Athletics/Guardians, Red Sox/Rays, Tigers/White Sox, Braves/Astros, Nationals/Cardinals, Blue Jays/Rangers, Mariners/Rockies, Twins/Angels, Giants/Dodgers, Marlins/Padres, Yankees/Diamondbacks, Brewers/Orioles) could not get a confirmed probable-pitcher matchup through available sources today and were passed per the SP-unconfirmed skip rule.
+
+Note: MLB Stats API, sportsbook odds pages, and the FanGraphs/Savant/lineup/weather/umpire feeds this routine normally uses were blocked by this session's network egress policy today. Only SP names/ERA and moneyline odds obtainable via web search could be verified, so the two plays above rest on starting-pitcher quality plus market price only - the bullpen, lineup-split, park/weather, and umpire layers were not available today.
