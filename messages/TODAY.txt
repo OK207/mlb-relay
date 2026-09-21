@@ -1,12 +1,8 @@
-MLB Picks - September 20
+Results September 20:
+  W  Phillies ML -170 | 1u -> +0.59u
+  L  Royals ML -120 | 1u -> -1u
+Day P&L: -0.41u (1W-1L)
 
-VALUE PLAYS
-Phillies ML -170 vs Mets | Bet 1u -> Win 0.59u
-Cristopher Sanchez (2.93 ERA, 17-6) vs Jonah Tong (3.43 ERA, 2-1). Sanchez has been one of the best lefties in baseball this year against a rookie with a much thinner track record; market already prices in part of this gap but the quality difference still supports Philadelphia.
+MLB Picks - September 21 - No strong plays today.
 
-Royals ML -120 vs Pirates | Bet 1u -> Win 0.83u
-Michael Wacha (3.34 ERA) vs Lake Bachar (3.50 ERA, rookie, 5 career starts). Modest experience and command edge for Wacha over a rookie righty, with Kansas City the deeper roster; near-even price undervalues that gap.
-
-Skipped: 13 games - Cubs/Reds had a confirmed SP matchup (Boyd 4.16 ERA vs Lodolo 5.12 ERA) but no odds could be verified, so it was passed. The other 12 games (Athletics/Guardians, Red Sox/Rays, Tigers/White Sox, Braves/Astros, Nationals/Cardinals, Blue Jays/Rangers, Mariners/Rockies, Twins/Angels, Giants/Dodgers, Marlins/Padres, Yankees/Diamondbacks, Brewers/Orioles) could not get a confirmed probable-pitcher matchup through available sources today and were passed per the SP-unconfirmed skip rule.
-
-Note: MLB Stats API, sportsbook odds pages, and the FanGraphs/Savant/lineup/weather/umpire feeds this routine normally uses were blocked by this session's network egress policy today. Only SP names/ERA and moneyline odds obtainable via web search could be verified, so the two plays above rest on starting-pitcher quality plus market price only - the bullpen, lineup-split, park/weather, and umpire layers were not available today.
+Skipped: 3 games - Blue Jays/Orioles: Yesavage is making his first start off a knee injury (one 34-pitch rehab outing), Baz has been dominant his last 3 starts (2.25 ERA, hit 97.8mph, 9K last time out), and moneyline odds disagreed sharply across books - no reliable price to act on. Nationals/Tigers: Tigers -152 but an outside model gives them only 54.9% win probability (below the price), Detroit's bats have gone cold (3 of 4 lost to White Sox, 1 run in each loss) while Washington won 6 of 7, and Detroit is using a bullpen-game plan (River Ryan debut piggybacked by Montero) - no clean edge either side. Twins/Giants: models split evenly (52.8% Twins vs 53.1% Giants) with both teams injury-depleted (Twins missing Buxton, Martin; Giants missing Webb) - efficiently priced coinflip, no edge.
