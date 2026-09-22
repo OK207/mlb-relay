@@ -1,6 +1,6 @@
 {
   "date": "2026-09-22",
-  "generated_at": "2026-09-22T17:13:30.560826+00:00",
+  "generated_at": "2026-09-22T17:25:31.807073+00:00",
   "source": "github-actions-prefetch",
   "slate": [
     {
@@ -9,7 +9,7 @@
       "away_team": "Tampa Bay Rays",
       "home_team": "New York Yankees",
       "venue": "Yankee Stadium",
-      "status": "Player challenge",
+      "status": "In Progress",
       "sp_away": {
         "name": "Nick Martinez",
         "id": 607259,
@@ -504,9 +504,522 @@
       "gb": "39.0"
     }
   },
-  "sp_stats": {},
+  "sp_stats": {
+    "Jacob Misiorowski": {
+      "era": "1.86",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.1",
+      "k9": "13.13",
+      "bb9": "2.23",
+      "source": "mlbapi"
+    },
+    "Cam Schlittler": {
+      "era": "1.94",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "190.2",
+      "k9": "11.05",
+      "bb9": "2.22",
+      "source": "mlbapi"
+    },
+    "Chris Sale": {
+      "era": "2.18",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "157.0",
+      "k9": "10.89",
+      "bb9": "1.78",
+      "source": "mlbapi"
+    },
+    "Dylan Cease": {
+      "era": "2.40",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.0",
+      "k9": "12.73",
+      "bb9": "4.15",
+      "source": "mlbapi"
+    },
+    "Yoshinobu Yamamoto": {
+      "era": "2.51",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "179.0",
+      "k9": "8.95",
+      "bb9": "2.06",
+      "source": "mlbapi"
+    },
+    "Parker Messick": {
+      "era": "2.57",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "178.1",
+      "k9": "9.39",
+      "bb9": "2.37",
+      "source": "mlbapi"
+    },
+    "Drew Rasmussen": {
+      "era": "2.72",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "165.1",
+      "k9": "8.87",
+      "bb9": "1.58",
+      "source": "mlbapi"
+    },
+    "Sonny Gray": {
+      "era": "2.82",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "163.0",
+      "k9": "8.06",
+      "bb9": "2.48",
+      "source": "mlbapi"
+    },
+    "Jes\u00fas Luzardo": {
+      "era": "2.87",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "178.2",
+      "k9": "11.13",
+      "bb9": "2.62",
+      "source": "mlbapi"
+    },
+    "Eduardo Rodriguez": {
+      "era": "2.89",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "183.2",
+      "k9": "6.86",
+      "bb9": "3.04",
+      "source": "mlbapi"
+    },
+    "Nick Martinez": {
+      "era": "2.92",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.1",
+      "k9": "5.27",
+      "bb9": "1.25",
+      "source": "mlbapi"
+    },
+    "Cristopher S\u00e1nchez": {
+      "era": "2.93",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "200.0",
+      "k9": "9.95",
+      "bb9": "1.98",
+      "source": "mlbapi"
+    },
+    "Cade Cavalli": {
+      "era": "3.02",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.2",
+      "k9": "10.61",
+      "bb9": "2.55",
+      "source": "mlbapi"
+    },
+    "Michael King": {
+      "era": "3.03",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "181.0",
+      "k9": "7.66",
+      "bb9": "3.38",
+      "source": "mlbapi"
+    },
+    "Nolan McLean": {
+      "era": "3.18",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.2",
+      "k9": "9.85",
+      "bb9": "3.60",
+      "source": "mlbapi"
+    },
+    "Michael Wacha": {
+      "era": "3.33",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "194.1",
+      "k9": "7.13",
+      "bb9": "2.45",
+      "source": "mlbapi"
+    },
+    "Sean Burke": {
+      "era": "3.40",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "167.0",
+      "k9": "9.59",
+      "bb9": "3.29",
+      "source": "mlbapi"
+    },
+    "Reid Detmers": {
+      "era": "3.47",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "179.0",
+      "k9": "10.26",
+      "bb9": "2.31",
+      "source": "mlbapi"
+    },
+    "Robbie Ray": {
+      "era": "3.60",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "162.1",
+      "k9": "7.65",
+      "bb9": "4.60",
+      "source": "mlbapi"
+    },
+    "Gavin Williams": {
+      "era": "3.63",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "181.0",
+      "k9": "12.13",
+      "bb9": "2.83",
+      "source": "mlbapi"
+    },
+    "Braxton Ashcraft": {
+      "era": "3.65",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "165.1",
+      "k9": "9.42",
+      "bb9": "1.91",
+      "source": "mlbapi"
+    },
+    "Foster Griffin": {
+      "era": "3.67",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "166.2",
+      "k9": "8.15",
+      "bb9": "2.43",
+      "source": "mlbapi"
+    },
+    "Logan Gilbert": {
+      "era": "3.69",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "178.0",
+      "k9": "9.81",
+      "bb9": "2.33",
+      "source": "mlbapi"
+    },
+    "Jos\u00e9 Soriano": {
+      "era": "3.72",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "174.1",
+      "k9": "8.62",
+      "bb9": "3.77",
+      "source": "mlbapi"
+    },
+    "Shota Imanaga": {
+      "era": "3.80",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "168.1",
+      "k9": "8.77",
+      "bb9": "1.98",
+      "source": "mlbapi"
+    },
+    "Taj Bradley": {
+      "era": "3.81",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.1",
+      "k9": "10.39",
+      "bb9": "3.81",
+      "source": "mlbapi"
+    },
+    "Michael McGreevy": {
+      "era": "3.84",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "164.0",
+      "k9": "6.20",
+      "bb9": "2.52",
+      "source": "mlbapi"
+    },
+    "Jacob deGrom": {
+      "era": "3.86",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "158.2",
+      "k9": "11.12",
+      "bb9": "2.44",
+      "source": "mlbapi"
+    },
+    "Sandy Alcantara": {
+      "era": "3.91",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "212.0",
+      "k9": "6.45",
+      "bb9": "2.50",
+      "source": "mlbapi"
+    },
+    "Paul Skenes": {
+      "era": "3.91",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "168.0",
+      "k9": "10.29",
+      "bb9": "2.52",
+      "source": "mlbapi"
+    },
+    "Noah Cameron": {
+      "era": "3.92",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.1",
+      "k9": "8.09",
+      "bb9": "2.82",
+      "source": "mlbapi"
+    },
+    "Bryan Woo": {
+      "era": "3.92",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "167.2",
+      "k9": "8.96",
+      "bb9": "1.93",
+      "source": "mlbapi"
+    },
+    "Framber Valdez": {
+      "era": "4.06",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "168.2",
+      "k9": "6.88",
+      "bb9": "3.42",
+      "source": "mlbapi"
+    },
+    "Trevor Rogers": {
+      "era": "4.07",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "165.2",
+      "k9": "8.31",
+      "bb9": "2.12",
+      "source": "mlbapi"
+    },
+    "Shane Baz": {
+      "era": "4.11",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "179.2",
+      "k9": "7.71",
+      "bb9": "3.16",
+      "source": "mlbapi"
+    },
+    "George Kirby": {
+      "era": "4.24",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.2",
+      "k9": "7.59",
+      "bb9": "2.33",
+      "source": "mlbapi"
+    },
+    "Logan Webb": {
+      "era": "4.31",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "160.2",
+      "k9": "7.51",
+      "bb9": "2.30",
+      "source": "mlbapi"
+    },
+    "Tanner Bibee": {
+      "era": "4.35",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "182.0",
+      "k9": "7.02",
+      "bb9": "2.67",
+      "source": "mlbapi"
+    },
+    "Aaron Nola": {
+      "era": "4.49",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "168.1",
+      "k9": "9.04",
+      "bb9": "3.10",
+      "source": "mlbapi"
+    },
+    "Kevin Gausman": {
+      "era": "4.55",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.0",
+      "k9": "9.26",
+      "bb9": "2.41",
+      "source": "mlbapi"
+    },
+    "Freddy Peralta": {
+      "era": "4.56",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "163.2",
+      "k9": "8.36",
+      "bb9": "3.30",
+      "source": "mlbapi"
+    },
+    "MacKenzie Gore": {
+      "era": "4.67",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "165.2",
+      "k9": "9.34",
+      "bb9": "3.75",
+      "source": "mlbapi"
+    },
+    "Andrew Abbott": {
+      "era": "4.70",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "159.0",
+      "k9": "7.08",
+      "bb9": "4.25",
+      "source": "mlbapi"
+    },
+    "Merrill Kelly": {
+      "era": "5.00",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "156.2",
+      "k9": "6.38",
+      "bb9": "3.96",
+      "source": "mlbapi"
+    },
+    "Seth Lugo": {
+      "era": "5.06",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.0",
+      "k9": "6.98",
+      "bb9": "2.88",
+      "source": "mlbapi"
+    }
+  },
   "odds": {},
-  "weather": {},
+  "odds_error": "Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to \"https://www.covers.com/sport/baseball/mlb/odds\", waiting until \"networkidle\"\n",
+  "weather": {
+    "Yankee Stadium": {
+      "city": "New York",
+      "error": "invalid literal for int() with base 10: '0.0'"
+    },
+    "Oriole Park at Camden Yards": {
+      "dome": true,
+      "conditions": "Domed/Retractable Stadium"
+    },
+    "Comerica Park": {
+      "city": "Detroit",
+      "error": "invalid literal for int() with base 10: '0.0'"
+    },
+    "PNC Park": {
+      "city": "Pittsburgh",
+      "error": "invalid literal for int() with base 10: '0.1'"
+    },
+    "Citizens Bank Park": {
+      "city": "Philadelphia",
+      "error": "invalid literal for int() with base 10: '0.3'"
+    },
+    "Fenway Park": {
+      "city": "Boston",
+      "error": "invalid literal for int() with base 10: '0.0'"
+    },
+    "Truist Park": {
+      "city": "Atlanta",
+      "error": "invalid literal for int() with base 10: '0.0'"
+    },
+    "Kauffman Stadium": {
+      "city": "Kansas City",
+      "error": "invalid literal for int() with base 10: '0.0'"
+    },
+    "Wrigley Field": {
+      "city": "Chicago",
+      "error": "invalid literal for int() with base 10: '0.0'"
+    },
+    "Globe Life Field": {
+      "dome": true,
+      "conditions": "Domed/Retractable Stadium"
+    },
+    "Coors Field": {
+      "city": "Denver",
+      "error": "invalid literal for int() with base 10: '0.0'"
+    },
+    "Sutter Health Park": {
+      "city": "West Sacramento",
+      "error": "invalid literal for int() with base 10: '0.0'"
+    },
+    "T-Mobile Park": {
+      "dome": true,
+      "conditions": "Domed/Retractable Stadium"
+    },
+    "Oracle Park": {
+      "city": "San Francisco",
+      "error": "invalid literal for int() with base 10: '0.0'"
+    },
+    "UNIQLO Field at Dodger Stadium": {
+      "dome": true,
+      "conditions": "Domed/Retractable Stadium"
+    }
+  },
   "lineups": {
     "TBNYY vs TB": {
       "sp_away": "TBD",
