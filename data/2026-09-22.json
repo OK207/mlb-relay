@@ -1,6 +1,6 @@
 {
   "date": "2026-09-22",
-  "generated_at": "2026-09-22T17:25:31.807073+00:00",
+  "generated_at": "2026-09-22T17:31:43.517592+00:00",
   "source": "github-actions-prefetch",
   "slate": [
     {
@@ -610,8 +610,8 @@
       "xera": "",
       "k_pct": "",
       "bb_pct": "",
-      "ip": "172.1",
-      "k9": "5.27",
+      "ip": "172.2",
+      "k9": "5.32",
       "bb9": "1.25",
       "source": "mlbapi"
     },
@@ -956,44 +956,383 @@
       "source": "mlbapi"
     }
   },
-  "odds": {},
-  "odds_error": "Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to \"https://www.covers.com/sport/baseball/mlb/odds\", waiting until \"networkidle\"\n",
+  "odds": {
+    "TOR vs BAL": {
+      "away_abbr": "TOR",
+      "home_abbr": "BAL",
+      "away_ml": 105,
+      "home_ml": -116,
+      "away_ml_best": 105,
+      "home_ml_best": 102,
+      "away_sp": {
+        "name": "M. Scherzer",
+        "throws": "R",
+        "era": 6.07
+      },
+      "home_sp": {
+        "name": "C. Bassitt",
+        "throws": "R",
+        "era": 4.64
+      },
+      "books_count": 10
+    },
+    "WAS vs DET": {
+      "away_abbr": "WAS",
+      "home_abbr": "DET",
+      "away_ml": 139,
+      "home_ml": -155,
+      "away_ml_best": 139,
+      "home_ml_best": 136,
+      "away_sp": {
+        "name": "R. Cornelio",
+        "throws": "?",
+        "era": null
+      },
+      "home_sp": {
+        "name": "D. Anderson",
+        "throws": "R",
+        "era": 3.62
+      },
+      "books_count": 9
+    },
+    "MIL vs PHI": {
+      "away_abbr": "MIL",
+      "home_abbr": "PHI",
+      "away_ml": 124,
+      "home_ml": -137,
+      "away_ml_best": 124,
+      "home_ml_best": 119,
+      "away_sp": {
+        "name": "D. May",
+        "throws": "R",
+        "era": 4.61
+      },
+      "home_sp": {
+        "name": "Z. Wheeler",
+        "throws": "R",
+        "era": 2.99
+      },
+      "books_count": 10
+    },
+    "STL vs PIT": {
+      "away_abbr": "STL",
+      "home_abbr": "PIT",
+      "away_ml": 132,
+      "home_ml": -146,
+      "away_ml_best": 145,
+      "home_ml_best": 145,
+      "away_sp": {
+        "name": "A. Pallante",
+        "throws": "R",
+        "era": 3.7
+      },
+      "home_sp": {
+        "name": "J. Jones",
+        "throws": "R",
+        "era": 4.17
+      },
+      "books_count": 10
+    },
+    "CLE vs BOS": {
+      "away_abbr": "CLE",
+      "home_abbr": "BOS",
+      "away_ml": 115,
+      "home_ml": -127,
+      "away_ml_best": 115,
+      "home_ml_best": 110,
+      "away_sp": {
+        "name": "P. Messick",
+        "throws": "L",
+        "era": 2.57
+      },
+      "home_sp": {
+        "name": "P. Tolle",
+        "throws": "L",
+        "era": 3.02
+      },
+      "books_count": 10
+    },
+    "TB vs NYY": {
+      "away_abbr": "TB",
+      "home_abbr": "NYY",
+      "away_ml": 118,
+      "home_ml": -130,
+      "away_ml_best": 122,
+      "home_ml_best": 120,
+      "away_sp": {
+        "name": "N. Martinez",
+        "throws": "R",
+        "era": 2.94
+      },
+      "home_sp": {
+        "name": "C. Rodon",
+        "throws": "L",
+        "era": 2.95
+      },
+      "books_count": 9
+    },
+    "CIN vs ATL": {
+      "away_abbr": "CIN",
+      "home_abbr": "ATL",
+      "away_ml": 163,
+      "home_ml": -182,
+      "away_ml_best": 163,
+      "home_ml_best": 158,
+      "away_sp": {
+        "name": "B. Williamson",
+        "throws": "L",
+        "era": 5.56
+      },
+      "home_sp": {
+        "name": "J. Ritchie",
+        "throws": "R",
+        "era": 5.03
+      },
+      "books_count": 9
+    },
+    "CHW vs KC": {
+      "away_abbr": "CHW",
+      "home_abbr": "KC",
+      "away_ml": -113,
+      "home_ml": 102,
+      "away_ml_best": 104,
+      "home_ml_best": 102,
+      "away_sp": {
+        "name": "A. Kay",
+        "throws": "L",
+        "era": 4.41
+      },
+      "home_sp": {
+        "name": "D. Lynch IV",
+        "throws": "L",
+        "era": 3.29
+      },
+      "books_count": 8
+    },
+    "MIA vs CHC": {
+      "away_abbr": "MIA",
+      "home_abbr": "CHC",
+      "away_ml": 187,
+      "home_ml": -211,
+      "away_ml_best": 187,
+      "home_ml_best": 174,
+      "away_sp": {
+        "name": "J. Junk",
+        "throws": "R",
+        "era": 4.5
+      },
+      "home_sp": {
+        "name": "S. Imanaga",
+        "throws": "L",
+        "era": 3.8
+      },
+      "books_count": 8
+    },
+    "NYM vs TEX": {
+      "away_abbr": "NYM",
+      "home_abbr": "TEX",
+      "away_ml": 126,
+      "home_ml": -139,
+      "away_ml_best": 126,
+      "home_ml_best": 110,
+      "away_sp": {
+        "name": "S. Manaea",
+        "throws": "L",
+        "era": 4.74
+      },
+      "home_sp": {
+        "name": "M. Gore",
+        "throws": "L",
+        "era": 4.67
+      },
+      "books_count": 8
+    },
+    "AZ vs COL": {
+      "away_abbr": "AZ",
+      "home_abbr": "COL",
+      "away_ml": -186,
+      "home_ml": 166,
+      "away_ml_best": 165,
+      "home_ml_best": 166,
+      "away_sp": {
+        "name": "M. Soroka",
+        "throws": "R",
+        "era": 3.45
+      },
+      "home_sp": {
+        "name": "K. Freeland",
+        "throws": "L",
+        "era": 6.38
+      },
+      "books_count": 9
+    },
+    "HOU vs SEA": {
+      "away_abbr": "HOU",
+      "home_abbr": "SEA",
+      "away_ml": 132,
+      "home_ml": -147,
+      "away_ml_best": 132,
+      "home_ml_best": 119,
+      "away_sp": {
+        "name": "C. Javier",
+        "throws": "R",
+        "era": 5.31
+      },
+      "home_sp": {
+        "name": "L. Gilbert",
+        "throws": "R",
+        "era": 3.69
+      },
+      "books_count": 9
+    },
+    "LAA vs ATH": {
+      "away_abbr": "LAA",
+      "home_abbr": "ATH",
+      "away_ml": -104,
+      "home_ml": -106,
+      "away_ml_best": -104,
+      "home_ml_best": -106,
+      "away_sp": {
+        "name": "Y. Kikuchi",
+        "throws": "L",
+        "era": 5.02
+      },
+      "home_sp": {
+        "name": "B. Basso",
+        "throws": "L",
+        "era": 4.5
+      },
+      "books_count": 8
+    },
+    "MIN vs SF": {
+      "away_abbr": "MIN",
+      "home_abbr": "SF",
+      "away_ml": -128,
+      "home_ml": 116,
+      "away_ml_best": 113,
+      "home_ml_best": 116,
+      "away_sp": {
+        "name": "T. Bradley",
+        "throws": "R",
+        "era": 3.81
+      },
+      "home_sp": {
+        "name": "A. Molina",
+        "throws": "R",
+        "era": 4.18
+      },
+      "books_count": 9
+    },
+    "SD vs LAD": {
+      "away_abbr": "SD",
+      "home_abbr": "LAD",
+      "away_ml": 107,
+      "home_ml": -118,
+      "away_ml_best": 110,
+      "home_ml_best": 110,
+      "away_sp": {
+        "name": "M. King",
+        "throws": "R",
+        "era": 3.03
+      },
+      "home_sp": {
+        "name": "TBD",
+        "throws": "?",
+        "era": null
+      },
+      "books_count": 8
+    }
+  },
   "weather": {
     "Yankee Stadium": {
       "city": "New York",
-      "error": "invalid literal for int() with base 10: '0.0'"
+      "temp_f": 60,
+      "conditions": "Overcast ",
+      "wind_mph": 11,
+      "wind_dir": "NE",
+      "precip_pct": 0,
+      "humidity": 69,
+      "feels_like_f": 53
     },
     "Oriole Park at Camden Yards": {
-      "dome": true,
-      "conditions": "Domed/Retractable Stadium"
+      "city": "Baltimore",
+      "temp_f": 61,
+      "conditions": "Light drizzle",
+      "wind_mph": 16,
+      "wind_dir": "NE",
+      "precip_pct": 0,
+      "humidity": 85,
+      "feels_like_f": 54
     },
     "Comerica Park": {
       "city": "Detroit",
-      "error": "invalid literal for int() with base 10: '0.0'"
+      "temp_f": 59,
+      "conditions": "Cloudy ",
+      "wind_mph": 14,
+      "wind_dir": "NE",
+      "precip_pct": 0,
+      "humidity": 59,
+      "feels_like_f": 50
     },
     "PNC Park": {
       "city": "Pittsburgh",
-      "error": "invalid literal for int() with base 10: '0.1'"
+      "temp_f": 56,
+      "conditions": "Patchy rain nearby",
+      "wind_mph": 11,
+      "wind_dir": "E",
+      "precip_pct": 0,
+      "humidity": 87,
+      "feels_like_f": 51
     },
     "Citizens Bank Park": {
       "city": "Philadelphia",
-      "error": "invalid literal for int() with base 10: '0.3'"
+      "temp_f": 57,
+      "conditions": "Light drizzle",
+      "wind_mph": 10,
+      "wind_dir": "NE",
+      "precip_pct": 0,
+      "humidity": 90,
+      "feels_like_f": 53
     },
     "Fenway Park": {
       "city": "Boston",
-      "error": "invalid literal for int() with base 10: '0.0'"
+      "temp_f": 61,
+      "conditions": "Sunny",
+      "wind_mph": 14,
+      "wind_dir": "NE",
+      "precip_pct": 0,
+      "humidity": 58,
+      "feels_like_f": 52
     },
     "Truist Park": {
       "city": "Atlanta",
-      "error": "invalid literal for int() with base 10: '0.0'"
+      "temp_f": 82,
+      "conditions": "Overcast ",
+      "wind_mph": 4,
+      "wind_dir": "E",
+      "precip_pct": 0,
+      "humidity": 52,
+      "feels_like_f": 83
     },
     "Kauffman Stadium": {
       "city": "Kansas City",
-      "error": "invalid literal for int() with base 10: '0.0'"
+      "temp_f": 64,
+      "conditions": "Patchy rain nearby",
+      "wind_mph": 9,
+      "wind_dir": "NNE",
+      "precip_pct": 0,
+      "humidity": 82,
+      "feels_like_f": 61
     },
     "Wrigley Field": {
       "city": "Chicago",
-      "error": "invalid literal for int() with base 10: '0.0'"
+      "temp_f": 56,
+      "conditions": "Overcast ",
+      "wind_mph": 13,
+      "wind_dir": "ENE",
+      "precip_pct": 0,
+      "humidity": 70,
+      "feels_like_f": 49
     },
     "Globe Life Field": {
       "dome": true,
@@ -1001,23 +1340,53 @@
     },
     "Coors Field": {
       "city": "Denver",
-      "error": "invalid literal for int() with base 10: '0.0'"
+      "temp_f": 68,
+      "conditions": "Sunny",
+      "wind_mph": 4,
+      "wind_dir": "SSE",
+      "precip_pct": 0,
+      "humidity": 44,
+      "feels_like_f": 64
     },
     "Sutter Health Park": {
       "city": "West Sacramento",
-      "error": "invalid literal for int() with base 10: '0.0'"
+      "temp_f": 63,
+      "conditions": "Sunny",
+      "wind_mph": 5,
+      "wind_dir": "SW",
+      "precip_pct": 0,
+      "humidity": 69,
+      "feels_like_f": 61
     },
     "T-Mobile Park": {
-      "dome": true,
-      "conditions": "Domed/Retractable Stadium"
+      "city": "Seattle",
+      "temp_f": 57,
+      "conditions": "Patchy rain nearby",
+      "wind_mph": 2,
+      "wind_dir": "ENE",
+      "precip_pct": 0,
+      "humidity": 85,
+      "feels_like_f": 56
     },
     "Oracle Park": {
       "city": "San Francisco",
-      "error": "invalid literal for int() with base 10: '0.0'"
+      "temp_f": 59,
+      "conditions": "Patchy rain nearby",
+      "wind_mph": 6,
+      "wind_dir": "SSW",
+      "precip_pct": 0,
+      "humidity": 82,
+      "feels_like_f": 56
     },
     "UNIQLO Field at Dodger Stadium": {
-      "dome": true,
-      "conditions": "Domed/Retractable Stadium"
+      "city": "Los Angeles",
+      "temp_f": 69,
+      "conditions": "Sunny",
+      "wind_mph": 5,
+      "wind_dir": "WSW",
+      "precip_pct": 0,
+      "humidity": 70,
+      "feels_like_f": 69
     }
   },
   "lineups": {
