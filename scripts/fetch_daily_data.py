@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 """
 fetch_daily_data.py — Pre-fetch MLB daily data bundle for the CCR agent.
-
 Runs in GitHub Actions where all sports domains are accessible.
 Writes data/YYYY-MM-DD.json to the relay repo.
 
 Sources:
-  - Slate + probable pitchers: statsapi.mlb.com (JSON, reliable)
-  - Standings:                 statsapi.mlb.com (JSON, reliable)
-  - SP stats:                  baseballsavant.mlb.com (CSV, reliable)
-  - Odds:                      covers.com (HTML parse, best-effort)
-  - Weather:                   rotowire.com (HTML parse, best-effort)
-  - Lineups:                   rotowire.com (HTML parse, best-effort)
+  - Slate + SPs + Standings:  statsapi.mlb.com  (JSON — always works)
+  - SP stats:                  baseballsavant.mlb.com CSV  (+ MLB Stats API fallback)
+  - Odds + SP context:         covers.com  (Playwright — JS-rendered)
+  - Weather:                   wttr.in JSON per venue  (no JS needed)
+  - Lineups:                   rotowire.com  (requests — HTML partially works)
 """
 import argparse, csv, io, json, re, sys
 from datetime import date, datetime, timezone, timedelta
@@ -21,11 +19,11 @@ try:
     import requests
     from bs4 import BeautifulSoup
 except ImportError:
-    sys.exit("Missing deps — run: pip install requests beautifulsoup4")
+    sys.exit("Run: pip install requests beautifulsoup4")
 
-UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
+UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124 Safari/537.36"
 SESSION = requests.Session()
-SESSION.headers.update({"User-Agent": UA})
+SESSION.headers.update({"User-Agent": UA, "Accept-Language": "en-US,en;q=0.9"})
 
 
 def get(url, timeout=25, **kwargs):
@@ -35,7 +33,7 @@ def get(url, timeout=25, **kwargs):
 
 
 # ---------------------------------------------------------------------------
-# SLATE + PROBABLE PITCHERS  (statsapi.mlb.com — clean JSON)
+# SLATE + PROBABLE PITCHERS  (statsapi.mlb.com)
 # ---------------------------------------------------------------------------
 
 def fetch_slate(d: str) -> list:
@@ -84,7 +82,7 @@ def fetch_slate(d: str) -> list:
 
 
 # ---------------------------------------------------------------------------
-# STANDINGS  (statsapi.mlb.com — clean JSON)
+# STANDINGS  (statsapi.mlb.com)
 # ---------------------------------------------------------------------------
 
 def fetch_standings(year: str) -> dict:
@@ -109,7 +107,7 @@ def fetch_standings(year: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# SP STATS  (baseballsavant.mlb.com CSV — reliable)
+# SP STATS  (Baseball Savant CSV; MLB Stats API fallback)
 # ---------------------------------------------------------------------------
 
 def fetch_sp_stats(year: str) -> dict:
@@ -118,147 +116,230 @@ def fetch_sp_stats(year: str) -> dict:
         f"?year={year}&type=pitcher&filter=&sort=4&order=desc"
         f"&min=5&selections=p_era,xera,k_percent,bb_percent,p_formatted_ip&csv=true"
     )
-    text = get(url, headers={"Accept": "text/csv"})
-    reader = csv.DictReader(io.StringIO(text))
+    try:
+        text = SESSION.get(
+            url,
+            timeout=25,
+            headers={
+                "Accept": "text/csv,text/plain,*/*",
+                "Referer": "https://baseballsavant.mlb.com/leaderboard/custom",
+            },
+        ).text
+        # Validate: real CSV starts with the header line
+        if text.strip().startswith('"last_name, first_name"') or text.strip().startswith('last_name'):
+            reader = csv.DictReader(io.StringIO(text))
+            stats = {}
+            for row in reader:
+                name = row.get("last_name, first_name", "")
+                if "," in name:
+                    last, first = name.split(",", 1)
+                    name = f"{first.strip()} {last.strip()}"
+                if name:
+                    stats[name] = {
+                        "era":   row.get("p_era", ""),
+                        "xera":  row.get("xera", ""),
+                        "k_pct": row.get("k_percent", ""),
+                        "bb_pct":row.get("bb_percent", ""),
+                        "ip":    row.get("p_formatted_ip", ""),
+                        "source": "savant",
+                    }
+            if stats:
+                return stats
+        print("  Savant returned HTML — falling back to MLB Stats API")
+    except Exception as e:
+        print(f"  Savant error: {e} — falling back to MLB Stats API")
+
+    # Fallback: MLB Stats API season pitching stats
+    return _fetch_sp_stats_mlbapi(year)
+
+
+def _fetch_sp_stats_mlbapi(year: str) -> dict:
+    """Basic ERA + K/BB from statsapi.mlb.com as Savant fallback."""
+    url = (
+        f"https://statsapi.mlb.com/api/v1/stats"
+        f"?stats=season&group=pitching&season={year}&limit=300"
+        f"&sortStat=earnedRunAverage&order=asc"
+    )
+    data = SESSION.get(url, timeout=20).json()
     stats = {}
-    for row in reader:
-        name = row.get("last_name, first_name", "")
-        if "," in name:
-            last, first = name.split(",", 1)
-            name = f"{first.strip()} {last.strip()}"
-        if not name:
-            continue
-        stats[name] = {
-            "era": row.get("p_era", ""),
-            "xera": row.get("xera", ""),
-            "k_pct": row.get("k_percent", ""),
-            "bb_pct": row.get("bb_percent", ""),
-            "ip": row.get("p_formatted_ip", ""),
-        }
+    for entry in data.get("stats", [{}])[0].get("splits", []):
+        player = entry.get("player", {})
+        name = player.get("fullName", "")
+        s = entry.get("stat", {})
+        if name:
+            stats[name] = {
+                "era":   s.get("era", ""),
+                "xera":  "",
+                "k_pct": "",
+                "bb_pct":"",
+                "ip":    s.get("inningsPitched", ""),
+                "k9":    s.get("strikeoutsPer9Inn", ""),
+                "bb9":   s.get("walksPer9Inn", ""),
+                "source": "mlbapi",
+            }
     return stats
 
 
 # ---------------------------------------------------------------------------
-# ODDS  (covers.com — HTML parse, best-effort)
+# ODDS + SP CONTEXT  (covers.com via Playwright)
 # ---------------------------------------------------------------------------
 
-def fetch_odds() -> dict:
-    html = get("https://www.covers.com/sport/baseball/mlb/odds")
-    soup = BeautifulSoup(html, "html.parser")
+def fetch_odds_playwright() -> dict:
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print("  Playwright not installed — skipping odds")
+        return {}
+
     odds = {}
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page(user_agent=UA)
+        try:
+            page.goto(
+                "https://www.covers.com/sport/baseball/mlb/odds",
+                wait_until="networkidle",
+                timeout=30000,
+            )
+            game_rows = page.query_selector_all(".oddsGameRow")
 
-    # Strategy 1: embedded JSON in <script> tags
-    for script in soup.find_all("script"):
-        text = script.string or ""
-        if not ("moneyLine" in text or "runLine" in text or "gameTotal" in text):
-            continue
-        for pattern in [
-            r'window\.__(?:DATA|data|STATE|state)__?\s*=\s*({.+?})\s*;',
-            r'var\s+(?:data|gameData|oddsData)\s*=\s*({.+?})\s*;',
-        ]:
-            m = re.search(pattern, text, re.DOTALL)
-            if not m:
-                continue
-            try:
-                data = json.loads(m.group(1))
-                for game in data.get("games", data.get("events", [])):
-                    away = (game.get("awayTeam") or game.get("away") or {})
-                    home = (game.get("homeTeam") or game.get("home") or {})
-                    away_name = away.get("shortName", away.get("name", "?"))
-                    home_name = home.get("shortName", home.get("name", "?"))
-                    key = f"{away_name} vs {home_name}"
+            for row in game_rows:
+                try:
+                    cells = row.query_selector_all(".td-cell")
+                    if len(cells) < 5:
+                        continue
+
+                    def parse_team_cell(cell):
+                        txt = cell.inner_text()
+                        parts = [p.strip() for p in txt.split("\n") if p.strip()]
+                        abbr = parts[0] if parts else "?"
+                        sp_name = parts[1] if len(parts) > 1 else "TBD"
+                        hand, era = "?", None
+                        for part in parts:
+                            m = re.search(r'\(([LR]),\s*([\d.]+)\)', part)
+                            if m:
+                                hand, era = m.group(1), float(m.group(2))
+                        return abbr, sp_name, hand, era
+
+                    away_abbr, away_sp, away_hand, away_era = parse_team_cell(cells[1])
+                    home_abbr, home_sp, home_hand, home_era = parse_team_cell(cells[2])
+
+                    away_mls, home_mls = [], []
+                    for i, cell in enumerate(cells[3:]):
+                        txt = cell.inner_text().strip()
+                        m = re.match(r'^([+-]?\d{3,4})', txt)
+                        if m:
+                            val = int(m.group(1))
+                            if i % 2 == 0:
+                                away_mls.append(val)
+                            else:
+                                home_mls.append(val)
+
+                    if not away_mls or not home_mls:
+                        continue
+
+                    key = f"{away_abbr} vs {home_abbr}"
                     odds[key] = {
-                        "away_ml": game.get("awayMoneyLine", game.get("awayML")),
-                        "home_ml": game.get("homeMoneyLine", game.get("homeML")),
-                        "total": game.get("gameTotal", game.get("total")),
-                        "over_odds": game.get("overOdds"),
-                        "under_odds": game.get("underOdds"),
-                        "away_rl": game.get("awayRunLine", game.get("awayRL")),
-                        "home_rl": game.get("homeRunLine", game.get("homeRL")),
+                        "away_abbr": away_abbr,
+                        "home_abbr": home_abbr,
+                        "away_ml":   away_mls[0],
+                        "home_ml":   home_mls[0],
+                        "away_ml_best": max(away_mls),
+                        "home_ml_best": max(home_mls),
+                        "away_sp": {"name": away_sp, "throws": away_hand, "era": away_era},
+                        "home_sp": {"name": home_sp, "throws": home_hand, "era": home_era},
+                        "books_count": len(away_mls),
                     }
-                if odds:
-                    return odds
-            except Exception:
-                continue
-
-    # Strategy 2: HTML table/row parsing — covers.com game boxes
-    # Each matchup is in a container; away/home rows each have an ML cell
-    pairs = []
-    team_name = None
-    ml_val = None
-    for el in soup.select(
-        ".cmg_matchup_game_box, [class*='covers-CoversOdds-'], "
-        "[class*='game-box'], [class*='matchup']"
-    ):
-        rows = el.find_all("tr") or [el]
-        row_data = []
-        for row in rows:
-            cells = row.find_all("td")
-            if not cells:
-                continue
-            texts = [c.get_text(strip=True) for c in cells]
-            name = texts[0] if texts else ""
-            ml_text = next((t for t in texts[1:] if re.match(r'^[+-]?\d{3,4}$', t)), None)
-            if name and ml_text:
-                row_data.append({"team": name, "ml": int(ml_text)})
-        if len(row_data) == 2:
-            pairs.append(row_data)
-
-    for pair in pairs:
-        key = f"{pair[0]['team']} vs {pair[1]['team']}"
-        odds[key] = {"away_ml": pair[0]["ml"], "home_ml": pair[1]["ml"]}
+                except Exception:
+                    continue
+        finally:
+            browser.close()
 
     return odds
 
 
 # ---------------------------------------------------------------------------
-# WEATHER  (rotowire — HTML parse, best-effort)
+# WEATHER  (wttr.in JSON per venue — no JS needed)
 # ---------------------------------------------------------------------------
 
-def fetch_weather() -> dict:
-    html = get("https://www.rotowire.com/baseball/weather.php")
-    soup = BeautifulSoup(html, "html.parser")
+# Hardcoded venue → city for all 30 MLB parks
+VENUE_CITY = {
+    "Yankee Stadium":             "New York",
+    "Fenway Park":                "Boston",
+    "Camden Yards":               "Baltimore",
+    "Tropicana Field":            None,  # dome
+    "Rogers Centre":              None,  # dome
+    "Guaranteed Rate Field":      "Chicago",
+    "Progressive Field":          "Cleveland",
+    "Comerica Park":              "Detroit",
+    "Kauffman Stadium":           "Kansas City",
+    "Target Field":               "Minneapolis",
+    "Minute Maid Park":           None,  # retractable (usually closed)
+    "Globe Life Field":           None,  # dome
+    "Angel Stadium":              "Anaheim",
+    "Oakland Coliseum":           "Oakland",
+    "Sutter Health Park":         "West Sacramento",
+    "T-Mobile Park":              None,  # retractable (usually open)
+    "Wrigley Field":              "Chicago",
+    "Great American Ball Park":   "Cincinnati",
+    "American Family Field":      None,  # retractable
+    "PNC Park":                   "Pittsburgh",
+    "Busch Stadium":              "St. Louis",
+    "Coors Field":                "Denver",
+    "Chase Field":                None,  # retractable
+    "Petco Park":                 "San Diego",
+    "Dodger Stadium":             "Los Angeles",
+    "Oracle Park":                "San Francisco",
+    "Truist Park":                "Atlanta",
+    "loanDepot park":             None,  # retractable
+    "LoanDepot Park":             None,
+    "Nationals Park":             "Washington DC",
+    "Citizens Bank Park":         "Philadelphia",
+    "Citi Field":                 "New York",
+    "Daikin Park":                "Houston",  # formerly Minute Maid, retractable
+}
+
+
+def fetch_weather_wttr(slate: list) -> dict:
+    """Fetch per-game weather from wttr.in JSON API using venue→city lookup."""
+    import urllib.parse
     weather = {}
+    seen_venues = set()
 
-    # rotowire weather typically in .weather-forecast containers or tables
-    for container in soup.select(
-        ".weather-forecast, .weather-box, [class*='WeatherForecast'], "
-        "[class*='weather-card'], [class*='weather_card']"
-    ):
+    for game in slate:
+        venue = game.get("venue", "")
+        if not venue or venue in seen_venues:
+            continue
+        seen_venues.add(venue)
+
+        city = VENUE_CITY.get(venue)
+        if city is None:
+            weather[venue] = {"dome": True, "conditions": "Domed/Retractable Stadium"}
+            continue
+
         try:
-            venue_el = container.select_one(
-                "[class*='venue'], [class*='stadium'], [class*='ballpark'], "
-                "h3, h4, .location"
-            )
-            temp_el = container.select_one("[class*='temp']")
-            wind_el = container.select_one("[class*='wind']")
-            cond_el = container.select_one("[class*='cond'], [class*='sky'], [class*='weather']")
-
-            venue = venue_el.get_text(strip=True) if venue_el else None
-            if venue:
-                weather[venue] = {
-                    "temp": temp_el.get_text(strip=True) if temp_el else "",
-                    "wind": wind_el.get_text(strip=True) if wind_el else "",
-                    "conditions": cond_el.get_text(strip=True) if cond_el else "",
-                }
-        except Exception:
-            pass
-
-    # Fallback: table rows containing temperature pattern
-    if not weather:
-        for row in soup.select("tr"):
-            cells = row.find_all("td")
-            texts = [c.get_text(strip=True) for c in cells]
-            if len(texts) >= 3 and any(re.search(r'\d+\s*°', t) for t in texts):
-                venue = texts[0]
-                if venue and len(venue) > 3:
-                    weather[venue] = {"raw": " | ".join(t for t in texts if t)}
+            url = f"https://wttr.in/{urllib.parse.quote(city)}?format=j1"
+            data = json.loads(get(url, timeout=15))
+            cur = data.get("current_condition", [{}])[0]
+            # Also try to get forecast for game time (use next hour if available)
+            weather[venue] = {
+                "city": city,
+                "temp_f": int(cur.get("temp_F", 0)),
+                "conditions": (cur.get("weatherDesc") or [{}])[0].get("value", ""),
+                "wind_mph": int(cur.get("windspeedMiles", 0)),
+                "wind_dir": cur.get("winddir16Point", ""),
+                "precip_pct": int(cur.get("precipMM", 0)),
+                "humidity": int(cur.get("humidity", 0)),
+                "feels_like_f": int(cur.get("FeelsLikeF", 0)),
+            }
+        except Exception as e:
+            weather[venue] = {"city": city, "error": str(e)}
 
     return weather
 
 
 # ---------------------------------------------------------------------------
-# LINEUPS  (rotowire — HTML parse, best-effort)
+# LINEUPS  (rotowire — HTML, partially works)
 # ---------------------------------------------------------------------------
 
 def fetch_lineups() -> dict:
@@ -270,7 +351,6 @@ def fetch_lineups() -> dict:
         ".lineup__box, [class*='lineup-box'], [class*='lineupBox']"
     ):
         try:
-            # Team names
             teams = lineup_box.select(".lineup__team, [class*='lineup__team']")
             if len(teams) < 2:
                 continue
@@ -278,12 +358,10 @@ def fetch_lineups() -> dict:
             home_name = teams[1].get_text(strip=True)
             key = f"{away_name} vs {home_name}"
 
-            # SPs
             sps = lineup_box.select(".lineup__pitcher, [class*='lineup__pitcher']")
             sp_away = sps[0].get_text(strip=True) if sps else "TBD"
             sp_home = sps[1].get_text(strip=True) if len(sps) > 1 else "TBD"
 
-            # Batters
             away_batters, home_batters = [], []
             for col in lineup_box.select(".lineup__list, [class*='lineup__list']"):
                 batters = [
@@ -312,9 +390,9 @@ def fetch_lineups() -> dict:
 # ---------------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser(description="Fetch MLB daily data bundle")
-    parser.add_argument("--date", default=date.today().isoformat(), help="YYYY-MM-DD")
-    parser.add_argument("--out-dir", default="data", help="Output directory")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--date", default=date.today().isoformat())
+    parser.add_argument("--out-dir", default="data")
     args = parser.parse_args()
 
     d = args.date
@@ -328,13 +406,22 @@ def main():
         "source": "github-actions-prefetch",
     }
 
+    # Fetch slate first (weather needs it for venue list)
+    print("[slate] fetching...", flush=True)
+    try:
+        bundle["slate"] = fetch_slate(d)
+        print(f"[slate] OK — {len(bundle['slate'])} games")
+    except Exception as e:
+        print(f"[slate] FAILED: {e}")
+        bundle["slate"] = []
+        bundle["slate_error"] = str(e)
+
     steps = [
-        ("slate",      lambda: fetch_slate(d)),
-        ("standings",  lambda: fetch_standings(year)),
-        ("sp_stats",   lambda: fetch_sp_stats(year)),
-        ("odds",       fetch_odds),
-        ("weather",    fetch_weather),
-        ("lineups",    fetch_lineups),
+        ("standings", lambda: fetch_standings(year)),
+        ("sp_stats",  lambda: fetch_sp_stats(year)),
+        ("odds",      fetch_odds_playwright),
+        ("weather",   lambda: fetch_weather_wttr(bundle.get("slate", []))),
+        ("lineups",   fetch_lineups),
     ]
 
     for key, fn in steps:
@@ -342,7 +429,7 @@ def main():
         try:
             result = fn()
             bundle[key] = result
-            n = len(result) if hasattr(result, "__len__") else "?"
+            n = len(result)
             print(f"[{key}] OK — {n} items")
         except Exception as e:
             print(f"[{key}] FAILED: {e}")
