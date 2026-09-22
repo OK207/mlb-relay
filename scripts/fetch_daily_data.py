@@ -198,9 +198,11 @@ def fetch_odds_playwright() -> dict:
         try:
             page.goto(
                 "https://www.covers.com/sport/baseball/mlb/odds",
-                wait_until="networkidle",
-                timeout=30000,
+                wait_until="domcontentloaded",
+                timeout=60000,
             )
+            # Wait for game rows to actually render (JS-driven)
+            page.wait_for_selector(".oddsGameRow", timeout=30000)
             game_rows = page.query_selector_all(".oddsGameRow")
 
             for row in game_rows:
@@ -263,40 +265,49 @@ def fetch_odds_playwright() -> dict:
 # ---------------------------------------------------------------------------
 
 # Hardcoded venue → city for all 30 MLB parks
+# Use exact names as returned by statsapi.mlb.com; None = dome/retractable (skip weather)
 VENUE_CITY = {
-    "Yankee Stadium":             "New York",
-    "Fenway Park":                "Boston",
-    "Camden Yards":               "Baltimore",
-    "Tropicana Field":            None,  # dome
-    "Rogers Centre":              None,  # dome
-    "Guaranteed Rate Field":      "Chicago",
-    "Progressive Field":          "Cleveland",
-    "Comerica Park":              "Detroit",
-    "Kauffman Stadium":           "Kansas City",
-    "Target Field":               "Minneapolis",
-    "Minute Maid Park":           None,  # retractable (usually closed)
-    "Globe Life Field":           None,  # dome
-    "Angel Stadium":              "Anaheim",
-    "Oakland Coliseum":           "Oakland",
-    "Sutter Health Park":         "West Sacramento",
-    "T-Mobile Park":              None,  # retractable (usually open)
-    "Wrigley Field":              "Chicago",
-    "Great American Ball Park":   "Cincinnati",
-    "American Family Field":      None,  # retractable
-    "PNC Park":                   "Pittsburgh",
-    "Busch Stadium":              "St. Louis",
-    "Coors Field":                "Denver",
-    "Chase Field":                None,  # retractable
-    "Petco Park":                 "San Diego",
-    "Dodger Stadium":             "Los Angeles",
-    "Oracle Park":                "San Francisco",
-    "Truist Park":                "Atlanta",
-    "loanDepot park":             None,  # retractable
-    "LoanDepot Park":             None,
-    "Nationals Park":             "Washington DC",
-    "Citizens Bank Park":         "Philadelphia",
-    "Citi Field":                 "New York",
-    "Daikin Park":                "Houston",  # formerly Minute Maid, retractable
+    # AL East
+    "Yankee Stadium":                       "New York",
+    "Fenway Park":                          "Boston",
+    "Oriole Park at Camden Yards":          "Baltimore",
+    "Camden Yards":                         "Baltimore",   # alt name
+    "Tropicana Field":                      None,          # dome
+    "Rogers Centre":                        None,          # dome
+    # AL Central
+    "Guaranteed Rate Field":                "Chicago",
+    "Progressive Field":                    "Cleveland",
+    "Comerica Park":                        "Detroit",
+    "Kauffman Stadium":                     "Kansas City",
+    "Target Field":                         "Minneapolis",
+    # AL West
+    "Minute Maid Park":                     None,          # retractable
+    "Daikin Park":                          None,          # retractable (new name for Minute Maid)
+    "Globe Life Field":                     None,          # dome
+    "Angel Stadium":                        "Anaheim",
+    "Oakland Coliseum":                     "Oakland",
+    "Sutter Health Park":                   "West Sacramento",
+    "T-Mobile Park":                        "Seattle",     # retractable but usually open
+    # NL East
+    "Wrigley Field":                        "Chicago",
+    "Great American Ball Park":             "Cincinnati",
+    "American Family Field":                None,          # retractable
+    "PNC Park":                             "Pittsburgh",
+    "Busch Stadium":                        "St. Louis",
+    # NL Central
+    "Truist Park":                          "Atlanta",
+    "loanDepot park":                       None,          # retractable
+    "LoanDepot Park":                       None,
+    "Nationals Park":                       "Washington DC",
+    "Citizens Bank Park":                   "Philadelphia",
+    "Citi Field":                           "New York",
+    # NL West
+    "Coors Field":                          "Denver",
+    "Chase Field":                          None,          # retractable
+    "Petco Park":                           "San Diego",
+    "Dodger Stadium":                       "Los Angeles",
+    "UNIQLO Field at Dodger Stadium":       "Los Angeles",  # naming rights variant
+    "Oracle Park":                          "San Francisco",
 }
 
 
@@ -322,15 +333,21 @@ def fetch_weather_wttr(slate: list) -> dict:
             data = json.loads(get(url, timeout=15))
             cur = data.get("current_condition", [{}])[0]
             # Also try to get forecast for game time (use next hour if available)
+            def _int(v, default=0):
+                try:
+                    return int(float(v or default))
+                except (TypeError, ValueError):
+                    return default
+
             weather[venue] = {
                 "city": city,
-                "temp_f": int(cur.get("temp_F", 0)),
+                "temp_f":     _int(cur.get("temp_F")),
                 "conditions": (cur.get("weatherDesc") or [{}])[0].get("value", ""),
-                "wind_mph": int(cur.get("windspeedMiles", 0)),
-                "wind_dir": cur.get("winddir16Point", ""),
-                "precip_pct": int(cur.get("precipMM", 0)),
-                "humidity": int(cur.get("humidity", 0)),
-                "feels_like_f": int(cur.get("FeelsLikeF", 0)),
+                "wind_mph":   _int(cur.get("windspeedMiles")),
+                "wind_dir":   cur.get("winddir16Point", ""),
+                "precip_pct": round(float(cur.get("precipMM") or 0)),
+                "humidity":   _int(cur.get("humidity")),
+                "feels_like_f": _int(cur.get("FeelsLikeF")),
             }
         except Exception as e:
             weather[venue] = {"city": city, "error": str(e)}
