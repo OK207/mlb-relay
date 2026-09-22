@@ -1,0 +1,56 @@
+name: MLB Data Pre-fetch
+
+on:
+  schedule:
+    # 9:30 AM ET (13:30 UTC) — early enough for morning card, after overnight lineup updates
+    - cron: '30 13 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Date override (YYYY-MM-DD, blank = today ET)'
+        required: false
+        default: ''
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Resolve date (ET)
+        id: date
+        run: |
+          if [ -n "${{ github.event.inputs.date }}" ]; then
+            echo "date=${{ github.event.inputs.date }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "date=$(TZ=America/New_York date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Fetch MLB data
+        run: |
+          mkdir -p data
+          python3 scripts/fetch_daily_data.py \
+            --date "${{ steps.date.outputs.date }}" \
+            --out-dir data
+
+      - name: Commit and push
+        run: |
+          git config user.email "mlb-data-bot@github.com"
+          git config user.name "MLB Data Bot"
+          git add data/
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "data: ${{ steps.date.outputs.date }}"
+            git push
+          fi
