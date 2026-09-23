@@ -2,8 +2,10 @@ name: MLB Data Pre-fetch
 
 on:
   schedule:
-    # 9:30 AM ET (13:30 UTC) — early enough for morning card, after overnight lineup updates
-    - cron: '30 13 * * *'
+    # 9:00 AM ET (13:00 UTC) — nudged 30min earlier for more buffer before the
+    # 11:00 AM ET picks routine fires; GH schedule triggers can run late, and
+    # the routine now retries for ~18min before falling back to live scraping.
+    - cron: '0 13 * * *'
   workflow_dispatch:
     inputs:
       date:
