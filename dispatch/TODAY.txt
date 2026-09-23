@@ -1,8 +1,11 @@
-Results September 20:
-  W  Phillies ML -170 | 1u -> +0.59u
-  L  Royals ML -120 | 1u -> -1u
-Day P&L: -0.41u (1W-1L)
+MLB Picks - September 23
 
-MLB Picks - September 21 - No strong plays today.
+HIGH CONFIDENCE
+Brewers ML -130 vs Phillies | Bet 2u -> Win 1.54u
+Logan Henderson (2.51 ERA) vs Aaron Nola (4.49 ERA). Milwaukee owns the best record in baseball (98-58) against a fading Phillies club (86-70), and Nola has pitched to a below-average tier all season - the SP gap and team-quality gap both point the same direction.
 
-Skipped: 3 games - Blue Jays/Orioles: Yesavage is making his first start off a knee injury (one 34-pitch rehab outing), Baz has been dominant his last 3 starts (2.25 ERA, hit 97.8mph, 9K last time out), and moneyline odds disagreed sharply across books - no reliable price to act on. Nationals/Tigers: Tigers -152 but an outside model gives them only 54.9% win probability (below the price), Detroit's bats have gone cold (3 of 4 lost to White Sox, 1 run in each loss) while Washington won 6 of 7, and Detroit is using a bullpen-game plan (River Ryan debut piggybacked by Montero) - no clean edge either side. Twins/Giants: models split evenly (52.8% Twins vs 53.1% Giants) with both teams injury-depleted (Twins missing Buxton, Martin; Giants missing Webb) - efficiently priced coinflip, no edge.
+VALUE PLAYS
+Tigers ML -178 vs Nationals | Bet 1u -> Win 0.56u
+Framber Valdez (2.86 ERA over last 8 starts) vs a Washington bullpen day opened by Richard Lovelady. Detroit rested ace Cade Cavalli for Friday and instead gets a start from its offseason free-agent addition against a piggyback pitching plan; Detroit has held favorite status across books all day despite some price disagreement.
+
+Skipped: 14 games - Cardinals/Pirates: Liberatore's ERA is over 5.00 but Pittsburgh's price already reflects that gap, no edge. Diamondbacks/Rockies: Coors Field without a confirmed elite SP - auto-skip. Blue Jays/Orioles (DH), Twins/Giants, Rays/Yankees, Guardians/Red Sox, Reds/Braves, White Sox/Royals, Marlins/Cubs, Mets/Rangers, Angels/A's, Padres/Dodgers, Astros/Mariners: full data blackout - every sports-data domain (MLB Stats API, ESPN, MLB.com, RotoWire, OddsShark, Baseball Savant) was blocked at the network egress proxy today; only WebSearch summaries were reachable and did not return confirmed lineups, umpire tendencies, or reliable single-book pricing for these games - no basis to size an edge.
