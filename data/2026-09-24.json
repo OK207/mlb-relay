@@ -1,0 +1,1751 @@
+{
+  "date": "2026-09-24",
+  "generated_at": "2026-09-24T17:49:16.737252+00:00",
+  "source": "github-actions-prefetch",
+  "slate": [
+    {
+      "game_id": 823326,
+      "time_et": "12:35",
+      "away_team": "St. Louis Cardinals",
+      "home_team": "Pittsburgh Pirates",
+      "venue": "PNC Park",
+      "status": "In Progress",
+      "sp_away": {
+        "name": "Kyle Leahy",
+        "id": 681517,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Paul Skenes",
+        "id": 694973,
+        "throws": "?"
+      }
+    },
+    {
+      "game_id": 824059,
+      "time_et": "14:10",
+      "away_team": "Chicago White Sox",
+      "home_team": "Kansas City Royals",
+      "venue": "Kauffman Stadium",
+      "status": "Warmup",
+      "sp_away": {
+        "name": "David Sandlin",
+        "id": 689818,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Randy Dobnak",
+        "id": 677976,
+        "throws": "?"
+      }
+    },
+    {
+      "game_id": 824623,
+      "time_et": "14:20",
+      "away_team": "Miami Marlins",
+      "home_team": "Chicago Cubs",
+      "venue": "Wrigley Field",
+      "status": "Pre-Game",
+      "sp_away": {
+        "name": "Tyler Phillips",
+        "id": 663969,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Matthew Boyd",
+        "id": 571510,
+        "throws": "?"
+      }
+    },
+    {
+      "game_id": 822842,
+      "time_et": "14:35",
+      "away_team": "New York Mets",
+      "home_team": "Texas Rangers",
+      "venue": "Globe Life Field",
+      "status": "Pre-Game",
+      "sp_away": {
+        "name": "Zac Thornton",
+        "id": 804267,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Kumar Rocker",
+        "id": 677958,
+        "throws": "?"
+      }
+    },
+    {
+      "game_id": 824298,
+      "time_et": "15:10",
+      "away_team": "Arizona Diamondbacks",
+      "home_team": "Colorado Rockies",
+      "venue": "Coors Field",
+      "status": "Pre-Game",
+      "sp_away": {
+        "name": "Eduardo Rodriguez",
+        "id": 593958,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Tanner Gordon",
+        "id": 685299,
+        "throws": "?"
+      }
+    },
+    {
+      "game_id": 823411,
+      "time_et": "18:05",
+      "away_team": "Milwaukee Brewers",
+      "home_team": "Philadelphia Phillies",
+      "venue": "Citizens Bank Park",
+      "status": "Scheduled",
+      "sp_away": {
+        "name": "Shane Drohan",
+        "id": 675660,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Andrew Painter",
+        "id": 691725,
+        "throws": "?"
+      }
+    },
+    {
+      "game_id": 824707,
+      "time_et": "18:45",
+      "away_team": "Cleveland Guardians",
+      "home_team": "Boston Red Sox",
+      "venue": "Fenway Park",
+      "status": "Scheduled",
+      "sp_away": {
+        "name": "Daniel Espino",
+        "id": 682982,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Ranger Suarez",
+        "id": 624133,
+        "throws": "?"
+      }
+    },
+    {
+      "game_id": 823493,
+      "time_et": "19:05",
+      "away_team": "Tampa Bay Rays",
+      "home_team": "New York Yankees",
+      "venue": "Yankee Stadium",
+      "status": "Scheduled",
+      "sp_away": {
+        "name": "Ian Seymour",
+        "id": 693855,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Cam Schlittler",
+        "id": 693645,
+        "throws": "?"
+      }
+    },
+    {
+      "game_id": 824866,
+      "time_et": "19:15",
+      "away_team": "Cincinnati Reds",
+      "home_team": "Atlanta Braves",
+      "venue": "Truist Park",
+      "status": "Scheduled",
+      "sp_away": {
+        "name": "Brady Singer",
+        "id": 663903,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Tyler Mahle",
+        "id": 641816,
+        "throws": "?"
+      }
+    },
+    {
+      "game_id": 824950,
+      "time_et": "21:40",
+      "away_team": "Houston Astros",
+      "home_team": "Athletics",
+      "venue": "Sutter Health Park",
+      "status": "Scheduled",
+      "sp_away": {
+        "name": "Peter Lambert",
+        "id": 663567,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Mason Barnett",
+        "id": 686930,
+        "throws": "?"
+      }
+    },
+    {
+      "game_id": 823087,
+      "time_et": "21:40",
+      "away_team": "Los Angeles Angels",
+      "home_team": "Seattle Mariners",
+      "venue": "T-Mobile Park",
+      "status": "Scheduled",
+      "sp_away": {
+        "name": "Grayson Rodriguez",
+        "id": 680570,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Bryan Woo",
+        "id": 693433,
+        "throws": "?"
+      }
+    },
+    {
+      "game_id": 823895,
+      "time_et": "22:10",
+      "away_team": "San Diego Padres",
+      "home_team": "Los Angeles Dodgers",
+      "venue": "UNIQLO Field at Dodger Stadium",
+      "status": "Scheduled",
+      "sp_away": {
+        "name": "Nick Pivetta",
+        "id": 601713,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Tyler Glasnow",
+        "id": 607192,
+        "throws": "?"
+      }
+    }
+  ],
+  "standings": {
+    "Rays": {
+      "wins": 96,
+      "losses": 62,
+      "pct": 0.608,
+      "division": "",
+      "gb": "-"
+    },
+    "Yankees": {
+      "wins": 91,
+      "losses": 67,
+      "pct": 0.576,
+      "division": "",
+      "gb": "5.0"
+    },
+    "Red Sox": {
+      "wins": 85,
+      "losses": 73,
+      "pct": 0.538,
+      "division": "",
+      "gb": "11.0"
+    },
+    "Orioles": {
+      "wins": 78,
+      "losses": 81,
+      "pct": 0.491,
+      "division": "",
+      "gb": "18.5"
+    },
+    "Blue Jays": {
+      "wins": 77,
+      "losses": 82,
+      "pct": 0.484,
+      "division": "",
+      "gb": "19.5"
+    },
+    "Guardians": {
+      "wins": 82,
+      "losses": 76,
+      "pct": 0.519,
+      "division": "",
+      "gb": "-"
+    },
+    "White Sox": {
+      "wins": 81,
+      "losses": 77,
+      "pct": 0.513,
+      "division": "",
+      "gb": "1.0"
+    },
+    "Twins": {
+      "wins": 75,
+      "losses": 84,
+      "pct": 0.472,
+      "division": "",
+      "gb": "7.5"
+    },
+    "Tigers": {
+      "wins": 74,
+      "losses": 85,
+      "pct": 0.465,
+      "division": "",
+      "gb": "8.5"
+    },
+    "Royals": {
+      "wins": 68,
+      "losses": 90,
+      "pct": 0.43,
+      "division": "",
+      "gb": "14.0"
+    },
+    "Astros": {
+      "wins": 78,
+      "losses": 80,
+      "pct": 0.494,
+      "division": "",
+      "gb": "-"
+    },
+    "Rangers": {
+      "wins": 78,
+      "losses": 80,
+      "pct": 0.494,
+      "division": "",
+      "gb": "-"
+    },
+    "Mariners": {
+      "wins": 74,
+      "losses": 84,
+      "pct": 0.468,
+      "division": "",
+      "gb": "4.0"
+    },
+    "Athletics": {
+      "wins": 63,
+      "losses": 95,
+      "pct": 0.399,
+      "division": "",
+      "gb": "15.0"
+    },
+    "Angels": {
+      "wins": 60,
+      "losses": 98,
+      "pct": 0.38,
+      "division": "",
+      "gb": "18.0"
+    },
+    "Braves": {
+      "wins": 93,
+      "losses": 65,
+      "pct": 0.589,
+      "division": "",
+      "gb": "-"
+    },
+    "Phillies": {
+      "wins": 87,
+      "losses": 71,
+      "pct": 0.551,
+      "division": "",
+      "gb": "6.0"
+    },
+    "Marlins": {
+      "wins": 78,
+      "losses": 80,
+      "pct": 0.494,
+      "division": "",
+      "gb": "15.0"
+    },
+    "Nationals": {
+      "wins": 75,
+      "losses": 84,
+      "pct": 0.472,
+      "division": "",
+      "gb": "18.5"
+    },
+    "Mets": {
+      "wins": 73,
+      "losses": 85,
+      "pct": 0.462,
+      "division": "",
+      "gb": "20.0"
+    },
+    "Brewers": {
+      "wins": 99,
+      "losses": 59,
+      "pct": 0.627,
+      "division": "",
+      "gb": "-"
+    },
+    "Cubs": {
+      "wins": 87,
+      "losses": 71,
+      "pct": 0.551,
+      "division": "",
+      "gb": "12.0"
+    },
+    "Pirates": {
+      "wins": 80,
+      "losses": 78,
+      "pct": 0.506,
+      "division": "",
+      "gb": "19.0"
+    },
+    "Cardinals": {
+      "wins": 77,
+      "losses": 81,
+      "pct": 0.487,
+      "division": "",
+      "gb": "22.0"
+    },
+    "Reds": {
+      "wins": 73,
+      "losses": 85,
+      "pct": 0.462,
+      "division": "",
+      "gb": "26.0"
+    },
+    "Dodgers": {
+      "wins": 97,
+      "losses": 61,
+      "pct": 0.614,
+      "division": "",
+      "gb": "-"
+    },
+    "Padres": {
+      "wins": 88,
+      "losses": 70,
+      "pct": 0.557,
+      "division": "",
+      "gb": "9.0"
+    },
+    "D-backs": {
+      "wins": 84,
+      "losses": 74,
+      "pct": 0.532,
+      "division": "",
+      "gb": "13.0"
+    },
+    "Giants": {
+      "wins": 65,
+      "losses": 94,
+      "pct": 0.409,
+      "division": "",
+      "gb": "32.5"
+    },
+    "Rockies": {
+      "wins": 57,
+      "losses": 101,
+      "pct": 0.361,
+      "division": "",
+      "gb": "40.0"
+    }
+  },
+  "sp_stats": {
+    "Jacob Misiorowski": {
+      "era": "1.86",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.1",
+      "k9": "13.13",
+      "bb9": "2.23",
+      "source": "mlbapi"
+    },
+    "Cam Schlittler": {
+      "era": "1.94",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "190.2",
+      "k9": "11.05",
+      "bb9": "2.22",
+      "source": "mlbapi"
+    },
+    "Chris Sale": {
+      "era": "2.16",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "162.2",
+      "k9": "11.07",
+      "bb9": "1.72",
+      "source": "mlbapi"
+    },
+    "Dylan Cease": {
+      "era": "2.40",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.0",
+      "k9": "12.73",
+      "bb9": "4.15",
+      "source": "mlbapi"
+    },
+    "Yoshinobu Yamamoto": {
+      "era": "2.53",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "185.0",
+      "k9": "8.85",
+      "bb9": "2.04",
+      "source": "mlbapi"
+    },
+    "Parker Messick": {
+      "era": "2.55",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "183.1",
+      "k9": "9.38",
+      "bb9": "2.36",
+      "source": "mlbapi"
+    },
+    "Drew Rasmussen": {
+      "era": "2.67",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.0",
+      "k9": "9.10",
+      "bb9": "1.67",
+      "source": "mlbapi"
+    },
+    "Sonny Gray": {
+      "era": "2.72",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.0",
+      "k9": "7.93",
+      "bb9": "2.45",
+      "source": "mlbapi"
+    },
+    "Jes\u00fas Luzardo": {
+      "era": "2.87",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "178.2",
+      "k9": "11.13",
+      "bb9": "2.62",
+      "source": "mlbapi"
+    },
+    "Eduardo Rodriguez": {
+      "era": "2.89",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "183.2",
+      "k9": "6.86",
+      "bb9": "3.04",
+      "source": "mlbapi"
+    },
+    "Cristopher S\u00e1nchez": {
+      "era": "2.93",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "200.0",
+      "k9": "9.95",
+      "bb9": "1.98",
+      "source": "mlbapi"
+    },
+    "Nick Martinez": {
+      "era": "2.94",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "177.1",
+      "k9": "5.48",
+      "bb9": "1.27",
+      "source": "mlbapi"
+    },
+    "Cade Cavalli": {
+      "era": "3.02",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.2",
+      "k9": "10.61",
+      "bb9": "2.55",
+      "source": "mlbapi"
+    },
+    "Nolan McLean": {
+      "era": "3.16",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "179.2",
+      "k9": "9.72",
+      "bb9": "3.51",
+      "source": "mlbapi"
+    },
+    "Michael King": {
+      "era": "3.21",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "185.0",
+      "k9": "7.74",
+      "bb9": "3.41",
+      "source": "mlbapi"
+    },
+    "Michael Wacha": {
+      "era": "3.33",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "194.1",
+      "k9": "7.13",
+      "bb9": "2.45",
+      "source": "mlbapi"
+    },
+    "Sean Burke": {
+      "era": "3.40",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "167.0",
+      "k9": "9.59",
+      "bb9": "3.29",
+      "source": "mlbapi"
+    },
+    "Reid Detmers": {
+      "era": "3.47",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "179.0",
+      "k9": "10.26",
+      "bb9": "2.31",
+      "source": "mlbapi"
+    },
+    "Robbie Ray": {
+      "era": "3.59",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "165.2",
+      "k9": "7.61",
+      "bb9": "4.56",
+      "source": "mlbapi"
+    },
+    "Foster Griffin": {
+      "era": "3.60",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.2",
+      "k9": "8.24",
+      "bb9": "2.35",
+      "source": "mlbapi"
+    },
+    "Gavin Williams": {
+      "era": "3.63",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "181.0",
+      "k9": "12.13",
+      "bb9": "2.83",
+      "source": "mlbapi"
+    },
+    "Braxton Ashcraft": {
+      "era": "3.65",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "165.1",
+      "k9": "9.42",
+      "bb9": "1.91",
+      "source": "mlbapi"
+    },
+    "Jos\u00e9 Soriano": {
+      "era": "3.72",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "174.1",
+      "k9": "8.62",
+      "bb9": "3.77",
+      "source": "mlbapi"
+    },
+    "Taj Bradley": {
+      "era": "3.73",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "178.1",
+      "k9": "10.35",
+      "bb9": "3.84",
+      "source": "mlbapi"
+    },
+    "Shota Imanaga": {
+      "era": "3.74",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "173.1",
+      "k9": "8.88",
+      "bb9": "1.92",
+      "source": "mlbapi"
+    },
+    "Logan Gilbert": {
+      "era": "3.81",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "182.0",
+      "k9": "9.74",
+      "bb9": "2.37",
+      "source": "mlbapi"
+    },
+    "Michael McGreevy": {
+      "era": "3.84",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "164.0",
+      "k9": "6.20",
+      "bb9": "2.52",
+      "source": "mlbapi"
+    },
+    "Jacob deGrom": {
+      "era": "3.86",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "158.2",
+      "k9": "11.12",
+      "bb9": "2.44",
+      "source": "mlbapi"
+    },
+    "Paul Skenes": {
+      "era": "3.87",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.0",
+      "k9": "10.36",
+      "bb9": "2.56",
+      "source": "mlbapi"
+    },
+    "Sandy Alcantara": {
+      "era": "3.89",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "213.0",
+      "k9": "6.42",
+      "bb9": "2.49",
+      "source": "mlbapi"
+    },
+    "Noah Cameron": {
+      "era": "3.92",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.1",
+      "k9": "8.09",
+      "bb9": "2.82",
+      "source": "mlbapi"
+    },
+    "Bryan Woo": {
+      "era": "3.92",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "167.2",
+      "k9": "8.96",
+      "bb9": "1.93",
+      "source": "mlbapi"
+    },
+    "Framber Valdez": {
+      "era": "4.03",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "174.0",
+      "k9": "6.98",
+      "bb9": "3.47",
+      "source": "mlbapi"
+    },
+    "Trevor Rogers": {
+      "era": "4.07",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "165.2",
+      "k9": "8.31",
+      "bb9": "2.12",
+      "source": "mlbapi"
+    },
+    "Shane Baz": {
+      "era": "4.11",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "179.2",
+      "k9": "7.71",
+      "bb9": "3.16",
+      "source": "mlbapi"
+    },
+    "Logan Webb": {
+      "era": "4.31",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "160.2",
+      "k9": "7.51",
+      "bb9": "2.30",
+      "source": "mlbapi"
+    },
+    "George Kirby": {
+      "era": "4.33",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "174.2",
+      "k9": "7.63",
+      "bb9": "2.42",
+      "source": "mlbapi"
+    },
+    "Tanner Bibee": {
+      "era": "4.35",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "182.0",
+      "k9": "7.02",
+      "bb9": "2.67",
+      "source": "mlbapi"
+    },
+    "Kevin Gausman": {
+      "era": "4.51",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "177.2",
+      "k9": "9.32",
+      "bb9": "2.38",
+      "source": "mlbapi"
+    },
+    "Aaron Nola": {
+      "era": "4.54",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "174.1",
+      "k9": "9.14",
+      "bb9": "3.05",
+      "source": "mlbapi"
+    },
+    "Freddy Peralta": {
+      "era": "4.56",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "163.2",
+      "k9": "8.36",
+      "bb9": "3.30",
+      "source": "mlbapi"
+    },
+    "MacKenzie Gore": {
+      "era": "4.59",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "170.2",
+      "k9": "9.18",
+      "bb9": "3.69",
+      "source": "mlbapi"
+    },
+    "Andrew Abbott": {
+      "era": "4.61",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "166.0",
+      "k9": "7.10",
+      "bb9": "4.12",
+      "source": "mlbapi"
+    },
+    "Merrill Kelly": {
+      "era": "4.94",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "162.0",
+      "k9": "6.28",
+      "bb9": "3.89",
+      "source": "mlbapi"
+    },
+    "Seth Lugo": {
+      "era": "5.17",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.1",
+      "k9": "7.00",
+      "bb9": "2.82",
+      "source": "mlbapi"
+    }
+  },
+  "odds": {
+    "CHW vs KC": {
+      "away_abbr": "CHW",
+      "home_abbr": "KC",
+      "away_ml": -121,
+      "home_ml": 110,
+      "away_ml_best": 118,
+      "home_ml_best": 118,
+      "away_sp": {
+        "name": "D. Sandlin",
+        "throws": "R",
+        "era": 6.29
+      },
+      "home_sp": {
+        "name": "R. Dobnak",
+        "throws": "R",
+        "era": 3.08
+      },
+      "books_count": 9
+    },
+    "MIA vs CHC": {
+      "away_abbr": "MIA",
+      "home_abbr": "CHC",
+      "away_ml": 179,
+      "home_ml": -201,
+      "away_ml_best": 179,
+      "home_ml_best": 178,
+      "away_sp": {
+        "name": "T. Phillips",
+        "throws": "R",
+        "era": 3.45
+      },
+      "home_sp": {
+        "name": "M. Boyd",
+        "throws": "L",
+        "era": 4.06
+      },
+      "books_count": 9
+    },
+    "NYM vs TEX": {
+      "away_abbr": "NYM",
+      "home_abbr": "TEX",
+      "away_ml": 114,
+      "home_ml": -126,
+      "away_ml_best": 115,
+      "home_ml_best": 111,
+      "away_sp": {
+        "name": "Z. Thornton",
+        "throws": "L",
+        "era": 3.4
+      },
+      "home_sp": {
+        "name": "K. Rocker",
+        "throws": "R",
+        "era": 4.47
+      },
+      "books_count": 9
+    },
+    "AZ vs COL": {
+      "away_abbr": "AZ",
+      "home_abbr": "COL",
+      "away_ml": -181,
+      "home_ml": 162,
+      "away_ml_best": 165,
+      "home_ml_best": 165,
+      "away_sp": {
+        "name": "E. Rodriguez",
+        "throws": "L",
+        "era": 2.89
+      },
+      "home_sp": {
+        "name": "T. Gordon",
+        "throws": "R",
+        "era": 6.01
+      },
+      "books_count": 10
+    },
+    "MIL vs PHI": {
+      "away_abbr": "MIL",
+      "home_abbr": "PHI",
+      "away_ml": 106,
+      "home_ml": -117,
+      "away_ml_best": 118,
+      "home_ml_best": 118,
+      "away_sp": {
+        "name": "B. Wilson",
+        "throws": "R",
+        "era": 3.67
+      },
+      "home_sp": {
+        "name": "A. Painter",
+        "throws": "R",
+        "era": 5.59
+      },
+      "books_count": 10
+    },
+    "CLE vs BOS": {
+      "away_abbr": "CLE",
+      "home_abbr": "BOS",
+      "away_ml": 125,
+      "home_ml": -138,
+      "away_ml_best": 125,
+      "home_ml_best": 112,
+      "away_sp": {
+        "name": "D. Espino",
+        "throws": "R",
+        "era": 4.72
+      },
+      "home_sp": {
+        "name": "R. Suarez",
+        "throws": "L",
+        "era": 3.27
+      },
+      "books_count": 10
+    },
+    "TB vs NYY": {
+      "away_abbr": "TB",
+      "home_abbr": "NYY",
+      "away_ml": 131,
+      "home_ml": -145,
+      "away_ml_best": 131,
+      "home_ml_best": 130,
+      "away_sp": {
+        "name": "I. Seymour",
+        "throws": "L",
+        "era": 4.38
+      },
+      "home_sp": {
+        "name": "C. Schlittler",
+        "throws": "R",
+        "era": 1.94
+      },
+      "books_count": 9
+    },
+    "CIN vs ATL": {
+      "away_abbr": "CIN",
+      "home_abbr": "ATL",
+      "away_ml": 186,
+      "home_ml": -210,
+      "away_ml_best": 190,
+      "home_ml_best": 188,
+      "away_sp": {
+        "name": "B. Singer",
+        "throws": "R",
+        "era": 5.67
+      },
+      "home_sp": {
+        "name": "T. Mahle",
+        "throws": "R",
+        "era": 3.81
+      },
+      "books_count": 10
+    },
+    "LAA vs SEA": {
+      "away_abbr": "LAA",
+      "home_abbr": "SEA",
+      "away_ml": 181,
+      "home_ml": -204,
+      "away_ml_best": 190,
+      "home_ml_best": 187,
+      "away_sp": {
+        "name": "G. Rodriguez",
+        "throws": "R",
+        "era": 5.96
+      },
+      "home_sp": {
+        "name": "B. Woo",
+        "throws": "R",
+        "era": 3.92
+      },
+      "books_count": 9
+    },
+    "HOU vs ATH": {
+      "away_abbr": "HOU",
+      "home_abbr": "ATH",
+      "away_ml": -155,
+      "home_ml": 140,
+      "away_ml_best": 141,
+      "home_ml_best": 140,
+      "away_sp": {
+        "name": "P. Lambert",
+        "throws": "R",
+        "era": 3.7
+      },
+      "home_sp": {
+        "name": "M. Barnett",
+        "throws": "R",
+        "era": 7.16
+      },
+      "books_count": 10
+    },
+    "SD vs LAD": {
+      "away_abbr": "SD",
+      "home_abbr": "LAD",
+      "away_ml": 152,
+      "home_ml": -169,
+      "away_ml_best": 152,
+      "home_ml_best": 146,
+      "away_sp": {
+        "name": "N. Pivetta",
+        "throws": "R",
+        "era": 3.3
+      },
+      "home_sp": {
+        "name": "T. Glasnow",
+        "throws": "R",
+        "era": 3.46
+      },
+      "books_count": 9
+    },
+    "STL vs PIT": {
+      "away_abbr": "STL",
+      "home_abbr": "PIT",
+      "away_ml": 140,
+      "home_ml": -156,
+      "away_ml_best": 140,
+      "home_ml_best": 140,
+      "away_sp": {
+        "name": "K. Leahy",
+        "throws": "R",
+        "era": 3.65
+      },
+      "home_sp": {
+        "name": "P. Skenes",
+        "throws": "R",
+        "era": 3.91
+      },
+      "books_count": 10
+    }
+  },
+  "weather": {
+    "PNC Park": {
+      "city": "Pittsburgh",
+      "temp_f": 61,
+      "conditions": "Overcast ",
+      "wind_mph": 9,
+      "wind_dir": "E",
+      "precip_pct": 0,
+      "humidity": 42,
+      "feels_like_f": 53
+    },
+    "Kauffman Stadium": {
+      "city": "Kansas City",
+      "temp_f": 71,
+      "conditions": "Partly Cloudy ",
+      "wind_mph": 7,
+      "wind_dir": "ESE",
+      "precip_pct": 0,
+      "humidity": 51,
+      "feels_like_f": 68
+    },
+    "Wrigley Field": {
+      "city": "Chicago",
+      "temp_f": 62,
+      "conditions": "Overcast ",
+      "wind_mph": 8,
+      "wind_dir": "E",
+      "precip_pct": 0,
+      "humidity": 67,
+      "feels_like_f": 58
+    },
+    "Globe Life Field": {
+      "dome": true,
+      "conditions": "Domed/Retractable Stadium"
+    },
+    "Coors Field": {
+      "city": "Denver",
+      "temp_f": 66,
+      "conditions": "Overcast ",
+      "wind_mph": 7,
+      "wind_dir": "N",
+      "precip_pct": 0,
+      "humidity": 52,
+      "feels_like_f": 62
+    },
+    "Citizens Bank Park": {
+      "city": "Philadelphia",
+      "temp_f": 61,
+      "conditions": "Partly Cloudy ",
+      "wind_mph": 13,
+      "wind_dir": "NE",
+      "precip_pct": 0,
+      "humidity": 53,
+      "feels_like_f": 53
+    },
+    "Fenway Park": {
+      "city": "Boston",
+      "temp_f": 60,
+      "conditions": "Sunny",
+      "wind_mph": 16,
+      "wind_dir": "NE",
+      "precip_pct": 0,
+      "humidity": 62,
+      "feels_like_f": 51
+    },
+    "Yankee Stadium": {
+      "city": "New York",
+      "temp_f": 65,
+      "conditions": "Sunny",
+      "wind_mph": 15,
+      "wind_dir": "ENE",
+      "precip_pct": 0,
+      "humidity": 44,
+      "feels_like_f": 55
+    },
+    "Truist Park": {
+      "city": "Atlanta",
+      "temp_f": 64,
+      "conditions": "Overcast ",
+      "wind_mph": 9,
+      "wind_dir": "ENE",
+      "precip_pct": 0,
+      "humidity": 72,
+      "feels_like_f": 60
+    },
+    "Sutter Health Park": {
+      "city": "West Sacramento",
+      "temp_f": 78,
+      "conditions": "Overcast ",
+      "wind_mph": 2,
+      "wind_dir": "WSW",
+      "precip_pct": 0,
+      "humidity": 30,
+      "feels_like_f": 76
+    },
+    "T-Mobile Park": {
+      "city": "Seattle",
+      "temp_f": 56,
+      "conditions": "Smoky haze",
+      "wind_mph": 4,
+      "wind_dir": "N",
+      "precip_pct": 0,
+      "humidity": 66,
+      "feels_like_f": 53
+    },
+    "UNIQLO Field at Dodger Stadium": {
+      "city": "Los Angeles",
+      "temp_f": 74,
+      "conditions": "Smoky haze",
+      "wind_mph": 2,
+      "wind_dir": "SSW",
+      "precip_pct": 0,
+      "humidity": 62,
+      "feels_like_f": 77
+    }
+  },
+  "lineups": {
+    "STLPIT vs STL": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "Cooper HjerpeL1-0\u00a06.00 ERAPRIM",
+        "Confirmed Lineup",
+        "2BJ. WetherholtL",
+        "CIvan HerreraR",
+        "1BA. BurlesonL",
+        "RFJ. WalkerR",
+        "DHLeo BernalS",
+        "LFBryan TorresL",
+        "3BT. SaggeseR",
+        "CFN. ChurchL",
+        "SSMasyn WinnR",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Paul SkenesR10-11\u00a03.91 ERA",
+        "Confirmed Lineup",
+        "CFOneil CruzL",
+        "SSK. GriffinR",
+        "2BBrandon LoweL",
+        "DHRyan O'HearnL",
+        "3BN. GonzalesR",
+        "RFRonny SimonS",
+        "1BS. HorwitzL",
+        "LFJake MangumS",
+        "CHenry DavisR",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    },
+    "CWSKC vs CWS": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "David SandlinR2-2\u00a06.29 ERA",
+        "Confirmed Lineup",
+        "LFS. AntonacciL",
+        "CKyle TeelL",
+        "3BM. VargasR",
+        "1BM. MurakamiL",
+        "DHA. BenintendiL",
+        "CFT. PetersL",
+        "2BC. MeidrothR",
+        "SSC. MontgomeryL",
+        "RFB. MontgomeryS",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Randy DobnakR3-4\u00a03.08 ERA",
+        "Confirmed Lineup",
+        "CC. JensenL",
+        "SSBobby WittR",
+        "1BV. PasquantinoL",
+        "DHS. PerezR",
+        "2BM. MasseyL",
+        "3BNick LoftinR",
+        "RFJohn RaveL",
+        "CFKyle IsbelL",
+        "LFI. CollinsS",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    },
+    "MIACHC vs MIA": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "Tyler PhillipsR5-6\u00a03.45 ERA",
+        "Confirmed Lineup",
+        "SSOtto LopezR",
+        "LFH. HernandezR",
+        "CFJakob MarseeL",
+        "3BJ. SanojaR",
+        "DHA. RamirezR",
+        "RFEsteury RuizR",
+        "1BD. De Los SantosR",
+        "2BJared SernaR",
+        "CB. NavarretoR",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Matthew BoydL9-5\u00a04.06 ERA",
+        "Confirmed Lineup",
+        "CFP. Crow-ArmstrongL",
+        "RFSeiya SuzukiR",
+        "1BM. BuschL",
+        "DHM. ConfortoL",
+        "LFIan HappS",
+        "2BNico HoernerR",
+        "3BP. RamirezS",
+        "CCarson KellyR",
+        "SSD. SwansonR",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    },
+    "NYMTEX vs NYM": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "Zac ThorntonL5-5\u00a03.40 ERA",
+        "Confirmed Lineup",
+        "SSF. LindorS",
+        "DHJuan SotoL",
+        "3BBo BichetteR",
+        "RFCarson BengeL",
+        "1BBrett BatyL",
+        "2BM. SemienR",
+        "CFA.J. EwingL",
+        "CLuis TorrensR",
+        "LFN. MorabitoR",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Kumar RockerR5-11\u00a04.47 ERA",
+        "Confirmed Lineup",
+        "2BJ. FoscueR",
+        "SSCorey SeagerL",
+        "3BJosh JungR",
+        "1BJake BurgerR",
+        "RFB. NimmoL",
+        "LFW. LangfordR",
+        "CFE. DuranR",
+        "CElias DiazR",
+        "DHDanny JansenR",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    },
+    "ARICOL vs ARI": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "E. RodriguezL15-7\u00a02.89 ERA",
+        "Confirmed Lineup",
+        "LFL. NootbaarL",
+        "2BKetel MarteS",
+        "DHG. MorenoR",
+        "SSG. PerdomoS",
+        "1BPavin SmithL",
+        "3BN. ArenadoR",
+        "RFC. CarrollL",
+        "CJames McCannR",
+        "CFTim TawaR",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Tanner GordonR1-5\u00a06.01 ERA",
+        "Confirmed Lineup",
+        "LFJ. McCarthyL",
+        "2BConnor NorbyR",
+        "DHH. GoodmanR",
+        "1BTJ RumfieldL",
+        "CFCole CarriggS",
+        "3BKyle KarrosR",
+        "CB. SullivanL",
+        "RFJordan BeckR",
+        "SSE. TovarR",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    },
+    "MILPHI vs MIL": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "Bryse WilsonR0-0\u00a03.67 ERA",
+        "Expected Lineup",
+        "CFG. MitchellL",
+        "LFJ. ChourioR",
+        "2BBrice TurangL",
+        "CW. ContrerasR",
+        "1BJake BauersL",
+        "DHC. YelichL",
+        "3BJoey OrtizR",
+        "RFLuis LaraS",
+        "SSCooper PrattR",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Andrew PainterR3-10\u00a05.59 ERA",
+        "Expected Lineup",
+        "DHK. SchwarberL",
+        "SSTrea TurnerR",
+        "RFBryce HarperL",
+        "2BLuis ArraezL",
+        "1BAlec BohmR",
+        "LFEdmundo SosaR",
+        "CJ. RealmutoR",
+        "3BBryson StottL",
+        "CFDerek HillR",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    },
+    "CLEBOS vs CLE": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "Joey CantilloL10-9\u00a03.74 ERAPRIM",
+        "Expected Lineup",
+        "CFSteven KwanL",
+        "$3,500",
+        "3BJose RamirezS",
+        "$5,300",
+        "DHC. DeLauterL",
+        "$4,100",
+        "RFJo AdellR",
+        "$3,700",
+        "LFA. MartinezS",
+        "$4,200",
+        "1BDavid FryR",
+        "$2,400",
+        "2BAngel GenaoS",
+        "$2,600",
+        "CA. HedgesR",
+        "$3,000",
+        "SSB. RocchioS",
+        "$3,600",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Ranger SuarezL8-4\u00a03.27 ERA",
+        "Expected Lineup",
+        "LFR. AnthonyL",
+        "$4,400",
+        "DHJahmai JonesR",
+        "$2,300",
+        "RFWilyer AbreuL",
+        "$5,100",
+        "1BW. ContrerasR",
+        "$4,600",
+        "CA. RutschmanS",
+        "$4,000",
+        "SSTrevor StoryR",
+        "$3,100",
+        "CFJarren DuranL",
+        "$3,500",
+        "3BCaleb DurbinR",
+        "$3,100",
+        "2BNick SogardS",
+        "$3,300",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    },
+    "TBNYY vs TB": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "Ian SeymourL9-7\u00a04.38 ERA",
+        "Expected Lineup",
+        "DHYandy DiazR",
+        "$4,300",
+        "1BJ. ArandaL",
+        "$4,100",
+        "3BJ. CamineroR",
+        "$6,300",
+        "CLiam HicksL",
+        "$4,100",
+        "RFVictor MesaL",
+        "$3,700",
+        "LFC. SimpsonL",
+        "$3,300",
+        "2BR. PalaciosL",
+        "$3,200",
+        "CFC. MullinsL",
+        "$3,800",
+        "SSTaylor WallsS",
+        "$3,100",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Cam SchlittlerR14-6\u00a01.94 ERA",
+        "Expected Lineup",
+        "DHBen RiceL",
+        "$5,600",
+        "LFC. BellingerL",
+        "$4,500",
+        "1BLuis GarciaL",
+        "$5,000",
+        "CFS. JonesL",
+        "$3,500",
+        "SSG. LombardR",
+        "$2,800",
+        "2BJ. ChisholmL",
+        "$4,200",
+        "RFHeliot RamosR",
+        "$3,000",
+        "CAustin WellsL",
+        "$2,300",
+        "3BRyan McMahonL",
+        "$2,500",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    },
+    "CINATL vs CIN": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "Brady SingerR6-15\u00a05.67 ERA",
+        "Expected Lineup",
+        "CFCarlos JorgeL",
+        "$2,600",
+        "SSE. De La CruzS",
+        "$6,100",
+        "1BSal StewartR",
+        "$5,100",
+        "LFJJ BledayL",
+        "$3,900",
+        "CT. StephensonR",
+        "$3,300",
+        "DHE. SuarezR",
+        "$4,100",
+        "RFH. RodriguezL",
+        "$3,100",
+        "2BMatt McLainR",
+        "$3,600",
+        "3BK. HayesR",
+        "$2,200",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Tyler MahleR7-10\u00a03.81 ERA",
+        "Expected Lineup",
+        "CD. BaldwinL",
+        "$4,700",
+        "RFRonald AcunaR",
+        "$5,800",
+        "1BMatt OlsonL",
+        "$5,300",
+        "CFM. HarrisL",
+        "$4,200",
+        "LFM. DubonR",
+        "$3,400",
+        "3BAustin RileyR",
+        "$3,400",
+        "DHM. YastrzemskiL",
+        "$2,700",
+        "2BOzzie AlbiesS",
+        "$3,800",
+        "SSHa-Seong KimR",
+        "$2,100",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    },
+    "HOUATH vs HOU": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "Peter LambertR8-10\u00a03.70 ERA",
+        "Expected Lineup",
+        "SSJeremy PenaR",
+        "$5,200",
+        "DHY. AlvarezL",
+        "$6,500",
+        "3BI. ParedesR",
+        "$4,600",
+        "2BJose AltuveR",
+        "$4,400",
+        "CYainer DiazR",
+        "$3,900",
+        "CFD. VarshoL",
+        "$3,700",
+        "1BC. WalkerR",
+        "$4,000",
+        "LFT. TrammellL",
+        "$3,400",
+        "RFCam SmithR",
+        "$3,800",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Mason BarnettR1-4\u00a07.16 ERA",
+        "Expected Lineup",
+        "CFHenry BolteR",
+        "$4,700",
+        "1BJeff McNeilL",
+        "$3,700",
+        "DHS. LangeliersR",
+        "$5,400",
+        "RFL. ButlerL",
+        "$4,200",
+        "3BZack GelofR",
+        "$5,700",
+        "2BD. WaltonL",
+        "$3,400",
+        "LFC. CortesL",
+        "$3,200",
+        "CJonah HeimS",
+        "$3,400",
+        "SSA. WilliamsR",
+        "$2,600",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    },
+    "LAASEA vs LAA": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "G. RodriguezR4-8\u00a05.96 ERA",
+        "Expected Lineup",
+        "SSZach NetoR",
+        "$4,900",
+        "DHMike TroutR",
+        "$5,000",
+        "LFWade MecklerL",
+        "$3,800",
+        "1BV. GrissomR",
+        "$3,900",
+        "CM. BallesterosL",
+        "$3,200",
+        "3BD. GuzmanR",
+        "$2,700",
+        "RFJosh LoweL",
+        "$2,800",
+        "CFJose SiriR",
+        "$3,500",
+        "2BC. MooreR",
+        "$2,400",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Bryan WooR12-9\u00a03.92 ERA",
+        "Expected Lineup",
+        "SSJ. CrawfordL",
+        "$3,500",
+        "LFR. ArozarenaR",
+        "$5,500",
+        "DHD. CanzoneL",
+        "$4,100",
+        "CCal RaleighS",
+        "$4,800",
+        "CFJ. RodriguezR",
+        "$4,400",
+        "1BJosh NaylorL",
+        "$3,800",
+        "2BCole YoungL",
+        "$3,200",
+        "RFL. MontesL",
+        "$3,600",
+        "3BBrock RoddenS",
+        "$2,400",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    },
+    "SDLAD vs SD": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "Nick PivettaR3-2\u00a03.30 ERA",
+        "Expected Lineup",
+        "2BF. TatisR",
+        "$6,200",
+        "RFD. HarrisL",
+        "$3,300",
+        "DHM. MachadoR",
+        "$5,200",
+        "1BTy FranceR",
+        "$4,200",
+        "CFJ. MerrillL",
+        "$4,900",
+        "SSX. BogaertsR",
+        "$3,900",
+        "CL. CampusanoR",
+        "$3,700",
+        "3BJ. CronenworthL",
+        "$3,500",
+        "LFSamad TaylorR",
+        "$4,000",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Tyler GlasnowR5-1\u00a03.46 ERA",
+        "Expected Lineup",
+        "DHS. OhtaniL",
+        "$6,000",
+        "SSMookie BettsR",
+        "$5,500",
+        "1BF. FreemanL",
+        "$5,400",
+        "3BMax MuncyL",
+        "$4,800",
+        "CWill SmithR",
+        "$4,200",
+        "RFKyle TuckerL",
+        "$4,600",
+        "LFT. HernandezR",
+        "$4,800",
+        "CFAndy PagesR",
+        "$4,500",
+        "2BTommy EdmanS",
+        "$4,400",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    }
+  }
+}
