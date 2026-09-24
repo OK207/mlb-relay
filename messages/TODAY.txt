@@ -1,11 +1,8 @@
-MLB Picks - September 23
+Results September 23:
+  W  Brewers ML -130 | 2u -> +1.54u
+  L  Tigers ML -178 | 1u -> -1.00u
+Day P&L: +0.54u (1W-1L)
 
-HIGH CONFIDENCE
-Brewers ML -130 vs Phillies | Bet 2u -> Win 1.54u
-Logan Henderson (2.51 ERA) vs Aaron Nola (4.49 ERA). Milwaukee owns the best record in baseball (98-58) against a fading Phillies club (86-70), and Nola has pitched to a below-average tier all season - the SP gap and team-quality gap both point the same direction.
+MLB Picks - September 24 - No strong plays today.
 
-VALUE PLAYS
-Tigers ML -178 vs Nationals | Bet 1u -> Win 0.56u
-Framber Valdez (2.86 ERA over last 8 starts) vs a Washington bullpen day opened by Richard Lovelady. Detroit rested ace Cade Cavalli for Friday and instead gets a start from its offseason free-agent addition against a piggyback pitching plan; Detroit has held favorite status across books all day despite some price disagreement.
-
-Skipped: 14 games - Cardinals/Pirates: Liberatore's ERA is over 5.00 but Pittsburgh's price already reflects that gap, no edge. Diamondbacks/Rockies: Coors Field without a confirmed elite SP - auto-skip. Blue Jays/Orioles (DH), Twins/Giants, Rays/Yankees, Guardians/Red Sox, Reds/Braves, White Sox/Royals, Marlins/Cubs, Mets/Rangers, Angels/A's, Padres/Dodgers, Astros/Mariners: full data blackout - every sports-data domain (MLB Stats API, ESPN, MLB.com, RotoWire, OddsShark, Baseball Savant) was blocked at the network egress proxy today; only WebSearch summaries were reachable and did not return confirmed lineups, umpire tendencies, or reliable single-book pricing for these games - no basis to size an edge.
+Skipped: full data blackout - the daily data bundle (data/2026-09-24.json) did not land after an 18-minute retry, and every primary data source (statsapi.mlb.com, mlb.com, espn.com, covers.com, betmgm.com) returned EGRESS_BLOCKED from this environment's network proxy - not 403s, outright connection rejections. WebSearch fallback surfaced only two matchups (Angels/Mariners, Astros/Athletics) via betting-preview snippets, and even those were unreliable (one snippet paired a real-world Orioles pitcher's name with the Angels) - not a verified game list, confirmed lineups, live odds, or umpire assignments for any game. Per the pre-pick checklist, no picks were published rather than risk fabricated matchups or lines.
