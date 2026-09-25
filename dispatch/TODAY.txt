@@ -1,8 +1,3 @@
-Results September 23:
-  W  Brewers ML -130 | 2u -> +1.54u
-  L  Tigers ML -178 | 1u -> -1.00u
-Day P&L: +0.54u (1W-1L)
+MLB Picks - September 25 - No strong plays today.
 
-MLB Picks - September 24 - No strong plays today.
-
-Skipped: full data blackout - the daily data bundle (data/2026-09-24.json) did not land after an 18-minute retry, and every primary data source (statsapi.mlb.com, mlb.com, espn.com, covers.com, betmgm.com) returned EGRESS_BLOCKED from this environment's network proxy - not 403s, outright connection rejections. WebSearch fallback surfaced only two matchups (Angels/Mariners, Astros/Athletics) via betting-preview snippets, and even those were unreliable (one snippet paired a real-world Orioles pitcher's name with the Angels) - not a verified game list, confirmed lineups, live odds, or umpire assignments for any game. Per the pre-pick checklist, no picks were published rather than risk fabricated matchups or lines.
+Skipped: full data blackout - the daily data bundle (data/2026-09-25.json) did not land after an 18-minute retry, and every primary data source (statsapi.mlb.com, mlb.com, espn.com, baseball-reference.com) returned EGRESS_BLOCKED from this environment's network proxy - not 403s, outright connection rejections. WebSearch fallback returned internally contradictory game lists across separate queries and at least one outright fabricated pitcher assignment (attributed Detroit's Tarik Skubal to the Dodgers) - not a verified game list, confirmed lineups, live odds, or umpire assignments for any game. Per the pre-pick checklist, no picks were published rather than risk fabricated matchups or lines.
