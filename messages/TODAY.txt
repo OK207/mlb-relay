@@ -1,7 +1,6 @@
-MLB Picks - September 27
+Results September 27:
+  W  Astros ML -190 | 2u -> +1.05u
+Day P&L: +1.05u (1W-0L)
 
-HIGH CONFIDENCE
-Astros ML -190 vs Athletics | Bet 2u -> Win 1.05u
-Peter Lambert (3.87 ERA) vs an Athletics bullpen game led by opener Seth Johnson (6.19 ERA). Astros clinch the AL West outright with a win today and avoid the win-or-go-home wild card game; A's finished 61-94, last place, nothing to play for, with a bullpen that was the roster's weak point all season. Clean weather at Sutter Health Park (sunny, light wind, no rain) removes any variance concern.
-
-Skipped: 14 games - Rays/Phillies (steady rain and crosswind at Citizens Bank Park, Wheeler 3.06 ERA vs Martinez 2.94 ERA is a wash, Phillies on a 4-game skid, no clear edge despite the clinch stakes); Diamondbacks/Padres (high stakes but odds/SP/lineup data unavailable within budget); Mariners/Angels, Mets/Nationals, Pirates/Tigers, Orioles/Yankees, Cardinals/Brewers, Rockies/Cubs, Rangers/Twins, and remaining games - full stats blackout continued for a 4th straight day (MLB Stats API, MLB.com, ESPN, Baseball Savant all returned EGRESS_BLOCKED/403 at the proxy), and season-finale roster uncertainty (clinched teams resting regulars, September call-ups) made unverified lineups too risky to price.
+MLB Picks - September 28
+No games scheduled today. The 2026 regular season ended September 27; the postseason (Wild Card Series) begins September 29.
