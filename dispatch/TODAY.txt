@@ -1,17 +1,21 @@
-MLB Picks - September 29
+Results September 29:
+W  Braves ML -196 | 2u -> +1.02u
+W  White Sox ML +106 | 1u -> +1.06u
+L  Red Sox ML +120 | 0.5u -> -0.5u
+Day P&L: +1.58u (2W-1L)
 
-Note: Today is AL/NL Wild Card Series Game 1 (postseason), not a regular-season slate.
+MLB Picks - September 30
 
 HIGH CONFIDENCE
-Braves ML -196 vs Phillies | Bet 2u -> Win 1.02u
-Chris Sale (2.16 ERA, elite form) vs Jesus Luzardo, who just returned from a shoulder IL stint and threw only 1 inning in his comeback appearance Sunday with an uncertain workload cap. Phillies likely need a near-immediate bullpen game against a stacked Braves lineup at Truist Park - that health risk is not fully priced into the -196 line.
+Padres ML -136 vs Cubs | Bet 2u -> Win 1.47u
+Nick Pivetta (2.86 ERA, 1.42 ERA last 7 starts) vs Kevin Gausman (4.51 ERA, 5.40 ERA on the road). Padres crushed Cubs 8-0 in Game 1 on a near no-hitter and explosive offense; Gausman is a well below-average road starter facing a red-hot lineup in an elimination spot for Chicago. Clear SP tier gap plus momentum.
 
 VALUE PLAYS
-White Sox ML +106 vs Astros | Bet 1u -> Win 1.06u
-Both teams are running bullpen games, but Chicago's pen ranked 8th in MLB (3.70 ERA, led the majors in relief innings) vs Houston's 17th-ranked pen (4.08 ERA, inconsistent all year). Hagen Smith (1.29 ERA) opens for the Sox - the market has Houston favored on name value and home field, not on the actual bullpen matchup.
+Yankees ML -139 vs Red Sox | Bet 1u -> Win 0.72u
+Max Fried (2.48 xERA) vs Sonny Gray (2.72 ERA, 2.37 ERA last 5 starts). Close SP matchup, but Yankees bring a fresh bullpen after a 9-0 Game 1 blowout and a deep power lineup at home in calm conditions. Elimination game for Boston.
 
 LEAN
-Red Sox ML +120 vs Yankees | Bet 0.5u -> Win 0.6u
-Aaron Judge (sore calf) is off the Yankees roster for this series, and Payton Tolle has been excellent since August (2.52 ERA, 31.8% K rate) opposite Cam Schlittler's Cy Young-caliber season. Plus-money dog with real offsetting factors; high variance.
+White Sox ML +128 vs Astros | Bet 0.5u -> Win 0.64u
+Sean Burke (2.76 ERA since the break, 5 straight quality starts, already beat Houston 9/2) vs Hunter Brown (2.43 ERA last 6 starts). Plus-money value with comparable recent SP form and both bullpens equally taxed from Game 1 bullpen games; high variance road elimination spot.
 
-Skipped: 1 game - Cubs/Padres: no differentiated edge found; Petco Park favors King at home and the -128/+107 line already reflects that fairly.
+Skipped: 1 game - Phillies/Braves (odds near even at -106/-114, no clear SP or contextual edge identified)
