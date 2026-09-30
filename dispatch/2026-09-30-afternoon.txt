@@ -1,0 +1,17 @@
+MLB Afternoon - September 30 - No new plays. Morning card covers the slate.
+
+Slate: 4 Wild Card Series Game 2s today.
+Morning card already covers: White Sox @ Astros (White Sox ML), Red Sox @ Yankees (Yankees ML), Cubs @ Padres (Padres ML).
+
+Uncovered game: Phillies @ Braves (2 PM ET, Truist Park)
+- C. Sanchez (LHP, K/9=10.0) vs T. Mahle (RHP, ERA 1.99 last 8 starts)
+- PHI -117 (implied 53.9%) | ATL -102 (implied 50.5%)
+- Model: ~52% PHI / ~48% ATL. Both sides negative edge vs market. Skip.
+- Note: PHI trailing series 0-1 (Braves -310 series favorite). Lineup change flagged (unknown scratches).
+
+K Props: No qualifying plays.
+- Gausman Over 4.5 (CHC/Padres game): Skip - correlated with 2u Padres ML in morning card.
+- Sanchez K Over 6.5: Mean 6.6 K, edge_over -2.2% (Pass tier). HP umpire for Game 2 unconfirmed (hard gate fail).
+- Mahle Under 4.5: Edge_under -3.8% (Pass tier) after -140 juice. Below-avg K pitcher, line ineligible at fair value.
+
+No Play: Phillies ML (-1.9% edge), Braves ML (-2.5% edge), all K props (gate failures or sub-threshold edges).
