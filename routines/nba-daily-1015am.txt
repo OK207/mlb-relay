@@ -65,7 +65,41 @@ WebFetch https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard
 Extract: all games scheduled today, tip times, home/away teams with records, venue.
 If no games today: stop, send "NBA Picks - [date] - No games today."
 
-STEP 2 - DRAFTKINGS ODDS (1 call):
+STEP 2 - DRAFTKINGS ODDS (try The Odds API first, then scrape):
+First check The Odds API quota (free — does not use credits):
+python3 -c "
+import os, json, urllib.request
+key = os.environ.get('ODDS_API_KEY')
+out = {'available': False, 'remaining': None}
+if key:
+    try:
+        req = urllib.request.Request('https://api.the-odds-api.com/v4/sports/?apiKey=' + key)
+        with urllib.request.urlopen(req, timeout=10) as r:
+            out['remaining'] = int(r.headers.get('x-requests-remaining', '0'))
+        out['available'] = out['remaining'] > 10
+    except Exception as e:
+        out['error'] = str(e)
+print(json.dumps(out))
+"
+If ODDS_API_KEY is unset, the call errored, or available is false: skip straight
+to the WebFetch fallback below.
+
+If available: fetch the day's NBA moneylines, spreads and totals in one call
+(3 credits total, covers every game on the slate):
+python3 -c "
+import os, urllib.request
+key = os.environ.get('ODDS_API_KEY')
+url = ('https://api.the-odds-api.com/v4/sports/basketball_nba/odds/?apiKey='
+       + key + '&bookmakers=draftkings,fanduel&markets=h2h,spreads,totals&oddsFormat=american')
+with urllib.request.urlopen(urllib.request.Request(url), timeout=15) as r:
+    print(r.read().decode())
+"
+Match each returned event to a game by home_team/away_team. Prefer the
+'draftkings' bookmaker's outcomes; use 'fanduel' only if draftkings has no
+line for that game. If the call errors, or a game has no bookmaker data, fall
+back to the WebFetch method below for that game only.
+
+Fallback (Odds API unavailable or failed):
 WebFetch https://www.covers.com/sport/basketball/nba/odds
 Extract for each game: ML (home + away), spread (home line), game total (O/U line).
 If Covers fails: try https://www.actionnetwork.com/nba/odds

@@ -197,10 +197,47 @@
    include its game label (e.g. "[G3] Reds vs Nationals").
   - If no games scheduled, stop and send nothing.
 
-  STEP 2 - ODDS (skip if bundle available, otherwise 1-2 calls):
+  STEP 2 - ODDS (skip if bundle available, otherwise try The Odds API, then scrape):
   If BUNDLE['odds'] is non-empty: use bundle odds (away_ml/home_ml per game).
-  Skip web call.
-  Otherwise — Primary: WebFetch https://www.oddsshark.com/mlb/odds
+  Skip this entire step.
+
+  Otherwise, first check The Odds API quota (free — does not use credits):
+  python3 -c "
+  import os, json, urllib.request
+  key = os.environ.get('ODDS_API_KEY')
+  out = {'available': False, 'remaining': None}
+  if key:
+      try:
+          req = urllib.request.Request('https://api.the-odds-api.com/v4/sports/?apiKey=' + key)
+          with urllib.request.urlopen(req, timeout=10) as r:
+              out['remaining'] = int(r.headers.get('x-requests-remaining', '0'))
+          out['available'] = out['remaining'] > 10
+      except Exception as e:
+          out['error'] = str(e)
+  print(json.dumps(out))
+  "
+  If ODDS_API_KEY is unset, the call errored, or available is false: skip straight
+  to the WebFetch fallback below — do not treat this as an error, it's expected
+  until the key is configured or when quota is nearly exhausted.
+
+  If available: fetch the day's MLB moneylines and spreads in one call
+  (2 credits total, covers every game on the slate):
+  python3 -c "
+  import os, urllib.request
+  key = os.environ.get('ODDS_API_KEY')
+  url = ('https://api.the-odds-api.com/v4/sports/baseball_mlb/odds/?apiKey='
+         + key + '&bookmakers=draftkings,fanduel&markets=h2h,spreads&oddsFormat=american')
+  with urllib.request.urlopen(urllib.request.Request(url), timeout=15) as r:
+      print(r.read().decode())
+  "
+  Match each returned event to GAME LIST by home_team/away_team. For each game,
+  prefer the 'draftkings' bookmaker's h2h and spreads outcomes; use 'fanduel'
+  only if draftkings has no line for that game. If the call errors, or a
+  specific game has no bookmaker data, fall back to the WebFetch method below
+  for that game only — do not fail the whole step over one missing game.
+
+  Fallback (bundle unavailable AND Odds API unavailable/failed):
+  Primary: WebFetch https://www.oddsshark.com/mlb/odds
   If 403 or error: WebSearch "MLB moneyline odds TODAY DraftKings
   site:sportsbookreview.com OR site:oddsshark.com"
   Extract ML, RL, and game totals for every game. Note any significant line

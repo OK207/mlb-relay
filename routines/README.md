@@ -94,6 +94,38 @@ from the local clone instead.
   and UFC grades live at `picks/ufc/grades/<date>.json`. Both workflows
   unwrap the former and special-case the latter.
 
+## The Odds API (optional, added 2026-09-30)
+
+MLB, NBA and UFC odds steps now try [The Odds API](https://the-odds-api.com)
+before falling back to WebFetch/WebSearch scraping. This is opt-in: if
+`ODDS_API_KEY` isn't set in the routine's environment variables, every step
+silently skips straight to the existing scrape/WebSearch path — no behavior
+change, no error.
+
+**Why:** one call returns DraftKings' (and FanDuel's) odds for the *entire*
+day's slate as structured JSON, instead of scraping oddsshark/covers.com or
+falling back to WebSearch. Free tier is 500 credits/month, reset on the 1st
+of each calendar month; `h2h`/`spreads`/`totals` cost 1 credit per market
+(e.g. `markets=h2h,spreads` = 2 credits for every game that day).
+
+**Budget pacing:** player props (MLB K props) are billed per *event*, not
+per day, so they can burn through the monthly quota much faster than the
+bulk moneyline/spread calls. Every odds step checks `x-requests-remaining`
+(via a free, quota-exempt call to `/v4/sports`) before spending credits:
+- Bulk h2h/spreads/totals calls run whenever remaining credits are above a
+  small floor (10) — cheap enough (~200/month across all three sports) that
+  they're effectively always on.
+- Props calls additionally require being *on pace* for an even 500-credits-
+  across-the-month budget (`remaining >= 500 * days_left_in_month / days_in_month`).
+  If usage has run ahead of pace, props fall back to the existing
+  WebSearch-based method for the rest of the month rather than exhausting
+  the quota early — the point is to make the free tier last the whole month,
+  not front-load it.
+
+If a specific game/fighter/pitcher has no bookmaker line in the API response,
+that one entry falls back to the scrape/WebSearch method rather than failing
+the whole step.
+
 ## Backfill status (as of 2026-08-01)
 
 Delivery was broken from 6/18 onward, so picks stopped being recorded. What has

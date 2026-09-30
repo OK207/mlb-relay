@@ -73,9 +73,45 @@ If event found:
 Save event name as UFC_EVENT and fight card as UFC_CARD for subsequent steps.
 
 ===================================================
-STEP 2 - ODDS (1 web call)
+STEP 2 - ODDS (try The Odds API first, then scrape)
 ===================================================
 
+First check The Odds API quota (free — does not use credits):
+python3 -c "
+import os, json, urllib.request
+key = os.environ.get('ODDS_API_KEY')
+out = {'available': False, 'remaining': None}
+if key:
+    try:
+        req = urllib.request.Request('https://api.the-odds-api.com/v4/sports/?apiKey=' + key)
+        with urllib.request.urlopen(req, timeout=10) as r:
+            out['remaining'] = int(r.headers.get('x-requests-remaining', '0'))
+        out['available'] = out['remaining'] > 10
+    except Exception as e:
+        out['error'] = str(e)
+print(json.dumps(out))
+"
+If ODDS_API_KEY is unset, the call errored, or available is false: skip straight
+to the WebFetch fallback below.
+
+If available: fetch fight-winner moneylines for the whole card in one call
+(1 credit total):
+python3 -c "
+import os, urllib.request
+key = os.environ.get('ODDS_API_KEY')
+url = ('https://api.the-odds-api.com/v4/sports/mma_mixed_martial_arts/odds/?apiKey='
+       + key + '&bookmakers=draftkings,fanduel&markets=h2h&oddsFormat=american')
+with urllib.request.urlopen(urllib.request.Request(url), timeout=15) as r:
+    print(r.read().decode())
+"
+Match each returned event to a fight on UFC_CARD by home_team/away_team
+(fighter names). Prefer the 'draftkings' bookmaker's h2h outcomes; use
+'fanduel' only if draftkings has no line for that fight. Method-of-victory
+odds are not in this call (coverage is limited) — use the WebFetch fallback
+below for those if wanted. If the call errors, or a fight has no bookmaker
+data, fall back to the WebFetch method below for that fight only.
+
+Fallback (Odds API unavailable or failed):
 WebFetch https://www.covers.com/sport/mma/ufc/odds
 
 Extract for every fight on UFC_CARD:

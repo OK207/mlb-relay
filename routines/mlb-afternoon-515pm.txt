@@ -47,7 +47,41 @@ SP K% defaults:
 
 ---
 
-STEP 2 - ODDS (1-2 web calls):
+STEP 2 - ODDS (try The Odds API first, then scrape):
+First check The Odds API quota (free — does not use credits):
+python3 -c "
+import os, json, urllib.request
+key = os.environ.get('ODDS_API_KEY')
+out = {'available': False, 'remaining': None}
+if key:
+    try:
+        req = urllib.request.Request('https://api.the-odds-api.com/v4/sports/?apiKey=' + key)
+        with urllib.request.urlopen(req, timeout=10) as r:
+            out['remaining'] = int(r.headers.get('x-requests-remaining', '0'))
+        out['available'] = out['remaining'] > 10
+    except Exception as e:
+        out['error'] = str(e)
+print(json.dumps(out))
+"
+If ODDS_API_KEY is unset, the call errored, or available is false: skip straight
+to the WebFetch fallback below.
+
+If available: fetch the day's MLB moneylines, spreads and totals in one call
+(3 credits total, covers every game on the slate):
+python3 -c "
+import os, urllib.request
+key = os.environ.get('ODDS_API_KEY')
+url = ('https://api.the-odds-api.com/v4/sports/baseball_mlb/odds/?apiKey='
+       + key + '&bookmakers=draftkings,fanduel&markets=h2h,spreads,totals&oddsFormat=american')
+with urllib.request.urlopen(urllib.request.Request(url), timeout=15) as r:
+    print(r.read().decode())
+"
+Match each returned event to a game by home_team/away_team. Prefer the
+'draftkings' bookmaker's outcomes; use 'fanduel' only if draftkings has no
+line for that game. If the call errors, or a game has no bookmaker data, fall
+back to the WebFetch method below for that game only.
+
+Fallback (Odds API unavailable or failed):
 Primary: WebFetch https://www.oddsshark.com/mlb/odds
 If 403 or error: WebSearch "MLB moneyline odds TODAY DraftKings site:sportsbookreview.com OR site:oddsshark.com"
 Extract ML, RL, and totals for ALL games. Note line movement where visible.
@@ -86,11 +120,66 @@ Umpire K-tendency adj: known K-friendly = +0.010; known run-friendly = -0.010; u
 
 ---
 
-STEP 5 - K PROP LINES (1-2 web calls):
+STEP 5 - K PROP LINES (try The Odds API first, then WebSearch):
+Player props cost credits per EVENT (not one bulk call for the whole day like
+STEP 2), so this step is paced separately and more conservatively — it must
+stay on pace with an even 500-credits-across-the-month budget, not just clear
+a low floor, so the free tier lasts the whole month instead of running out
+early from props alone.
+
+First check quota AND pace (free call — does not use credits):
+python3 -c "
+import os, json, urllib.request, datetime, calendar
+key = os.environ.get('ODDS_API_KEY')
+out = {'pace_ok': False, 'remaining': None}
+if key:
+    try:
+        req = urllib.request.Request('https://api.the-odds-api.com/v4/sports/?apiKey=' + key)
+        with urllib.request.urlopen(req, timeout=10) as r:
+            remaining = int(r.headers.get('x-requests-remaining', '0'))
+        today = datetime.date.today()
+        days_in_month = calendar.monthrange(today.year, today.month)[1]
+        days_left = days_in_month - today.day + 1
+        expected_remaining = 500 * (days_left / days_in_month)
+        out['remaining'] = remaining
+        out['pace_ok'] = remaining > 10 and remaining >= expected_remaining
+    except Exception as e:
+        out['error'] = str(e)
+print(json.dumps(out))
+"
+If ODDS_API_KEY is unset, the call errored, or pace_ok is false: skip straight
+to the WebSearch fallback below — this is the expected, normal way quota gets
+conserved later in the month, not an error.
+
+If pace_ok: look up event IDs for today's slate (free — does not use credits):
+python3 -c "
+import os, urllib.request
+key = os.environ.get('ODDS_API_KEY')
+url = 'https://api.the-odds-api.com/v4/sports/baseball_mlb/events/?apiKey=' + key
+with urllib.request.urlopen(urllib.request.Request(url), timeout=10) as r:
+    print(r.read().decode())
+"
+Match each K prop candidate's game to its event id by home_team/away_team.
+Then for each candidate (one call per pitcher, 1 credit each):
+python3 -c "
+import os, urllib.request
+key = os.environ.get('ODDS_API_KEY')
+event_id = 'EVENT_ID_HERE'   # substitute the matched event id
+url = ('https://api.the-odds-api.com/v4/sports/baseball_mlb/events/' + event_id
+       + '/odds?apiKey=' + key + '&bookmakers=draftkings,fanduel&markets=pitcher_strikeouts&oddsFormat=american')
+with urllib.request.urlopen(urllib.request.Request(url), timeout=15) as r:
+    print(r.read().decode())
+"
+Prefer the 'draftkings' bookmaker's line; use 'fanduel' only if draftkings has
+no line for that pitcher. If a candidate's event has no pitcher_strikeouts
+market (coverage is limited to select games), fall back to WebSearch for that
+candidate only.
+
+Fallback (pace_ok false, Odds API unavailable, or a specific candidate has no line):
 WebSearch "MLB pitcher strikeout props today over under DraftKings TODAY [names of K prop candidates]"
 If the search returns thin results: WebSearch "[SP1 name] strikeout prop TODAY" individually for top 1-2 candidates.
 
-For each K prop candidate: extract K over/under line, over price, under price from the search results.
+For each K prop candidate: extract K over/under line, over price, under price from whichever source was used above.
 If NO confirmed line found for a candidate: mark SP as No Line - No Play. Do NOT publish without a confirmed line.
 If no K prop data found at all: mark ALL K prop candidates as No Line - No Play and skip K props entirely.
 
