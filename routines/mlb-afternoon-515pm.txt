@@ -2,6 +2,14 @@ IMPORTANT: If any WebFetch call returns HTTP 403 or connection error, do NOT sto
 
 Run bash to get today's date as YYYY-MM-DD (TODAY).
 
+CRITICAL - READ BEFORE TOUCHING ANY FILE PATH: TODAY is a placeholder for the date
+string you just computed. Every time this prompt writes TODAY inside a file path
+below, substitute the real date (e.g. picks/TODAY.json means picks/2026-09-30.json).
+Never write or read a file literally named TODAY.json or TODAY-afternoon.txt — the
+repo's Sheets-logging workflow (sheets.yml) only recognizes filenames matching
+YYYY-MM-DD.json and silently does nothing for any other name. This has already
+caused weeks of picks to go unlogged to the Sheet without any error.
+
 You are running the MLB afternoon session. Budget: 8 web calls. Use WebSearch as the fallback for any WebFetch that returns 403 — WebSearch is not blocked from this environment. This session does TWO things:
 1. Evening ML picks: for games NOT already picked by the morning card (confirmed lineups available now)
 2. K props: pitcher strikeout props for qualifying SPs
@@ -13,7 +21,7 @@ Do NOT re-pick games already in the morning card. Do NOT revisit morning picks.
 STEP 0 - READ MORNING PICKS (0 web calls - local git clone, no token):
 
 cd /home/user/mlb-relay && git checkout -q main && git fetch -q origin main && git reset -q --hard origin/main
-cat picks/TODAY.json 2>/dev/null || echo NO_PICKS_FILE
+cat picks/TODAY.json 2>/dev/null || echo NO_PICKS_FILE   # use the real TODAY date, e.g. picks/2026-09-30.json
 
 Save as TODAY_PICKS (NO_PICKS_FILE means the morning card logged nothing).
 Extract team names already picked (e.g. 'Dodgers ML' -> 'Dodgers'). Games with
@@ -205,10 +213,12 @@ If nothing qualifies at all: 'MLB Afternoon - [Month Day] - No new plays. Mornin
 
 STEP 9 - ADD NEW PICKS TO TODAY'S PICKS FILE (0 web calls - only if new picks exist):
 
-The morning card already wrote /home/user/mlb-relay/picks/TODAY.json. Read it, append
-today's new afternoon picks to that JSON array, and write the combined array
-back to the same path with the Write tool. Do not drop the morning entries.
-If the file does not exist yet, create it with just the new picks.
+The morning card already wrote /home/user/mlb-relay/picks/TODAY.json — the real
+dated file, e.g. /home/user/mlb-relay/picks/2026-09-30.json. Read that exact
+dated file, append today's new afternoon picks to that JSON array, and write the
+combined array back to the SAME dated path with the Write tool. Do not drop the
+morning entries, and do not write a separate file literally named TODAY.json.
+If the file does not exist yet, create it at the dated path with just the new picks.
 Do not commit yet - STEP 10 pushes everything at once.
 
 ML bet name format: '[Nickname] ML' e.g. {"bet":"Dodgers ML","odds":-128,"units":1.0}
@@ -268,7 +278,7 @@ TG
    the record but not the message:
 cd /home/user/mlb-relay
 git add -A picks grades dispatch messages
-git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -m "afternoon: TODAY"
+git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -m "afternoon: TODAY"   # use the real date in the message, e.g. "afternoon: 2026-09-30"
 git push origin main || git push origin HEAD:claude/auto
 
 7. In your final response state: whether the text went directly or via the

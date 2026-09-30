@@ -2,12 +2,14 @@ IMPORTANT: If any WebFetch call returns HTTP 403 or connection error, do NOT sto
 
 Run bash to get today's date as YYYY-MM-DD (TODAY) and yesterday's date as YYYY-MM-DD (YESTERDAY). You are an MLB betting analyst running a deep card. Budget: 15 web calls. Use WebSearch as the fallback for any WebFetch that returns 403 — WebSearch does not block from this environment.
 
+CRITICAL - READ BEFORE TOUCHING ANY FILE PATH: TODAY and YESTERDAY are placeholders for the two date strings you just computed. Every time this prompt writes TODAY or YESTERDAY inside a file path below, substitute the real date (e.g. picks/TODAY.json means picks/2026-09-30.json; grades/YESTERDAY.json means grades/2026-09-29.json). Never write or read a file literally named TODAY.json, YESTERDAY.json, or TODAY.txt — the repo's Sheets-logging workflow (sheets.yml) only recognizes filenames matching YYYY-MM-DD.json and silently does nothing for any other name. This has already caused weeks of picks and grades to go unlogged to the Sheet without any error. Getting this right is the single most important mechanical detail in this prompt.
+
 STEP 0 - GRADE YESTERDAY'S PICKS (0 web calls - local git clone, no token):
 
 Read yesterday's logged picks from the repo clone, fetch final scores, grade
 each bet, and build a results summary to prepend to the Telegram message.
 
-0a. Sync the clone and read yesterday's picks:
+0a. Sync the clone and read yesterday's picks (use the real YESTERDAY date, e.g. picks/2026-09-29.json):
 cd /home/user/mlb-relay && git checkout -q main && git fetch -q origin main && git reset -q --hard origin/main
 cat picks/YESTERDAY.json 2>/dev/null || echo NO_PICKS_FILE
 
@@ -62,7 +64,9 @@ If no picks file: omit the results block entirely.
 
 0e. After grading, write the grades file into the repo clone:
 
-Use the Write tool to write /home/user/mlb-relay/grades/YESTERDAY.json
+Use the Write tool to write /home/user/mlb-relay/grades/YESTERDAY.json — using the
+real computed date, e.g. /home/user/mlb-relay/grades/2026-09-29.json. Do NOT write
+a file literally named YESTERDAY.json.
 
 Grades JSON format: [{"bet": "...", "odds": ..., "units": ..., "outcome": "W/L/P/PENDING", "net": 1.23}]
 
@@ -259,7 +263,9 @@ STEP 11 - WRITE TODAY'S PICKS FILE (0 web calls):
 Format: JSON array of {bet, odds, units} - one object per published pick.
 Do NOT include No Play entries or invalidated picks.
 
-Use the Write tool to write it to /home/user/mlb-relay/picks/TODAY.json
+Use the Write tool to write it to /home/user/mlb-relay/picks/TODAY.json — using the
+real computed date, e.g. /home/user/mlb-relay/picks/2026-09-30.json. Do NOT write
+a file literally named TODAY.json.
 If no picks qualified today, write no file.
 Do not commit yet - STEP 12 pushes everything at once.
 
@@ -314,7 +320,7 @@ TG
    the record but not the message:
 cd /home/user/mlb-relay
 git add -A picks grades dispatch messages
-git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -m "picks: TODAY"
+git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -m "picks: TODAY"   # use the real date in the message, e.g. "picks: 2026-09-30"
 git push origin main || git push origin HEAD:claude/auto
 
 7. In your final response state: whether the text went directly or via the
