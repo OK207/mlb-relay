@@ -1,0 +1,881 @@
+{
+  "date": "2026-10-01",
+  "generated_at": "2026-10-01T18:46:37.257432+00:00",
+  "source": "github-actions-prefetch",
+  "slate": [
+    {
+      "game_id": 849844,
+      "time_et": "20:00",
+      "away_team": "Philadelphia Phillies",
+      "home_team": "Atlanta Braves",
+      "venue": "Truist Park",
+      "status": "Scheduled",
+      "sp_away": {
+        "name": "Aaron Nola",
+        "id": 605400,
+        "throws": "?"
+      },
+      "sp_home": {
+        "name": "Ray Kerr",
+        "id": 678061,
+        "throws": "?"
+      }
+    }
+  ],
+  "standings": {
+    "Rays": {
+      "wins": 98,
+      "losses": 64,
+      "pct": 0.605,
+      "division": "",
+      "gb": "-"
+    },
+    "Yankees": {
+      "wins": 93,
+      "losses": 68,
+      "pct": 0.578,
+      "division": "",
+      "gb": "4.5"
+    },
+    "Red Sox": {
+      "wins": 87,
+      "losses": 75,
+      "pct": 0.537,
+      "division": "",
+      "gb": "11.0"
+    },
+    "Orioles": {
+      "wins": 79,
+      "losses": 82,
+      "pct": 0.491,
+      "division": "",
+      "gb": "18.5"
+    },
+    "Blue Jays": {
+      "wins": 79,
+      "losses": 83,
+      "pct": 0.488,
+      "division": "",
+      "gb": "19.0"
+    },
+    "Guardians": {
+      "wins": 85,
+      "losses": 77,
+      "pct": 0.525,
+      "division": "",
+      "gb": "-"
+    },
+    "White Sox": {
+      "wins": 84,
+      "losses": 78,
+      "pct": 0.519,
+      "division": "",
+      "gb": "1.0"
+    },
+    "Twins": {
+      "wins": 77,
+      "losses": 85,
+      "pct": 0.475,
+      "division": "",
+      "gb": "8.0"
+    },
+    "Tigers": {
+      "wins": 76,
+      "losses": 86,
+      "pct": 0.469,
+      "division": "",
+      "gb": "9.0"
+    },
+    "Royals": {
+      "wins": 69,
+      "losses": 93,
+      "pct": 0.426,
+      "division": "",
+      "gb": "16.0"
+    },
+    "Astros": {
+      "wins": 81,
+      "losses": 81,
+      "pct": 0.5,
+      "division": "",
+      "gb": "-"
+    },
+    "Rangers": {
+      "wins": 80,
+      "losses": 82,
+      "pct": 0.494,
+      "division": "",
+      "gb": "1.0"
+    },
+    "Mariners": {
+      "wins": 76,
+      "losses": 86,
+      "pct": 0.469,
+      "division": "",
+      "gb": "5.0"
+    },
+    "Athletics": {
+      "wins": 64,
+      "losses": 98,
+      "pct": 0.395,
+      "division": "",
+      "gb": "17.0"
+    },
+    "Angels": {
+      "wins": 62,
+      "losses": 100,
+      "pct": 0.383,
+      "division": "",
+      "gb": "19.0"
+    },
+    "Braves": {
+      "wins": 94,
+      "losses": 68,
+      "pct": 0.58,
+      "division": "",
+      "gb": "-"
+    },
+    "Phillies": {
+      "wins": 88,
+      "losses": 74,
+      "pct": 0.543,
+      "division": "",
+      "gb": "6.0"
+    },
+    "Marlins": {
+      "wins": 80,
+      "losses": 82,
+      "pct": 0.494,
+      "division": "",
+      "gb": "14.0"
+    },
+    "Nationals": {
+      "wins": 77,
+      "losses": 85,
+      "pct": 0.475,
+      "division": "",
+      "gb": "17.0"
+    },
+    "Mets": {
+      "wins": 74,
+      "losses": 88,
+      "pct": 0.457,
+      "division": "",
+      "gb": "20.0"
+    },
+    "Brewers": {
+      "wins": 103,
+      "losses": 59,
+      "pct": 0.636,
+      "division": "",
+      "gb": "-"
+    },
+    "Cubs": {
+      "wins": 89,
+      "losses": 73,
+      "pct": 0.549,
+      "division": "",
+      "gb": "14.0"
+    },
+    "Pirates": {
+      "wins": 82,
+      "losses": 80,
+      "pct": 0.506,
+      "division": "",
+      "gb": "21.0"
+    },
+    "Cardinals": {
+      "wins": 77,
+      "losses": 85,
+      "pct": 0.475,
+      "division": "",
+      "gb": "26.0"
+    },
+    "Reds": {
+      "wins": 75,
+      "losses": 87,
+      "pct": 0.463,
+      "division": "",
+      "gb": "28.0"
+    },
+    "Dodgers": {
+      "wins": 100,
+      "losses": 62,
+      "pct": 0.617,
+      "division": "",
+      "gb": "-"
+    },
+    "Padres": {
+      "wins": 91,
+      "losses": 71,
+      "pct": 0.562,
+      "division": "",
+      "gb": "9.0"
+    },
+    "D-backs": {
+      "wins": 86,
+      "losses": 76,
+      "pct": 0.531,
+      "division": "",
+      "gb": "14.0"
+    },
+    "Giants": {
+      "wins": 65,
+      "losses": 97,
+      "pct": 0.401,
+      "division": "",
+      "gb": "35.0"
+    },
+    "Rockies": {
+      "wins": 58,
+      "losses": 104,
+      "pct": 0.358,
+      "division": "",
+      "gb": "42.0"
+    }
+  },
+  "sp_stats": {
+    "Jacob Misiorowski": {
+      "era": "1.80",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "174.2",
+      "k9": "12.98",
+      "bb9": "2.27",
+      "source": "mlbapi"
+    },
+    "Cam Schlittler": {
+      "era": "1.95",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "193.2",
+      "k9": "11.11",
+      "bb9": "2.28",
+      "source": "mlbapi"
+    },
+    "Chris Sale": {
+      "era": "2.16",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "162.2",
+      "k9": "11.07",
+      "bb9": "1.72",
+      "source": "mlbapi"
+    },
+    "Dylan Cease": {
+      "era": "2.40",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.0",
+      "k9": "12.73",
+      "bb9": "4.15",
+      "source": "mlbapi"
+    },
+    "Yoshinobu Yamamoto": {
+      "era": "2.53",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "185.0",
+      "k9": "8.85",
+      "bb9": "2.04",
+      "source": "mlbapi"
+    },
+    "Parker Messick": {
+      "era": "2.56",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "186.1",
+      "k9": "9.32",
+      "bb9": "2.37",
+      "source": "mlbapi"
+    },
+    "Drew Rasmussen": {
+      "era": "2.67",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.0",
+      "k9": "9.10",
+      "bb9": "1.67",
+      "source": "mlbapi"
+    },
+    "Sonny Gray": {
+      "era": "2.72",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.0",
+      "k9": "7.93",
+      "bb9": "2.45",
+      "source": "mlbapi"
+    },
+    "Jes\u00fas Luzardo": {
+      "era": "2.86",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "179.2",
+      "k9": "11.07",
+      "bb9": "2.60",
+      "source": "mlbapi"
+    },
+    "Eduardo Rodriguez": {
+      "era": "2.89",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "189.2",
+      "k9": "6.79",
+      "bb9": "2.94",
+      "source": "mlbapi"
+    },
+    "Cristopher S\u00e1nchez": {
+      "era": "2.91",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "207.0",
+      "k9": "10.04",
+      "bb9": "1.96",
+      "source": "mlbapi"
+    },
+    "Zack Wheeler": {
+      "era": "3.00",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "162.0",
+      "k9": "10.72",
+      "bb9": "2.61",
+      "source": "mlbapi"
+    },
+    "Cade Cavalli": {
+      "era": "3.02",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.2",
+      "k9": "10.61",
+      "bb9": "2.55",
+      "source": "mlbapi"
+    },
+    "Nick Martinez": {
+      "era": "3.10",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "180.0",
+      "k9": "5.45",
+      "bb9": "1.30",
+      "source": "mlbapi"
+    },
+    "Nolan McLean": {
+      "era": "3.16",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "179.2",
+      "k9": "9.72",
+      "bb9": "3.51",
+      "source": "mlbapi"
+    },
+    "Michael King": {
+      "era": "3.21",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "185.0",
+      "k9": "7.74",
+      "bb9": "3.41",
+      "source": "mlbapi"
+    },
+    "Michael Wacha": {
+      "era": "3.32",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "200.2",
+      "k9": "7.09",
+      "bb9": "2.42",
+      "source": "mlbapi"
+    },
+    "Sean Burke": {
+      "era": "3.34",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.1",
+      "k9": "9.66",
+      "bb9": "3.24",
+      "source": "mlbapi"
+    },
+    "Reid Detmers": {
+      "era": "3.36",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "185.0",
+      "k9": "10.26",
+      "bb9": "2.34",
+      "source": "mlbapi"
+    },
+    "Robbie Ray": {
+      "era": "3.59",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "165.2",
+      "k9": "7.61",
+      "bb9": "4.56",
+      "source": "mlbapi"
+    },
+    "Foster Griffin": {
+      "era": "3.60",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.2",
+      "k9": "8.24",
+      "bb9": "2.35",
+      "source": "mlbapi"
+    },
+    "Braxton Ashcraft": {
+      "era": "3.65",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "165.1",
+      "k9": "9.42",
+      "bb9": "1.91",
+      "source": "mlbapi"
+    },
+    "Logan Gilbert": {
+      "era": "3.73",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "186.0",
+      "k9": "9.92",
+      "bb9": "2.37",
+      "source": "mlbapi"
+    },
+    "Taj Bradley": {
+      "era": "3.73",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "178.1",
+      "k9": "10.35",
+      "bb9": "3.84",
+      "source": "mlbapi"
+    },
+    "Gavin Williams": {
+      "era": "3.76",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "184.1",
+      "k9": "12.11",
+      "bb9": "2.98",
+      "source": "mlbapi"
+    },
+    "Shota Imanaga": {
+      "era": "3.77",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "174.1",
+      "k9": "8.98",
+      "bb9": "1.91",
+      "source": "mlbapi"
+    },
+    "Paul Skenes": {
+      "era": "3.82",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "174.1",
+      "k9": "10.33",
+      "bb9": "2.53",
+      "source": "mlbapi"
+    },
+    "Andre Pallante": {
+      "era": "3.83",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "162.0",
+      "k9": "6.11",
+      "bb9": "2.78",
+      "source": "mlbapi"
+    },
+    "Sandy Alcantara": {
+      "era": "3.87",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "214.0",
+      "k9": "6.43",
+      "bb9": "2.48",
+      "source": "mlbapi"
+    },
+    "Jos\u00e9 Soriano": {
+      "era": "3.91",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "177.1",
+      "k9": "8.58",
+      "bb9": "3.70",
+      "source": "mlbapi"
+    },
+    "Michael McGreevy": {
+      "era": "3.95",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "168.2",
+      "k9": "6.14",
+      "bb9": "2.56",
+      "source": "mlbapi"
+    },
+    "Bryan Woo": {
+      "era": "4.01",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "173.0",
+      "k9": "9.10",
+      "bb9": "2.03",
+      "source": "mlbapi"
+    },
+    "Trevor Rogers": {
+      "era": "4.03",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.2",
+      "k9": "8.33",
+      "bb9": "2.07",
+      "source": "mlbapi"
+    },
+    "Framber Valdez": {
+      "era": "4.03",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "174.0",
+      "k9": "6.98",
+      "bb9": "3.47",
+      "source": "mlbapi"
+    },
+    "Shane Baz": {
+      "era": "4.11",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "179.2",
+      "k9": "7.71",
+      "bb9": "3.16",
+      "source": "mlbapi"
+    },
+    "Noah Cameron": {
+      "era": "4.11",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "177.1",
+      "k9": "8.02",
+      "bb9": "2.94",
+      "source": "mlbapi"
+    },
+    "Jacob deGrom": {
+      "era": "4.20",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "162.2",
+      "k9": "11.12",
+      "bb9": "2.55",
+      "source": "mlbapi"
+    },
+    "George Kirby": {
+      "era": "4.33",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "174.2",
+      "k9": "7.63",
+      "bb9": "2.42",
+      "source": "mlbapi"
+    },
+    "Tanner Bibee": {
+      "era": "4.36",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "188.0",
+      "k9": "7.09",
+      "bb9": "2.63",
+      "source": "mlbapi"
+    },
+    "Freddy Peralta": {
+      "era": "4.42",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "169.0",
+      "k9": "8.31",
+      "bb9": "3.36",
+      "source": "mlbapi"
+    },
+    "Kevin Gausman": {
+      "era": "4.51",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "177.2",
+      "k9": "9.32",
+      "bb9": "2.38",
+      "source": "mlbapi"
+    },
+    "MacKenzie Gore": {
+      "era": "4.58",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "173.0",
+      "k9": "9.05",
+      "bb9": "3.69",
+      "source": "mlbapi"
+    },
+    "Andrew Abbott": {
+      "era": "4.61",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "166.0",
+      "k9": "7.10",
+      "bb9": "4.12",
+      "source": "mlbapi"
+    },
+    "Aaron Nola": {
+      "era": "4.67",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "175.1",
+      "k9": "9.09",
+      "bb9": "3.03",
+      "source": "mlbapi"
+    },
+    "Merrill Kelly": {
+      "era": "4.94",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "162.0",
+      "k9": "6.28",
+      "bb9": "3.89",
+      "source": "mlbapi"
+    },
+    "Seth Lugo": {
+      "era": "5.17",
+      "xera": "",
+      "k_pct": "",
+      "bb_pct": "",
+      "ip": "172.1",
+      "k9": "7.00",
+      "bb9": "2.82",
+      "source": "mlbapi"
+    }
+  },
+  "odds": {
+    "PHI vs ATL": {
+      "away_abbr": "PHI",
+      "home_abbr": "ATL",
+      "away_ml": -113,
+      "home_ml": 102,
+      "away_ml_best": -113,
+      "home_ml_best": 102,
+      "away_sp": {
+        "name": "C. Sanchez",
+        "throws": "L",
+        "era": 2.91
+      },
+      "home_sp": {
+        "name": "T. Mahle",
+        "throws": "R",
+        "era": 3.99
+      },
+      "books_count": 1
+    },
+    "CHW vs CLE": {
+      "away_abbr": "CHW",
+      "home_abbr": "CLE",
+      "away_ml": 135,
+      "home_ml": -150,
+      "away_ml_best": 135,
+      "home_ml_best": -150,
+      "away_sp": {
+        "name": "TBD",
+        "throws": "?",
+        "era": null
+      },
+      "home_sp": {
+        "name": "P. Messick",
+        "throws": "L",
+        "era": 2.56
+      },
+      "books_count": 1
+    },
+    "NYY vs TB": {
+      "away_abbr": "NYY",
+      "home_abbr": "TB",
+      "away_ml": 118,
+      "home_ml": -130,
+      "away_ml_best": 118,
+      "home_ml_best": -130,
+      "away_sp": {
+        "name": "TBD",
+        "throws": "?",
+        "era": null
+      },
+      "home_sp": {
+        "name": "TBD",
+        "throws": "?",
+        "era": null
+      },
+      "books_count": 1
+    },
+    "CHW vs HOU": {
+      "away_abbr": "CHW",
+      "home_abbr": "HOU",
+      "away_ml": 125,
+      "home_ml": -139,
+      "away_ml_best": 125,
+      "home_ml_best": -139,
+      "away_sp": {
+        "name": "S. Burke",
+        "throws": "R",
+        "era": 3.34
+      },
+      "home_sp": {
+        "name": "H. Brown",
+        "throws": "R",
+        "era": 3.19
+      },
+      "books_count": 1
+    },
+    "BOS vs NYY": {
+      "away_abbr": "BOS",
+      "home_abbr": "NYY",
+      "away_ml": 120,
+      "home_ml": -132,
+      "away_ml_best": 120,
+      "home_ml_best": -132,
+      "away_sp": {
+        "name": "S. Gray",
+        "throws": "R",
+        "era": 2.72
+      },
+      "home_sp": {
+        "name": "M. Fried",
+        "throws": "L",
+        "era": 2.8
+      },
+      "books_count": 1
+    },
+    "CHC vs SD": {
+      "away_abbr": "CHC",
+      "home_abbr": "SD",
+      "away_ml": 119,
+      "home_ml": -132,
+      "away_ml_best": 119,
+      "home_ml_best": -132,
+      "away_sp": {
+        "name": "K. Gausman",
+        "throws": "?",
+        "era": null
+      },
+      "home_sp": {
+        "name": "N. Pivetta",
+        "throws": "R",
+        "era": 2.86
+      },
+      "books_count": 1
+    }
+  },
+  "weather": {
+    "Truist Park": {
+      "city": "Atlanta",
+      "temp_f": 90,
+      "conditions": "Sunny",
+      "wind_mph": 7,
+      "wind_dir": "SE",
+      "precip_pct": 0,
+      "humidity": 45,
+      "feels_like_f": 92
+    }
+  },
+  "lineups": {
+    "PHIATL vs PHI": {
+      "sp_away": "TBD",
+      "sp_home": "TBD",
+      "away_batters": [
+        "Aaron NolaR7-12\u00a04.67 ERA",
+        "Expected Lineup",
+        "SSTrea TurnerR",
+        "$7,800",
+        "DHK. SchwarberL",
+        "$9,400",
+        "RFBryce HarperL",
+        "$9,000",
+        "2BBryson StottL",
+        "$7,200",
+        "1BAlec BohmR",
+        "$6,400",
+        "LFB. MarshL",
+        "$6,600",
+        "3BEdmundo SosaR",
+        "$4,400",
+        "CFJ. CrawfordL",
+        "$5,000",
+        "CJ. RealmutoR",
+        "$5,600",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ],
+      "home_batters": [
+        "Grant HolmesR10-6\u00a03.44 ERAPRIM",
+        "Expected Lineup",
+        "CFM. HarrisL",
+        "$7,600",
+        "RFRonald AcunaR",
+        "$9,800",
+        "1BMatt OlsonL",
+        "$8,600",
+        "DHD. BaldwinL",
+        "$8,200",
+        "SSM. DubonR",
+        "$6,200",
+        "2BOzzie AlbiesS",
+        "$6,800",
+        "LFM. YastrzemskiL",
+        "$4,200",
+        "3BAustin RileyR",
+        "$6,000",
+        "CSean MurphyR",
+        "$3,800",
+        "Home Run Odds",
+        "Starting Pitcher Intel"
+      ]
+    }
+  }
+}
