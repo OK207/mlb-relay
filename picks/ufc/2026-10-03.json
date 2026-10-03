@@ -1,0 +1,11 @@
+{
+  "event": "UFC 332: Silva vs. Wang",
+  "event_date": "2026-10-03",
+  "picks": [
+    {
+      "bet": "Green ML",
+      "odds": 180,
+      "units": 0.5
+    }
+  ]
+}
