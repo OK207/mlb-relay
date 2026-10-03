@@ -1,0 +1,5 @@
+MLB Afternoon - October 3 - No new plays. Morning card covers the slate.
+
+No Play: White Sox/Guardians, Braves/Dodgers, Yankees/Rays -- already in morning card
+No Play: Brewers ML (-220) -- C-tier edge only (~71% model vs 69% implied), heavy fav cap 0.5u, SP data thin (lineups unconfirmed)
+No Play: K props (Cole, Skubal, Misiorowski, Ray) -- Cole/Skubal correlated with morning ML 1.0u+; Misiorowski/Ray HP umpire unconfirmed (hard gate fail)
