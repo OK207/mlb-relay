@@ -1,0 +1,5 @@
+NBA Picks - October 6
+
+Data fetch failed: all sports data sources (ESPN, Covers, Polymarket, RotoWire, Basketball-Reference) are blocked by the session egress proxy. Unable to retrieve today's NBA slate, odds, injury reports, or team stats.
+
+No picks generated. If NBA regular season has begun, this run will need to be retried in an environment with broader egress access.
