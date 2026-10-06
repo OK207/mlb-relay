@@ -1,16 +1,6 @@
 [
-  {
-    "bet": "Gane ML",
-    "odds": -113,
-    "units": 1.0,
-    "outcome": "W",
-    "net": 0.88
-  },
-  {
-    "bet": "Garcia ML",
-    "odds": 154,
-    "units": 0.75,
-    "outcome": "L",
-    "net": -0.75
-  }
+  {"bet": "Gaethje ML", "odds": 500, "units": 0.75, "outcome": "W", "net": 4.5},
+  {"bet": "Gane ML", "odds": -113, "units": 1.0, "outcome": "W", "net": 0.88},
+  {"bet": "Zahabi ML", "odds": 275, "units": 0.5, "outcome": "L", "net": -0.5},
+  {"bet": "Garcia ML", "odds": 154, "units": 0.75, "outcome": "L", "net": -0.75}
 ]

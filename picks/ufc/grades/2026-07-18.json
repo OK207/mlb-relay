@@ -1,0 +1,5 @@
+[
+  {"bet": "Usman ML", "odds": 170, "units": 0.75, "outcome": "L", "net": -0.75},
+  {"bet": "Cannonier ML", "odds": 310, "units": 0.5, "outcome": "L", "net": -0.5},
+  {"bet": "Erceg ML", "odds": -115, "units": 0.75, "outcome": "P", "net": 0}
+]

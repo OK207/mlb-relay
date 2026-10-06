@@ -190,8 +190,9 @@ Both workflows now compare bets on the leading clause, so the two naming
 conventions match for dedupe *and* for grading. `reconcile` also corrects a
 row's odds/units when they disagree with the repo, logging every change.
 
-Still ungraded on that tab: **Gaethje ML vs Topuria +500 0.75u** and
-**Zahabi ML vs O'Malley +275 0.5u**. Both were hand-entered and have no
-counterpart in `picks/ufc/`, so they look like wagers placed outside the model.
-Their outcomes are known from the event (Gaethje beat Topuria; O'Malley beat
-Zahabi) but they have been left alone rather than written into a manual log.
+The two hand-entered 6/14 rows, **Gaethje ML vs Topuria +500 0.75u** (W +4.5u)
+and **Zahabi ML vs O'Malley +275 0.5u** (L -0.5u), were confirmed as UFC picks
+on 2026-10-06 and added to `picks/ufc/2026-06-14.json` and its grades file.
+The same day, the hand-graded 7/11, 7/18 and 10/3 results were copied from
+the tab into `picks/ufc/grades/`. The repo and the tab now agree: 12 bets,
++0.78u.
