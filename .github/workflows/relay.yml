@@ -29,8 +29,9 @@ jobs:
 
           TG_TOKEN = os.environ['TG_TOKEN']
           CHAT_ID = os.environ.get('TG_CHAT_ID')
-if not CHAT_ID:
-    sys.exit('TELEGRAM_CHAT_ID secret is not set')
+          if not CHAT_ID:
+              sys.exit('TELEGRAM_CHAT_ID secret is not set')
+          ZERO = '0' * 40
           ZERO = '0' * 40
           LIMIT = 3900  # Telegram caps a single sendMessage at 4096 chars
 
