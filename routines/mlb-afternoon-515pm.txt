@@ -330,10 +330,10 @@ STEP 10 - COMMIT AND PUSH (this is what delivers your Telegram message):
 python3 - <<'TG'
 import json, os, urllib.parse, urllib.request
 tok  = os.environ.get('TELEGRAM_TOKEN')
-chat = os.environ.get('TELEGRAM_CHAT_ID', '8644528540')
+chat = os.environ.get('TELEGRAM_CHAT_ID')
 msg  = open('/home/user/mlb-relay/messages/TODAY-afternoon.txt').read().strip()
-if not tok:
-    print('SEND_FAILED: TELEGRAM_TOKEN is not set in this environment')
+if not tok or not chat:
+    print('SEND_FAILED: TELEGRAM_TOKEN or TELEGRAM_CHAT_ID is not set in this environment')
     raise SystemExit(1)
 ok_all = bool(msg)
 while msg:
