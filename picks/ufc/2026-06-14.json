@@ -3,9 +3,19 @@
   "event_date": "2026-06-14",
   "picks": [
     {
+      "bet": "Gaethje ML",
+      "odds": 500,
+      "units": 0.75
+    },
+    {
       "bet": "Gane ML",
       "odds": -113,
       "units": 1.0
+    },
+    {
+      "bet": "Zahabi ML",
+      "odds": 275,
+      "units": 0.5
     },
     {
       "bet": "Garcia ML",
