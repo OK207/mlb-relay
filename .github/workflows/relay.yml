@@ -28,8 +28,9 @@ jobs:
           import json, os, subprocess, sys, urllib.parse, urllib.request, urllib.error
 
           TG_TOKEN = os.environ['TG_TOKEN']
-          # Falls back to the original hard-coded chat so nothing breaks if the secret is unset.
-          CHAT_ID = os.environ.get('TG_CHAT_ID') or '8644528540'
+          CHAT_ID = os.environ.get('TG_CHAT_ID')
+if not CHAT_ID:
+    sys.exit('TELEGRAM_CHAT_ID secret is not set')
           ZERO = '0' * 40
           LIMIT = 3900  # Telegram caps a single sendMessage at 4096 chars
 
