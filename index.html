@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pick Relay</title>
+<meta name="description" content="Daily MLB, NBA and UFC picks with graded results, built from this repo's picks/ and grades/ files.">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f5f2;
+  --surface: #fcfcfb;
+  --border: #e4e2dc;
+  --text: #0b0b0b;
+  --text-2: #52514e;
+  --text-3: #75736e;
+  --accent: #2a78d6;
+  --series: #2a78d6;
+  --grid: #e9e7e1;
+  --zero: #b9b7b0;
+  --good: #006300;
+  --bad: #b42828;
+  --chip-bg: #efeee9;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121211;
+    --surface: #1a1a19;
+    --border: #2e2e2b;
+    --text: #ffffff;
+    --text-2: #c3c2b7;
+    --text-3: #9a998f;
+    --accent: #3987e5;
+    --series: #3987e5;
+    --grid: #2a2a27;
+    --zero: #55544f;
+    --good: #4cc24c;
+    --bad: #ef7a7a;
+    --chip-bg: #262624;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211;
+  --surface: #1a1a19;
+  --border: #2e2e2b;
+  --text: #ffffff;
+  --text-2: #c3c2b7;
+  --text-3: #9a998f;
+  --accent: #3987e5;
+  --series: #3987e5;
+  --grid: #2a2a27;
+  --zero: #55544f;
+  --good: #4cc24c;
+  --bad: #ef7a7a;
+  --chip-bg: #262624;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 920px; margin: 0 auto; padding: 24px 16px 64px; }
+header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 15px; margin: 0 0 12px; color: var(--text-2); font-weight: 600; }
+.meta { color: var(--text-3); font-size: 13px; }
+.meta a { color: inherit; }
+
+.tabs { display: flex; gap: 4px; margin: 20px 0; border-bottom: 1px solid var(--border); }
+.tabs button {
+  appearance: none; background: none; border: 0; border-bottom: 2px solid transparent;
+  color: var(--text-2); font: inherit; font-weight: 600; padding: 8px 14px; cursor: pointer; margin-bottom: -1px;
+}
+.tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.tile .label { color: var(--text-3); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+.tile .value { font-size: 24px; font-weight: 650; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.tile .sub { color: var(--text-3); font-size: 12px; }
+@media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.pos { color: var(--good); }
+.neg { color: var(--bad); }
+.num { font-variant-numeric: tabular-nums; }
+
+.card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.card-head h2 { margin: 0; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; color: var(--text-3); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.r, th.r { text-align: right; }
+.table-scroll { overflow-x: auto; }
+
+.chip { display: inline-block; min-width: 22px; text-align: center; font-size: 12px; font-weight: 700; padding: 1px 6px; border-radius: 6px; background: var(--chip-bg); color: var(--text-2); }
+.chip.W { color: var(--good); }
+.chip.L { color: var(--bad); }
+
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: 240px; overflow: visible; }
+.chart text { fill: var(--text-3); font-size: 11px; font-variant-numeric: tabular-nums; }
+.chart .grid { stroke: var(--grid); stroke-width: 1; }
+.chart .zero { stroke: var(--zero); stroke-width: 1; }
+.chart .line { fill: none; stroke: var(--series); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .hair { stroke: var(--text-3); stroke-width: 1; }
+.chart .dot { fill: var(--series); stroke: var(--surface); stroke-width: 2; }
+.chart .hit { fill: transparent; cursor: crosshair; }
+.chart .hit:focus { outline: none; }
+.chart .hit:focus-visible { stroke: var(--accent); stroke-width: 2; }
+.tip {
+  position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 10px; font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,.12); white-space: nowrap; display: none;
+}
+.tip strong { font-size: 15px; font-variant-numeric: tabular-nums; }
+.tip .k { display: inline-block; width: 12px; height: 2px; background: var(--series); vertical-align: middle; margin-right: 6px; }
+.tip .d { color: var(--text-3); }
+
+details.day { border-bottom: 1px solid var(--border); }
+details.day:last-child { border-bottom: 0; }
+details.day summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 76px 1fr auto auto; gap: 12px; align-items: center; padding: 10px 4px; }
+details.day summary::-webkit-details-marker { display: none; }
+details.day summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 6px; }
+details.day summary .date { font-weight: 600; }
+details.day summary .bets { color: var(--text-2); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+details.day summary .rec { color: var(--text-3); font-size: 13px; }
+details.day summary .pl { font-weight: 600; min-width: 64px; text-align: right; }
+.day-body { padding: 0 4px 16px; }
+pre.writeup { white-space: pre-wrap; word-wrap: break-word; font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin: 12px 0 0; color: var(--text-2); }
+.muted { color: var(--text-3); font-size: 13px; }
+.more { appearance: none; background: none; border: 1px solid var(--border); color: var(--text-2); border-radius: 8px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; margin-top: 12px; }
+ul.trends { list-style: none; margin: 0; padding: 0; }
+ul.trends li { padding: 10px 0; border-bottom: 1px solid var(--border); }
+ul.trends li:first-child { padding-top: 0; }
+ul.trends li:last-child { border-bottom: 0; }
+ul.trends strong { display: block; font-weight: 600; }
+ul.trends span { color: var(--text-2); font-size: 14px; }
+.note { margin: 12px 0 0; }
+.block + .block { margin-top: 16px; }
+.block table { table-layout: fixed; min-width: 480px; }
+.block th:first-child { width: 40%; }
+details.block > summary { cursor: pointer; color: var(--text-2); font-weight: 600; font-size: 14px; padding: 4px 0; }
+details.block > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+details.block[open] > summary { margin-bottom: 8px; }
+.status { padding: 48px 0; text-align: center; color: var(--text-2); }
+@media (max-width: 640px) {
+  details.day summary { grid-template-columns: 60px 1fr auto; }
+  details.day summary .rec { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Pick Relay</h1>
+    <div class="meta" id="meta"></div>
+  </header>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+  <main id="main"><div class="status">Loading picks…</div></main>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  // Served by GitHub Pages from the repo root, so data files are same-origin relative paths.
+  // The GitHub API is used once to list them, since Pages has no directory listing.
+  const host = location.hostname.endsWith('.github.io') ? location.hostname.split('.')[0] : null;
+  const pathRepo = location.pathname.split('/').filter(Boolean)[0];
+  const OWNER = host || 'OK207';
+  const REPO = (host && pathRepo && !pathRepo.endsWith('.html')) ? pathRepo : 'mlb-relay';
+  const BRANCH = 'main';
+
+  const DATE = '(\\d{4}-\\d{2}-\\d{2})';
+  const SPORTS = {
+    mlb: { name: 'MLB', picks: new RegExp(`^picks/${DATE}\\.json$`),     grades: new RegExp(`^grades/${DATE}\\.json$`),           dispatch: ['', '-afternoon'] },
+    nba: { name: 'NBA', picks: new RegExp(`^picks/nba/${DATE}\\.json$`), grades: new RegExp(`^grades/nba/${DATE}\\.json$`),       dispatch: ['-nba'] },
+    ufc: { name: 'UFC', picks: new RegExp(`^picks/ufc/${DATE}\\.json$`), grades: new RegExp(`^picks/ufc/grades/${DATE}\\.json$`), dispatch: ['-ufc'] },
+  };
+  const DISPATCH = new RegExp(`^dispatch/${DATE}(-afternoon|-nba|-ufc)?\\.txt$`);
+
+  const $ = (sel, root = document) => root.querySelector(sel);
+  function el(tag, attrs = {}, ...kids) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k === 'class') n.className = v;
+      else if (k === 'text') n.textContent = v;
+      else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v === true ? '' : v);
+    }
+    for (const kid of kids.flat()) if (kid != null) n.append(kid instanceof Node ? kid : String(kid));
+    return n;
+  }
+
+  const fmtUnits = (u, sign = true) => {
+    const s = (Math.round(u * 100) / 100).toFixed(2).replace(/\.?0+$/, '') || '0';
+    return (sign && u > 0 ? '+' : '') + s + 'u';
+  };
+  const fmtOdds = o => (o > 0 ? '+' : '') + o;
+  const fmtPct = p => (p > 0 ? '+' : '') + (p * 100).toFixed(1) + '%';
+  const signClass = v => v > 0.0001 ? 'pos' : v < -0.0001 ? 'neg' : '';
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const fmtDate = d => `${MONTHS[+d.slice(5, 7) - 1]} ${+d.slice(8, 10)}`;
+  const todayET = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+
+  function payout(odds, units) {
+    return odds > 0 ? units * odds / 100 : units * 100 / Math.abs(odds);
+  }
+  // Grades name bets the same way picks do, but hand-entered rows sometimes add
+  // a " vs X" or " - Event" tail, so compare on the leading clause too.
+  const lead = s => String(s || '').toLowerCase().split(/\s+(?:vs\.?|-|—)\s+/)[0].trim();
+
+  async function fetchJSON(path) {
+    const r = await fetch(path, { cache: 'no-cache' });
+    if (!r.ok) throw new Error(`${path}: HTTP ${r.status}`);
+    return r.json();
+  }
+
+  async function pool(items, limit, fn) {
+    const out = new Array(items.length);
+    let i = 0;
+    await Promise.all(Array.from({ length: Math.min(limit, items.length) }, async () => {
+      while (i < items.length) { const k = i++; out[k] = await fn(items[k]); }
+    }));
+    return out;
+  }
+
+  async function listFiles() {
+    const url = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
+    const r = await fetch(url, { headers: { Accept: 'application/vnd.github+json' } });
+    if (!r.ok) throw new Error(r.status === 403 ? 'GitHub API rate limit reached; try again in a few minutes.' : `Could not list repo files (HTTP ${r.status}).`);
+    const tree = await r.json();
+    return tree.tree.filter(t => t.type === 'blob').map(t => t.path);
+  }
+
+  function normalizeBet(b) {
+    return {
+      bet: String(b.bet ?? ''),
+      odds: Number(b.odds),
+      units: Number(b.units),
+      outcome: ['W', 'L', 'P'].includes(b.outcome) ? b.outcome : null,
+      net: b.net == null || b.net === '' ? null : Number(b.net),
+    };
+  }
+
+  function mergeDay(picksRaw, gradesRaw) {
+    let event = null;
+    let picks = picksRaw ?? [];
+    if (picks && !Array.isArray(picks)) { event = picks.event || null; picks = picks.picks || []; }
+    const bets = picks.map(normalizeBet);
+    const grades = (Array.isArray(gradesRaw) ? gradesRaw : []).map(normalizeBet);
+    const used = new Set();
+    for (const b of bets) {
+      let gi = grades.findIndex((g, i) => !used.has(i) && g.bet === b.bet);
+      if (gi < 0) gi = grades.findIndex((g, i) => !used.has(i) && lead(g.bet) === lead(b.bet));
+      if (gi < 0) continue;
+      used.add(gi);
+      const g = grades[gi];
+      b.outcome = g.outcome;
+      if (Number.isFinite(g.odds)) b.odds = g.odds;
+      if (Number.isFinite(g.units)) b.units = g.units;
+      b.net = g.net;
+    }
+    // A grade row with no matching pick still happened; keep it.
+    grades.forEach((g, i) => { if (!used.has(i)) bets.push(g); });
+    for (const b of bets) {
+      if (b.outcome && (b.net == null || !Number.isFinite(b.net))) {
+        b.net = b.outcome === 'W' ? payout(b.odds, b.units) : b.outcome === 'L' ? -b.units : 0;
+      }
+      if (!b.outcome) b.net = null;
+    }
+    return { event, bets };
+  }
+
+  function summarize(bets) {
+    const s = { w: 0, l: 0, p: 0, open: 0, net: 0, staked: 0, n: bets.length };
+    for (const b of bets) {
+      if (!b.outcome) { s.open++; continue; }
+      if (b.outcome === 'W') s.w++; else if (b.outcome === 'L') s.l++; else s.p++;
+      s.net += b.net; s.staked += b.units;
+    }
+    s.roi = s.staked ? s.net / s.staked : 0;
+    s.graded = s.w + s.l + s.p;
+    return s;
+  }
+  const recStr = s => `${s.w}-${s.l}${s.p ? '-' + s.p : ''}`;
+
+  async function load() {
+    const files = await listFiles();
+    const fileSet = new Set(files);
+    const data = {};
+    const jobs = [];
+    for (const [key, sp] of Object.entries(SPORTS)) {
+      const days = {};
+      for (const f of files) {
+        let m;
+        if ((m = f.match(sp.picks))) (days[m[1]] ||= {}).picksPath = f;
+        else if ((m = f.match(sp.grades))) (days[m[1]] ||= {}).gradesPath = f;
+      }
+      data[key] = days;
+      for (const [date, d] of Object.entries(days)) {
+        if (d.picksPath) jobs.push(async () => { d.picks = await fetchJSON(d.picksPath); });
+        if (d.gradesPath) jobs.push(async () => { d.grades = await fetchJSON(d.gradesPath); });
+        d.dispatch = sp.dispatch.map(suf => `dispatch/${date}${suf}.txt`).filter(p => fileSet.has(p));
+      }
+    }
+    const errors = [];
+    await pool(jobs, 12, job => job().catch(e => errors.push(e.message)));
+    if (errors.length) console.warn('Some files failed to load:', errors);
+
+    const out = {};
+    for (const key of Object.keys(SPORTS)) {
+      out[key] = Object.entries(data[key])
+        .map(([date, d]) => ({ date, dispatch: d.dispatch, ...mergeDay(d.picks, d.grades) }))
+        .filter(d => d.bets.length)
+        .sort((a, b) => b.date.localeCompare(a.date));
+    }
+    return out;
+  }
+
+  // ---------- rendering ----------
+
+  function tiles(s) {
+    const tile = (label, value, sub, cls) => el('div', { class: 'tile' },
+      el('div', { class: 'label', text: label }),
+      el('div', { class: `value ${cls || ''}`, text: value }),
+      sub ? el('div', { class: 'sub', text: sub }) : null);
+    const winPct = s.w + s.l ? s.w / (s.w + s.l) : 0;
+    return el('div', { class: 'tiles' },
+      tile('Record', recStr(s), s.p ? 'W-L-Push' : 'W-L'),
+      tile('Units', fmtUnits(s.net), `${fmtUnits(s.staked, false)} staked`, signClass(s.net)),
+      tile('ROI', fmtPct(s.roi), 'net ÷ staked', signClass(s.roi)),
+      tile('Win rate', s.w + s.l ? (winPct * 100).toFixed(1) + '%' : '—', s.open ? `${s.open} ungraded` : `${s.graded} graded`),
+    );
+  }
+
+  function betTable(bets) {
+    return el('div', { class: 'table-scroll' }, el('table', {},
+      el('thead', {}, el('tr', {},
+        el('th', { text: 'Bet' }), el('th', { class: 'r', text: 'Odds' }), el('th', { class: 'r', text: 'Stake' }),
+        el('th', { class: 'r', text: 'Result' }), el('th', { class: 'r', text: 'Net' }))),
+      el('tbody', {}, bets.map(b => el('tr', {},
+        el('td', { text: b.bet }),
+        el('td', { class: 'r num', text: Number.isFinite(b.odds) ? fmtOdds(b.odds) : '—' }),
+        el('td', { class: 'r num', text: fmtUnits(b.units, false) }),
+        el('td', { class: 'r' }, el('span', { class: `chip ${b.outcome || ''}`, text: b.outcome || '–', title: b.outcome ? null : 'Not graded yet' })),
+        el('td', { class: `r num ${b.net == null ? '' : signClass(b.net)}`, text: b.net == null ? '—' : fmtUnits(b.net) }),
+      )))));
+  }
+
+  function latestCard(days) {
+    const d = days[0];
+    const label = d.date === todayET ? 'Today' : `Latest card · ${fmtDate(d.date)}`;
+    const s = summarize(d.bets);
+    return el('section', { class: 'card' },
+      el('div', { class: 'card-head' },
+        el('h2', { text: d.event ? `${label} · ${d.event}` : label }),
+        s.graded ? el('span', { class: `num ${signClass(s.net)}`, text: `${recStr(s)} · ${fmtUnits(s.net)}` }) : el('span', { class: 'muted', text: `${d.bets.length} bet${d.bets.length === 1 ? '' : 's'}` })),
+      betTable(d.bets),
+      writeupToggle(d));
+  }
+
+  function chart(days) {
+    const pts = [];
+    let cum = 0;
+    for (const d of [...days].reverse()) {
+      const s = summarize(d.bets);
+      if (!s.graded) continue;
+      cum += s.net;
+      pts.push({ date: d.date, day: s.net, cum, rec: recStr(s) });
+    }
+    const section = el('section', { class: 'card' }, el('h2', { text: 'Cumulative units' }));
+    if (pts.length < 2) { section.append(el('p', { class: 'muted', text: 'Not enough graded days to chart yet.' })); return section; }
+    pts.unshift({ date: null, day: 0, cum: 0 });
+
+    const box = el('div', { class: 'chart' });
+    const tip = el('div', { class: 'tip', role: 'status', 'aria-live': 'polite' });
+    box.append(tip);
+    section.append(box);
+
+    const draw = () => {
+      const W = Math.max(280, box.clientWidth), H = 240;
+      const m = { t: 10, r: 12, b: 24, l: 44 };
+      const iw = W - m.l - m.r, ih = H - m.t - m.b;
+      let lo = Math.min(0, ...pts.map(p => p.cum)), hi = Math.max(0, ...pts.map(p => p.cum));
+      const span = hi - lo || 1;
+      const raw = span / 4, mag = 10 ** Math.floor(Math.log10(raw));
+      const step = [1, 2, 2.5, 5, 10].map(k => k * mag).find(k => k >= raw);
+      lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+      const x = i => m.l + (i / (pts.length - 1)) * iw;
+      const y = v => m.t + (1 - (v - lo) / (hi - lo)) * ih;
+
+      const NS = 'http://www.w3.org/2000/svg';
+      const s = (tag, attrs) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); return n; };
+      const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `Cumulative units over ${pts.length - 1} graded days, ending at ${fmtUnits(pts.at(-1).cum)}` });
+      for (let v = lo; v <= hi + 1e-9; v += step) {
+        svg.append(s('line', { class: v === 0 ? 'zero' : 'grid', x1: m.l, x2: W - m.r, y1: y(v), y2: y(v) }));
+        const t = s('text', { x: m.l - 8, y: y(v) + 4, 'text-anchor': 'end' }); t.textContent = fmtUnits(v); svg.append(t);
+      }
+      const xi = [1, Math.round((pts.length - 1) / 2), pts.length - 1].filter((v, i, a) => a.indexOf(v) === i);
+      xi.forEach((i, k) => {
+        const t = s('text', { x: x(i), y: H - 6, 'text-anchor': k === 0 && xi.length > 1 ? 'start' : k === xi.length - 1 ? 'end' : 'middle' });
+        t.textContent = fmtDate(pts[i].date); svg.append(t);
+      });
+      svg.append(s('path', { class: 'line', d: pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.cum).toFixed(1)}`).join('') }));
+      const hair = s('line', { class: 'hair', y1: m.t, y2: m.t + ih, visibility: 'hidden' });
+      const dot = s('circle', { class: 'dot', r: 5, visibility: 'hidden' });
+      const hit = s('rect', { class: 'hit', x: m.l, y: 0, width: iw, height: H, tabindex: 0, 'aria-label': 'Chart: use arrow keys to step through days' });
+      svg.append(hair, dot, hit);
+      box.querySelector('svg')?.remove();
+      box.prepend(svg);
+
+      let cur = null;
+      const show = i => {
+        i = Math.max(1, Math.min(pts.length - 1, i)); cur = i;
+        const p = pts[i], px = x(i), py = y(p.cum);
+        hair.setAttribute('x1', px); hair.setAttribute('x2', px); hair.setAttribute('visibility', 'visible');
+        dot.setAttribute('cx', px); dot.setAttribute('cy', py); dot.setAttribute('visibility', 'visible');
+        tip.replaceChildren(
+          el('div', {}, el('span', { class: 'k' }), el('strong', { text: fmtUnits(p.cum) }), ' total'),
+          el('div', { class: 'd', text: `${fmtDate(p.date)} · ${p.rec} · day ${fmtUnits(p.day)}` }));
+        tip.style.display = 'block';
+        const scale = box.clientWidth / W;
+        const tw = tip.offsetWidth, left = px * scale;
+        tip.style.left = Math.max(0, Math.min(box.clientWidth - tw, left + (left + tw + 16 > box.clientWidth ? -tw - 12 : 12))) + 'px';
+        tip.style.top = Math.max(0, py * (240 / H) - 50) + 'px';
+      };
+      const hide = () => { cur = null; tip.style.display = 'none'; hair.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); };
+      hit.addEventListener('pointermove', e => {
+        const r = svg.getBoundingClientRect();
+        const vx = (e.clientX - r.left) * (W / r.width);
+        show(Math.round(((vx - m.l) / iw) * (pts.length - 1)));
+      });
+      hit.addEventListener('pointerleave', hide);
+      hit.addEventListener('focus', () => show(pts.length - 1));
+      hit.addEventListener('blur', hide);
+      hit.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); show((cur ?? pts.length - 1) + (e.key === 'ArrowLeft' ? -1 : 1)); }
+        else if (e.key === 'Escape') hide();
+      });
+    };
+    requestAnimationFrame(draw);
+    let rt; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(draw, 80); }).observe(box);
+    return section;
+  }
+
+  // ---------- trends ----------
+
+  const ODDS_BUCKETS = [
+    { k: 0, label: 'Big favorites (-150 or shorter)', short: 'Big favorites', test: o => o <= -150 },
+    { k: 1, label: 'Short favorites (-149 to -100)', short: 'Short favorites', test: o => o > -150 && o < 0 },
+    { k: 2, label: 'Small underdogs (+100 to +149)', short: 'Small underdogs', test: o => o > 0 && o < 150 },
+    { k: 3, label: 'Big underdogs (+150 or longer)', short: 'Big underdogs', test: o => o >= 150 },
+  ];
+  const oddsBucket = b => Number.isFinite(b.odds) ? ODDS_BUCKETS.find(x => x.test(b.odds)) ?? null : null;
+  // "Braves ML" -> "Braves"; props and other non-moneyline bets have no single side to group by.
+  const sideOf = b => /\sML\b/i.test(b.bet) ? b.bet.replace(/\s+ML\b.*$/i, '').trim() : null;
+  const implied = o => o < 0 ? -o / (-o + 100) : 100 / (o + 100);
+  const monthName = ym => `${MONTHS[+ym.slice(5, 7) - 1]} ${ym.slice(0, 4)}`;
+
+  function groupBets(bets, keyFn) {
+    const g = new Map();
+    for (const b of bets) { const k = keyFn(b); if (k == null) continue; (g.get(k) || g.set(k, []).get(k)).push(b); }
+    return [...g.entries()].map(([k, list]) => ({ k, s: summarize(list) }));
+  }
+  const line = s => `${recStr(s)}, ${fmtUnits(s.net)} (${fmtPct(s.roi)} ROI)`;
+
+  const MIN_TRENDS = 30;
+  function trends(days, sportKey) {
+    const section = el('section', { class: 'card' }, el('h2', { text: 'Trends' }));
+    const graded = days.flatMap(d => d.bets.map(b => ({ ...b, date: d.date }))).filter(b => b.outcome);
+    if (graded.length < MIN_TRENDS) {
+      section.append(el('p', { class: 'muted', text: `Trends appear once there are ${MIN_TRENDS} graded bets (${graded.length} so far).` }));
+      return section;
+    }
+    const all = summarize(graded);
+    const items = [];
+    const add = (head, detail) => items.push(el('li', {}, el('strong', { text: head }), el('span', { text: detail })));
+
+    // Price range: best and worst bucket with a usable sample.
+    const buckets = groupBets(graded, b => oddsBucket(b)?.k).filter(x => x.s.graded >= 10).sort((a, b) => b.s.roi - a.s.roi);
+    if (buckets.length >= 2) {
+      const best = buckets[0], worst = buckets.at(-1);
+      const name = k => ODDS_BUCKETS[k].label;
+      if (best.s.net > 0 && worst.s.net < 0)
+        add(`${ODDS_BUCKETS[best.k].short} are the profit center`,
+          `${name(best.k)}: ${line(best.s)}. ${name(worst.k)}: ${line(worst.s)}.`);
+      else add('Results by price', `Best: ${name(best.k)}, ${line(best.s)}. Worst: ${name(worst.k)}, ${line(worst.s)}.`);
+    }
+
+    // Stake size: does a bigger stake mean better results?
+    const stakes = groupBets(graded, b => Number.isFinite(b.units) ? b.units : null).filter(x => x.s.graded >= 10).sort((a, b) => b.k - a.k);
+    if (stakes.length >= 2) {
+      const top = stakes[0], rest = summarize(graded.filter(b => b.units !== top.k));
+      const verdict = top.s.roi > rest.roi + 0.05 ? `${fmtUnits(top.k, false)} plays carry the record`
+        : top.s.roi < rest.roi - 0.05 ? `${fmtUnits(top.k, false)} plays are underperforming` : 'Stake size makes little difference';
+      add(verdict, `${fmtUnits(top.k, false)} plays: ${line(top.s)}. Everything smaller: ${line(rest)}.`);
+    }
+
+    // Wins against what the odds implied.
+    const decided = graded.filter(b => b.outcome !== 'P' && Number.isFinite(b.odds));
+    if (decided.length) {
+      const exp = decided.reduce((t, b) => t + implied(b.odds), 0);
+      const diff = all.w - exp;
+      const head = Math.abs(diff) < 3 ? 'Winning about as often as the odds expect'
+        : diff > 0 ? 'Winning more often than the odds expect' : 'Winning less often than the odds expect';
+      add(head, `${all.w} wins in ${decided.length} decided bets; the posted odds implied about ${exp.toFixed(1)}. Implied odds include the bookmaker's margin, so matching them is roughly break-even.`);
+    }
+
+    // Recent form against the whole record.
+    const RECENT = 30;
+    if (graded.length >= RECENT * 2) {
+      const recent = summarize([...graded].sort((a, b) => a.date.localeCompare(b.date)).slice(-RECENT));
+      const head = recent.roi > all.roi + 0.05 ? 'Running hot lately' : recent.roi < all.roi - 0.05 ? 'Cooling off lately' : 'Recent form matches the long run';
+      add(head, `Last ${RECENT} graded bets: ${line(recent)}. All-time: ${fmtPct(all.roi)} ROI.`);
+    }
+
+    // Best and worst sides (team or fighter) with at least 5 bets.
+    const sides = groupBets(graded, sideOf).filter(x => x.s.graded >= 5).sort((a, b) => b.s.net - a.s.net);
+    if (sides.length >= 4) {
+      const fmt = x => `${x.k} ${recStr(x.s)} (${fmtUnits(x.s.net)})`;
+      const best = sides.slice(0, 2).filter(x => x.s.net > 0), worst = sides.slice(-2).reverse().filter(x => x.s.net < 0);
+      if (best.length && worst.length)
+        add(sportKey === 'ufc' ? 'Fighters that paid, and ones that cost' : 'Teams that paid, and teams that cost',
+          `Best: ${best.map(fmt).join(', ')}. Worst: ${worst.map(fmt).join(', ')}.`);
+    }
+
+    // Month-to-month swings.
+    const months = groupBets(graded, b => b.date.slice(0, 7)).filter(x => x.s.graded >= 8).sort((a, b) => b.s.net - a.s.net);
+    if (months.length >= 3) {
+      const best = months[0], worst = months.at(-1);
+      add('Big month-to-month swings', `Best month: ${monthName(best.k)}, ${line(best.s)}. Worst: ${monthName(worst.k)}, ${line(worst.s)}.`);
+    }
+
+    section.append(items.length ? el('ul', { class: 'trends' }, items) : el('p', { class: 'muted', text: 'No clear trends yet.' }));
+    section.append(el('p', { class: 'muted note', text: 'Computed from graded bets in this repo. Small samples swing a lot, so treat these as signals to watch, not rules.' }));
+    return section;
+  }
+
+  function breakdown(days, sportKey) {
+    const all = days.flatMap(d => d.bets.map(b => ({ ...b, date: d.date })));
+    const groups = (keyFn, order) => groupBets(all, keyFn).sort(order);
+    const stake = groups(b => Number.isFinite(b.units) ? b.units : null, (a, b) => b.k - a.k);
+    const side = groups(b => oddsBucket(b)?.k, (a, b) => a.k - b.k);
+    const month = groups(b => b.date.slice(0, 7), (a, b) => b.k.localeCompare(a.k));
+    const sides = groups(sideOf, (a, b) => b.s.net - a.s.net || b.s.graded - a.s.graded).filter(x => x.s.graded);
+    const rows = (list, label) => list.map(({ k, s }) => el('tr', {},
+      el('td', { text: label(k) }),
+      el('td', { class: 'r num', text: s.graded }),
+      el('td', { class: 'r num', text: recStr(s) }),
+      el('td', { class: `r num ${signClass(s.net)}`, text: fmtUnits(s.net) }),
+      el('td', { class: `r num ${signClass(s.roi)}`, text: s.staked ? fmtPct(s.roi) : '—' })));
+    const head = first => el('thead', {}, el('tr', {},
+      el('th', { text: first }), el('th', { class: 'r', text: 'Graded' }), el('th', { class: 'r', text: 'Record' }),
+      el('th', { class: 'r', text: 'Net' }), el('th', { class: 'r', text: 'ROI' })));
+    const block = (first, list, label) => el('div', { class: 'table-scroll block' },
+      el('table', {}, head(first), el('tbody', {}, rows(list, label))));
+    return el('section', { class: 'card' },
+      el('h2', { text: 'Where the units come from' }),
+      block('Stake size', stake, k => fmtUnits(k, false) + ' plays'),
+      block('Price', side, k => ODDS_BUCKETS[k].label),
+      block('Month', month, monthName),
+      sides.length ? el('details', { class: 'block' },
+        el('summary', { text: `${sportKey === 'ufc' ? 'By fighter' : 'By team'} (${sides.length})` }),
+        block(sportKey === 'ufc' ? 'Fighter' : 'Team', sides, k => k)) : null);
+  }
+
+  function writeupToggle(d) {
+    if (!d.dispatch.length) return null;
+    const holder = el('div');
+    const btn = el('button', { class: 'more', type: 'button', text: 'Show write-up', onclick: async () => {
+      if (holder.childElementCount) { holder.replaceChildren(); btn.textContent = 'Show write-up'; return; }
+      btn.textContent = 'Loading…';
+      const texts = await Promise.all(d.dispatch.map(p => fetch(p, { cache: 'no-cache' }).then(r => r.ok ? r.text() : '').catch(() => '')));
+      holder.replaceChildren(...texts.filter(t => t.trim()).map(t => el('pre', { class: 'writeup', text: t.trim() })));
+      if (!holder.childElementCount) holder.append(el('p', { class: 'muted', text: 'Write-up could not be loaded.' }));
+      btn.textContent = 'Hide write-up';
+    } });
+    return el('div', {}, btn, holder);
+  }
+
+  function history(days) {
+    const PAGE = 30;
+    const list = el('div');
+    const section = el('section', { class: 'card' }, el('h2', { text: 'History' }), list);
+    let shown = 0;
+    const more = el('button', { class: 'more', type: 'button', onclick: () => renderMore() });
+    const renderMore = () => {
+      for (const d of days.slice(shown, shown + PAGE)) {
+        const s = summarize(d.bets);
+        list.append(el('details', { class: 'day' },
+          el('summary', {},
+            el('span', { class: 'date', text: fmtDate(d.date) }),
+            el('span', { class: 'bets', text: d.event || d.bets.map(b => b.bet).join(', ') }),
+            el('span', { class: 'rec num', text: s.graded ? recStr(s) : 'ungraded' }),
+            el('span', { class: `pl num ${s.graded ? signClass(s.net) : ''}`, text: s.graded ? fmtUnits(s.net) : '—' })),
+          el('div', { class: 'day-body' }, betTable(d.bets), writeupToggle(d))));
+      }
+      shown += PAGE;
+      if (shown < days.length) { more.textContent = `Show older (${days.length - shown} more days)`; list.after(more); }
+      else more.remove();
+    };
+    renderMore();
+    return section;
+  }
+
+  function renderSport(key, days) {
+    const main = $('#main');
+    if (!days.length) { main.replaceChildren(el('div', { class: 'status', text: `No ${SPORTS[key].name} picks yet.` })); return; }
+    main.replaceChildren(
+      tiles(summarize(days.flatMap(d => d.bets))),
+      latestCard(days),
+      chart(days),
+      trends(days, key),
+      breakdown(days, key),
+      history(days));
+  }
+
+  function renderTabs(data) {
+    const keys = Object.keys(SPORTS).filter(k => data[k].length);
+    const saved = (() => { try { return localStorage.getItem('sport'); } catch { return null; } })();
+    const fromHash = location.hash.slice(1);
+    let active = keys.includes(fromHash) ? fromHash : keys.includes(saved) ? saved : keys[0] || 'mlb';
+    const tabs = $('#tabs');
+    const select = k => {
+      active = k;
+      for (const b of tabs.children) b.setAttribute('aria-selected', String(b.dataset.k === k));
+      try { localStorage.setItem('sport', k); } catch {}
+      window.history.replaceState(null, '', '#' + k);
+      renderSport(k, data[k]);
+    };
+    tabs.replaceChildren(...keys.map(k => el('button', {
+      role: 'tab', 'data-k': k, type: 'button', text: SPORTS[k].name, onclick: () => select(k),
+    })));
+    select(active);
+  }
+
+  load().then(data => {
+    const latest = Object.values(data).flat().map(d => d.date).sort().at(-1);
+    $('#meta').replaceChildren(
+      latest ? `Latest card ${fmtDate(latest)} · ` : '',
+      el('a', { href: `https://github.com/${OWNER}/${REPO}`, text: 'source' }));
+    renderTabs(data);
+  }).catch(err => {
+    $('#main').replaceChildren(el('div', { class: 'status', text: `Couldn't load picks. ${err.message}` }));
+  });
+})();
+</script>
+</body>
+</html>
