@@ -1,5 +1,20 @@
 NBA Picks - October 6
 
-Data fetch failed: all sports data sources (ESPN, Covers, Polymarket, RotoWire, Basketball-Reference) are blocked by the session egress proxy. Unable to retrieve today's NBA slate, odds, injury reports, or team stats.
+(Preseason slate - 4 games. Regular season begins October 20.)
 
-No picks generated. If NBA regular season has begun, this run will need to be retried in an environment with broader egress access.
+HIGH CONFIDENCE
+None
+
+VALUE PLAYS
+None
+
+LEAN
+None
+
+Skipped: 4 games
+- Nets at Hornets 7 PM: ML model diverges 11pp from sportsbook (no Polymarket to resolve); Hornets missing Coby White and Kon Knueppel (preseason out) reduces talent gap vs last-season SRS; two-layer blend only
+- Pelicans at Thunder 8 PM: Load management unresolved - every meaningful Thunder player listed as Questionable; SRS model (Thunder SRS 11.04) inapplicable when starters not expected to play
+- Nuggets at Jazz 9 PM: Jokic load management confirmed (3pts in preseason opener, limited interest); prediction markets near coin-flip (Jazz 49%); only C-tier edge on Nuggets away ML; skip per load mgmt rule
+- Lakers at Warriors 10 PM: Sources disagree across all three layers (ML 51% Lakers vs Poly 37% Lakers vs SB 39% Lakers); Lakers on back-to-back; Warriors missing Butler III, Moody, and Porzingis
+
+NBA Picks - October 6 - No strong plays today.
