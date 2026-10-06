@@ -139,6 +139,19 @@ details.day summary .pl { font-weight: 600; min-width: 64px; text-align: right; 
 pre.writeup { white-space: pre-wrap; word-wrap: break-word; font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin: 12px 0 0; color: var(--text-2); }
 .muted { color: var(--text-3); font-size: 13px; }
 .more { appearance: none; background: none; border: 1px solid var(--border); color: var(--text-2); border-radius: 8px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; margin-top: 12px; }
+ul.trends { list-style: none; margin: 0; padding: 0; }
+ul.trends li { padding: 10px 0; border-bottom: 1px solid var(--border); }
+ul.trends li:first-child { padding-top: 0; }
+ul.trends li:last-child { border-bottom: 0; }
+ul.trends strong { display: block; font-weight: 600; }
+ul.trends span { color: var(--text-2); font-size: 14px; }
+.note { margin: 12px 0 0; }
+.block + .block { margin-top: 16px; }
+.block table { table-layout: fixed; min-width: 480px; }
+.block th:first-child { width: 40%; }
+details.block > summary { cursor: pointer; color: var(--text-2); font-weight: 600; font-size: 14px; padding: 4px 0; }
+details.block > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+details.block[open] > summary { margin-bottom: 8px; }
 .status { padding: 48px 0; text-align: center; color: var(--text-2); }
 @media (max-width: 640px) {
   details.day summary { grid-template-columns: 60px 1fr auto; }
@@ -442,15 +455,106 @@ pre.writeup { white-space: pre-wrap; word-wrap: break-word; font: 13px/1.55 ui-m
     return section;
   }
 
-  function breakdown(days) {
-    const all = days.flatMap(d => d.bets);
-    const groups = (keyFn, order) => {
-      const g = new Map();
-      for (const b of all) { const k = keyFn(b); if (k == null) continue; (g.get(k) || g.set(k, []).get(k)).push(b); }
-      return [...g.entries()].sort(order).map(([k, bets]) => ({ k, s: summarize(bets) }));
-    };
-    const stake = groups(b => Number.isFinite(b.units) ? b.units : null, (a, b) => b[0] - a[0]);
-    const side = groups(b => !Number.isFinite(b.odds) ? null : b.odds < 0 ? 'Favorites' : 'Underdogs', (a, b) => a[0].localeCompare(b[0]));
+  // ---------- trends ----------
+
+  const ODDS_BUCKETS = [
+    { k: 0, label: 'Big favorites (-150 or shorter)', short: 'Big favorites', test: o => o <= -150 },
+    { k: 1, label: 'Short favorites (-149 to -100)', short: 'Short favorites', test: o => o > -150 && o < 0 },
+    { k: 2, label: 'Small underdogs (+100 to +149)', short: 'Small underdogs', test: o => o > 0 && o < 150 },
+    { k: 3, label: 'Big underdogs (+150 or longer)', short: 'Big underdogs', test: o => o >= 150 },
+  ];
+  const oddsBucket = b => Number.isFinite(b.odds) ? ODDS_BUCKETS.find(x => x.test(b.odds)) ?? null : null;
+  // "Braves ML" -> "Braves"; props and other non-moneyline bets have no single side to group by.
+  const sideOf = b => /\sML\b/i.test(b.bet) ? b.bet.replace(/\s+ML\b.*$/i, '').trim() : null;
+  const implied = o => o < 0 ? -o / (-o + 100) : 100 / (o + 100);
+  const monthName = ym => `${MONTHS[+ym.slice(5, 7) - 1]} ${ym.slice(0, 4)}`;
+
+  function groupBets(bets, keyFn) {
+    const g = new Map();
+    for (const b of bets) { const k = keyFn(b); if (k == null) continue; (g.get(k) || g.set(k, []).get(k)).push(b); }
+    return [...g.entries()].map(([k, list]) => ({ k, s: summarize(list) }));
+  }
+  const line = s => `${recStr(s)}, ${fmtUnits(s.net)} (${fmtPct(s.roi)} ROI)`;
+
+  const MIN_TRENDS = 30;
+  function trends(days, sportKey) {
+    const section = el('section', { class: 'card' }, el('h2', { text: 'Trends' }));
+    const graded = days.flatMap(d => d.bets.map(b => ({ ...b, date: d.date }))).filter(b => b.outcome);
+    if (graded.length < MIN_TRENDS) {
+      section.append(el('p', { class: 'muted', text: `Trends appear once there are ${MIN_TRENDS} graded bets (${graded.length} so far).` }));
+      return section;
+    }
+    const all = summarize(graded);
+    const items = [];
+    const add = (head, detail) => items.push(el('li', {}, el('strong', { text: head }), el('span', { text: detail })));
+
+    // Price range: best and worst bucket with a usable sample.
+    const buckets = groupBets(graded, b => oddsBucket(b)?.k).filter(x => x.s.graded >= 10).sort((a, b) => b.s.roi - a.s.roi);
+    if (buckets.length >= 2) {
+      const best = buckets[0], worst = buckets.at(-1);
+      const name = k => ODDS_BUCKETS[k].label;
+      if (best.s.net > 0 && worst.s.net < 0)
+        add(`${ODDS_BUCKETS[best.k].short} are the profit center`,
+          `${name(best.k)}: ${line(best.s)}. ${name(worst.k)}: ${line(worst.s)}.`);
+      else add('Results by price', `Best: ${name(best.k)}, ${line(best.s)}. Worst: ${name(worst.k)}, ${line(worst.s)}.`);
+    }
+
+    // Stake size: does a bigger stake mean better results?
+    const stakes = groupBets(graded, b => Number.isFinite(b.units) ? b.units : null).filter(x => x.s.graded >= 10).sort((a, b) => b.k - a.k);
+    if (stakes.length >= 2) {
+      const top = stakes[0], rest = summarize(graded.filter(b => b.units !== top.k));
+      const verdict = top.s.roi > rest.roi + 0.05 ? `${fmtUnits(top.k, false)} plays carry the record`
+        : top.s.roi < rest.roi - 0.05 ? `${fmtUnits(top.k, false)} plays are underperforming` : 'Stake size makes little difference';
+      add(verdict, `${fmtUnits(top.k, false)} plays: ${line(top.s)}. Everything smaller: ${line(rest)}.`);
+    }
+
+    // Wins against what the odds implied.
+    const decided = graded.filter(b => b.outcome !== 'P' && Number.isFinite(b.odds));
+    if (decided.length) {
+      const exp = decided.reduce((t, b) => t + implied(b.odds), 0);
+      const diff = all.w - exp;
+      const head = Math.abs(diff) < 3 ? 'Winning about as often as the odds expect'
+        : diff > 0 ? 'Winning more often than the odds expect' : 'Winning less often than the odds expect';
+      add(head, `${all.w} wins in ${decided.length} decided bets; the posted odds implied about ${exp.toFixed(1)}. Implied odds include the bookmaker's margin, so matching them is roughly break-even.`);
+    }
+
+    // Recent form against the whole record.
+    const RECENT = 30;
+    if (graded.length >= RECENT * 2) {
+      const recent = summarize([...graded].sort((a, b) => a.date.localeCompare(b.date)).slice(-RECENT));
+      const head = recent.roi > all.roi + 0.05 ? 'Running hot lately' : recent.roi < all.roi - 0.05 ? 'Cooling off lately' : 'Recent form matches the long run';
+      add(head, `Last ${RECENT} graded bets: ${line(recent)}. All-time: ${fmtPct(all.roi)} ROI.`);
+    }
+
+    // Best and worst sides (team or fighter) with at least 5 bets.
+    const sides = groupBets(graded, sideOf).filter(x => x.s.graded >= 5).sort((a, b) => b.s.net - a.s.net);
+    if (sides.length >= 4) {
+      const fmt = x => `${x.k} ${recStr(x.s)} (${fmtUnits(x.s.net)})`;
+      const best = sides.slice(0, 2).filter(x => x.s.net > 0), worst = sides.slice(-2).reverse().filter(x => x.s.net < 0);
+      if (best.length && worst.length)
+        add(sportKey === 'ufc' ? 'Fighters that paid, and ones that cost' : 'Teams that paid, and teams that cost',
+          `Best: ${best.map(fmt).join(', ')}. Worst: ${worst.map(fmt).join(', ')}.`);
+    }
+
+    // Month-to-month swings.
+    const months = groupBets(graded, b => b.date.slice(0, 7)).filter(x => x.s.graded >= 8).sort((a, b) => b.s.net - a.s.net);
+    if (months.length >= 3) {
+      const best = months[0], worst = months.at(-1);
+      add('Big month-to-month swings', `Best month: ${monthName(best.k)}, ${line(best.s)}. Worst: ${monthName(worst.k)}, ${line(worst.s)}.`);
+    }
+
+    section.append(items.length ? el('ul', { class: 'trends' }, items) : el('p', { class: 'muted', text: 'No clear trends yet.' }));
+    section.append(el('p', { class: 'muted note', text: 'Computed from graded bets in this repo. Small samples swing a lot, so treat these as signals to watch, not rules.' }));
+    return section;
+  }
+
+  function breakdown(days, sportKey) {
+    const all = days.flatMap(d => d.bets.map(b => ({ ...b, date: d.date })));
+    const groups = (keyFn, order) => groupBets(all, keyFn).sort(order);
+    const stake = groups(b => Number.isFinite(b.units) ? b.units : null, (a, b) => b.k - a.k);
+    const side = groups(b => oddsBucket(b)?.k, (a, b) => a.k - b.k);
+    const month = groups(b => b.date.slice(0, 7), (a, b) => b.k.localeCompare(a.k));
+    const sides = groups(sideOf, (a, b) => b.s.net - a.s.net || b.s.graded - a.s.graded).filter(x => x.s.graded);
     const rows = (list, label) => list.map(({ k, s }) => el('tr', {},
       el('td', { text: label(k) }),
       el('td', { class: 'r num', text: s.graded }),
@@ -460,12 +564,16 @@ pre.writeup { white-space: pre-wrap; word-wrap: break-word; font: 13px/1.55 ui-m
     const head = first => el('thead', {}, el('tr', {},
       el('th', { text: first }), el('th', { class: 'r', text: 'Graded' }), el('th', { class: 'r', text: 'Record' }),
       el('th', { class: 'r', text: 'Net' }), el('th', { class: 'r', text: 'ROI' })));
+    const block = (first, list, label) => el('div', { class: 'table-scroll block' },
+      el('table', {}, head(first), el('tbody', {}, rows(list, label))));
     return el('section', { class: 'card' },
       el('h2', { text: 'Where the units come from' }),
-      el('div', { class: 'table-scroll' },
-        el('table', {}, head('Stake size'), el('tbody', {}, rows(stake, k => fmtUnits(k, false) + ' plays')))),
-      el('div', { class: 'table-scroll', style: 'margin-top:12px' },
-        el('table', {}, head('Price'), el('tbody', {}, rows(side, k => k)))));
+      block('Stake size', stake, k => fmtUnits(k, false) + ' plays'),
+      block('Price', side, k => ODDS_BUCKETS[k].label),
+      block('Month', month, monthName),
+      sides.length ? el('details', { class: 'block' },
+        el('summary', { text: `${sportKey === 'ufc' ? 'By fighter' : 'By team'} (${sides.length})` }),
+        block(sportKey === 'ufc' ? 'Fighter' : 'Team', sides, k => k)) : null);
   }
 
   function writeupToggle(d) {
@@ -514,7 +622,8 @@ pre.writeup { white-space: pre-wrap; word-wrap: break-word; font: 13px/1.55 ui-m
       tiles(summarize(days.flatMap(d => d.bets))),
       latestCard(days),
       chart(days),
-      breakdown(days),
+      trends(days, key),
+      breakdown(days, key),
       history(days));
   }
 
