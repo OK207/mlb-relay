@@ -1,0 +1,35 @@
+UFC Picks - UFC Fight Night: Allen vs. Duncan (UFC Vegas 122) - October 10
+
+UFC Results UFC 332: Silva vs. Wang:
+  L  Green ML +180 | 0.5u -> -0.5u
+Day P&L: -0.5u (0W-1L)
+
+---
+
+EVENT: UFC Vegas 122 - Allen vs. Duncan
+Date: Saturday, October 10, 2026
+Venue: Meta APEX, Las Vegas, NV
+Main card: 8 PM ET (Paramount+) | Prelims: 5 PM ET
+
+---
+
+VALUE PLAYS
+
+Duncan ML +108 vs Brendan Allen (Middleweight, 5 rounds)
+Confidence: 6/10 | Units: 0.75u | Win: +0.81u
+Why: Duncan's striking profile dominates every metric - SLpM 4.45 vs Allen's 3.75,
+SApM 2.36 vs Allen's 3.78 (striking defense differential SDS +2.09, crossing the
+strong-signal threshold of 2.0), 54% strike defense vs Allen's 47%, 58% accuracy
+vs 52%. Line has moved from -140 to -132, showing market money on Duncan.
+At +108, implied break-even is 48%; statistical profile and physical attributes
+(younger, taller, 5-fight streak) support 52-54% model probability.
+Edge: ~4-6% (A-tier) | Note: 5-round format and Allen's grappling (1.52 TD/15min,
+1.1 sub attempts vs Duncan's 0) are primary risk factors.
+
+---
+
+No Play: Allen ML (-132) - Market favorite, but striking stats favor Duncan; insufficient value
+No Play: Herbert vs. Camilo - Camilo has better recent form and TD accuracy (53% vs 21%),
+         but no odds available to assess value
+No Play: Fili vs. Kamaka III - Kamaka is listed at +138 but no stat base to confirm edge
+No Play: Prelim fights - insufficient odds and stats data

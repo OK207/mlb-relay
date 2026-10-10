@@ -1,0 +1,11 @@
+{
+  "event": "UFC Fight Night: Allen vs. Duncan",
+  "event_date": "2026-10-10",
+  "picks": [
+    {
+      "bet": "Duncan ML",
+      "odds": 108,
+      "units": 0.75
+    }
+  ]
+}
