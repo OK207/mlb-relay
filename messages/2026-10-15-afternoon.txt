@@ -1,0 +1,9 @@
+MLB Afternoon - October 15 - No new plays. Morning card covers the slate.
+
+NLCS Game 4 (Brewers vs Dodgers, 8 PM ET): Brewers SP not officially named (Drohan or May, conflicting reports); skip condition triggered on incomplete SP matchup data. Dodgers ML not playable without full Layer 1 analysis.
+
+Tyler Glasnow K Over 5.5 (-154): Model shows A-tier edge (10.3%, mean 7.47 Ks) but HP umpire identity unconfirmed - hard gate fail. No Play.
+
+ALCS Game 3 (Rays vs Guardians): Already covered by morning card (Guardians ML 1.0u); K props skipped due to 1.0u correlation rule.
+
+No Play: Dodgers ML - Brewers SP unconfirmed / Glasnow K Over 5.5 - umpire identity not confirmed / Guardians game - already in morning card
