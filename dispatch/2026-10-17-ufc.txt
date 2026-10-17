@@ -1,0 +1,17 @@
+UFC Picks - UFC Fight Night: Buckley vs. Malott - October 17
+
+UFC Results Allen vs. Duncan:
+  L  Duncan ML +108 | 0.75u -> -0.75u
+Day P&L: -0.75u  (0W-1L)
+
+LEAN (plus-money only)
+Jasudavicius ML +240 vs Blanchfield
+Confidence: 3/10 | Units: 0.5u | Win: +1.20u
+Why: Blanchfield returns from 12-month injury layoff (withdrew from UFC 330 in August); ring rust creates meaningful uncertainty that market-implied 29% for Jasudavicius underprices.
+Edge: ~2% (C) | Qualified: Plus-money, layoff flag applied, capped 0.5u
+
+No Play: Malott ML -142 - sharp-driven favorite with model at market (56-58%), no edge
+No Play: Buckley ML +120 - central model estimate near market implied (44% vs 45.5%), edge < 1%
+No Play: Blanchfield ML - 12-month layoff flag discounts heavy favorite pricing
+No Play: Daukaus ML -222 - heavy price, insufficient data to confirm edge
+No Play: Nallo ML -278 - price too high relative to available statistical advantage
