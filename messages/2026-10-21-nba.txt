@@ -1,0 +1,8 @@
+NBA Results Oct 20:
+  L  Knicks ML -170 | 1.5u -> -1.5u
+  L  Spurs ML -120 | 1.5u -> -1.5u
+Day P&L: -3.0u (0W-2L)
+
+NBA Picks - October 21 - No strong plays today.
+
+Skipped: 11 games - Day 2 of 2026-27 season. No reliable in-season model data (too early for SRS/ELO); no Polymarket markets found; sportsbook lines only partially recovered (Lakers ~-190, Kings +4.5, Wizards line suspicious). All games fail the no-Polymarket single-signal threshold.
