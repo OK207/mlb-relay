@@ -29,6 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      HAS_ODDS_KEY: ${{ secrets.ODDS_API_KEY != '' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -40,7 +42,11 @@ jobs:
       - name: Install Python dependencies
         run: pip install requests beautifulsoup4 playwright
 
+      # Only the covers.com scrape needs a browser, and installing one has
+      # taken up to 8 minutes while a routine waits on this bundle. With The
+      # Odds API key set, covers is skipped and so is this step.
       - name: Install Playwright browsers
+        if: env.HAS_ODDS_KEY != 'true'
         run: playwright install chromium --with-deps
 
       - name: Resolve date (ET)

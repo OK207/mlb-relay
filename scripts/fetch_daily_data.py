@@ -134,24 +134,77 @@ def fetch_slate(d: str) -> list:
                 "sp_home": sp(ht),
             })
 
-    # The schedule's probablePitcher carries no handedness, which is why every
-    # bundle so far said throws "?". One people lookup fills it for the slate.
+    # The schedule's probablePitcher carries no handedness (every bundle so far
+    # said throws "?"), and the season leaderboards behind sp_stats only cover
+    # qualified pitchers. One people lookup fills both for exactly today's SPs.
     ids = [gm[s]["id"] for gm in games for s in ("sp_away", "sp_home") if gm[s]["id"]]
     if ids:
         try:
             people = SESSION.get(
                 "https://statsapi.mlb.com/api/v1/people?personIds="
-                + ",".join(str(i) for i in ids),
-                timeout=20,
+                + ",".join(str(i) for i in ids)
+                + f"&hydrate=stats(group=[pitching],type=[season,gameLog],season={d[:4]})",
+                timeout=25,
             ).json().get("people", [])
-            hand = {p["id"]: p.get("pitchHand", {}).get("code", "?") for p in people}
+            info = {p["id"]: (p.get("pitchHand", {}).get("code", "?"), _sp_form(p)) for p in people}
             for gm in games:
                 for s in ("sp_away", "sp_home"):
-                    if gm[s]["id"] in hand:
-                        gm[s]["throws"] = hand[gm[s]["id"]]
+                    if gm[s]["id"] in info:
+                        gm[s]["throws"], form = info[gm[s]["id"]]
+                        gm[s].update(form)
         except Exception as e:
-            print(f"  pitcher handedness lookup failed: {e}")
+            print(f"  pitcher lookup failed: {e}")
+        # The batch hydrate has come back without stats; the per-pitcher
+        # stats endpoint is the dependable way to get them.
+        for gm in games:
+            for s in ("sp_away", "sp_home"):
+                sp = gm[s]
+                if sp["id"] and "season" not in sp:
+                    try:
+                        st = SESSION.get(
+                            f"https://statsapi.mlb.com/api/v1/people/{sp['id']}/stats"
+                            f"?stats=season,gameLog&group=pitching&season={d[:4]}",
+                            timeout=20,
+                        ).json()
+                        sp.update(_sp_form(st))
+                    except Exception as e:
+                        print(f"  stats for {sp['name']} failed: {e}")
+        print(f"  SP season lines: {sum('season' in gm[s] for gm in games for s in ('sp_away', 'sp_home'))}"
+              f" of {len(ids)}")
     return games
+
+
+def _sp_form(person: dict) -> dict:
+    """Season line and last three starts for one pitcher, from a people lookup."""
+    out = {}
+    for block in person.get("stats", []):
+        kind = block.get("type", {}).get("displayName")
+        splits = block.get("splits", [])
+        if kind == "season" and splits:
+            st = splits[-1].get("stat", {})
+            bf = st.get("battersFaced") or 0
+            gs = st.get("gamesStarted") or 0
+            outs = _ip_to_outs(st.get("inningsPitched"))
+            out["season"] = {
+                "era": st.get("era"), "whip": st.get("whip"), "ip": st.get("inningsPitched"),
+                "gs": gs,
+                "k_pct": round((st.get("strikeOuts") or 0) / bf, 3) if bf else None,
+                "bb_pct": round((st.get("baseOnBalls") or 0) / bf, 3) if bf else None,
+                "ip_per_start": round(outs / 3 / gs, 1) if gs else None,
+            }
+        elif kind == "gameLog":
+            starts = [s for s in splits if (s.get("stat", {}).get("gamesStarted") or 0) > 0][-3:]
+            if starts:
+                outs = sum(_ip_to_outs(s["stat"].get("inningsPitched")) for s in starts)
+                er = sum(s["stat"].get("earnedRuns") or 0 for s in starts)
+                out["last3"] = {
+                    "dates": [s.get("date") for s in starts],
+                    "ip": f"{outs // 3}.{outs % 3}",
+                    "era": round(27 * er / outs, 2) if outs else None,
+                    "k": sum(s["stat"].get("strikeOuts") or 0 for s in starts),
+                    "bb": sum(s["stat"].get("baseOnBalls") or 0 for s in starts),
+                }
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -190,6 +243,9 @@ def fetch_sp_stats(year: str) -> dict:
         f"&min=5&selections=p_era,xera,k_percent,bb_percent,p_formatted_ip&csv=true"
     )
     try:
+        # Savant's CSV starts with a byte-order mark. Decoding as plain UTF-8
+        # left it in front of the header, the check below failed, and every
+        # bundle since 9/22 fell back to stats with no xERA, K% or BB%.
         text = SESSION.get(
             url,
             timeout=25,
@@ -197,7 +253,7 @@ def fetch_sp_stats(year: str) -> dict:
                 "Accept": "text/csv,text/plain,*/*",
                 "Referer": "https://baseballsavant.mlb.com/leaderboard/custom",
             },
-        ).text
+        ).content.decode("utf-8-sig", errors="replace")
         # Validate: real CSV starts with the header line
         if text.strip().startswith('"last_name, first_name"') or text.strip().startswith('last_name'):
             reader = csv.DictReader(io.StringIO(text))
@@ -218,12 +274,44 @@ def fetch_sp_stats(year: str) -> dict:
                     }
             if stats:
                 return stats
+        print(f"  Savant custom leaderboard was not CSV ({text.strip()[:60]!r})")
+        stats = _fetch_xera_expected(year)
+        if stats:
+            return stats
         print("  Savant returned HTML — falling back to MLB Stats API")
     except Exception as e:
         print(f"  Savant error: {e} — falling back to MLB Stats API")
 
     # Fallback: MLB Stats API season pitching stats
     return _fetch_sp_stats_mlbapi(year)
+
+
+def _fetch_xera_expected(year: str) -> dict:
+    """xERA from Savant's expected-statistics leaderboard, the second source."""
+    try:
+        text = SESSION.get(
+            "https://baseballsavant.mlb.com/leaderboard/expected_statistics"
+            f"?type=pitcher&year={year}&position=&team=&filterType=bip&min=25&csv=true",
+            timeout=25,
+            headers={"Accept": "text/csv,text/plain,*/*"},
+        ).content.decode("utf-8-sig", errors="replace")
+        rows = list(csv.DictReader(io.StringIO(text)))
+        if not rows or "xera" not in rows[0]:
+            print(f"  Savant expected stats was not CSV ({text.strip()[:60]!r})")
+            return {}
+        stats = {}
+        for row in rows:
+            name = row.get("last_name, first_name", "")
+            if "," in name:
+                last, first = name.split(",", 1)
+                name = f"{first.strip()} {last.strip()}"
+            if name:
+                stats[name] = {"era": row.get("era", ""), "xera": row.get("xera", ""),
+                               "k_pct": "", "bb_pct": "", "ip": "", "source": "savant-expected"}
+        return stats
+    except Exception as e:
+        print(f"  Savant expected stats error: {e}")
+        return {}
 
 
 def _fetch_sp_stats_mlbapi(year: str) -> dict:
@@ -742,7 +830,9 @@ def main():
         ("standings", lambda: fetch_standings(year)),
         ("sp_stats",  lambda: fetch_sp_stats(year)),
         ("team_splits", lambda: fetch_team_splits(year)),
-        ("odds",      fetch_odds_playwright),
+        # covers.com is the fallback for when The Odds API is not configured;
+        # it needs a browser, which is slow to install while a routine waits.
+        ("odds",      (lambda: {}) if os.environ.get("ODDS_API_KEY") else fetch_odds_playwright),
         ("odds_api",  fetch_odds_api),
         ("weather",   lambda: fetch_weather_wttr(bundle.get("slate", []))),
         ("weather_first_pitch", lambda: fetch_weather_first_pitch(bundle.get("slate", []))),
