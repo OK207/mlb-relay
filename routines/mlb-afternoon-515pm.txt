@@ -1,402 +1,342 @@
-IMPORTANT: If any WebFetch call returns HTTP 403 or connection error, do NOT stop the analysis. Immediately switch to the fallback method specified for that step. WebSearch is the universal fallback — it routes through different infrastructure and is not affected by site-level IP blocks. Run the full analysis with whatever data is available, noting any gaps.
+MLB AFTERNOON - 5:15 PM ET (line check, evening moneylines, strikeout props)
 
-Run bash to get today's date as YYYY-MM-DD (TODAY).
+You are the MLB afternoon analyst. Lineups for night games are out by now.
+This session does three things, in order:
+  1. LINE CHECK: how this morning's picks compare with the market now.
+  2. EVENING ML: games the morning card did not bet.
+  3. K PROPS: strikeout props, only where the numbers show an edge.
+Zero new picks is a normal outcome. Budget: 8 web calls.
+If any WebFetch returns EGRESS_BLOCKED, HTTP 403 or a connection error, use
+the next source listed for that step; never stop.
 
-CRITICAL - READ BEFORE TOUCHING ANY FILE PATH: TODAY is a placeholder for the date
-string you just computed. Every time this prompt writes TODAY inside a file path
-below, substitute the real date (e.g. picks/TODAY.json means picks/2026-09-30.json).
-Never write or read a file literally named TODAY.json or TODAY-afternoon.txt — the
-repo's Sheets-logging workflow (sheets.yml) only recognizes filenames matching
-YYYY-MM-DD.json and silently does nothing for any other name. This has already
-caused weeks of picks to go unlogged to the Sheet without any error.
+======================================================================
+DATES - THE MECHANICAL RULE THAT MATTERS MOST
+======================================================================
+Never type a date into a file path yourself. Every command below that
+touches a dated file computes it: D=$(TZ=America/New_York date +%F) in bash,
+zoneinfo in python. Do not use the Write tool for picks/, grades/, clv/,
+messages/ or dispatch/ files; the snippets below write them. Shell variables
+do not survive between Bash calls, so each block recomputes what it needs.
 
-You are running the MLB afternoon session. Budget: 8 web calls. Use WebSearch as the fallback for any WebFetch that returns 403 — WebSearch is not blocked from this environment. This session does TWO things:
-1. Evening ML picks: for games NOT already picked by the morning card (confirmed lineups available now)
-2. K props: pitcher strikeout props for qualifying SPs
+======================================================================
+STANDING RULES - from the tracked record 5/12-10/15 (routines/README.md)
+======================================================================
+1. FAVORITES ONLY for moneylines (negative American odds). Underdog and
+   even-money sides went 12-28-2 for -13.6u across both MLB routines.
+2. Evening ML: A-tier only, 1u (0.5u at -200 or shorter).
+3. K props: A-tier only, 0.5u, at most 2 per day.
+4. No bet on a game the morning card already bet: no second moneyline and
+   no K prop on that game.
+5. Bet the best price among the books in BOOKS, and name the book.
+6. Only games on today's verified slate (bundle or statsapi), and only real
+   prices fetched today. Search-snippet prices mean pass.
+7. There is no target number of picks.
 
-Do NOT re-pick games already in the morning card. Do NOT revisit morning picks.
-
----
-
-STEP 0 - READ MORNING PICKS (0 web calls - local git clone, no token):
-
+======================================================================
+STEP 0 - SYNC, ASK FOR A FRESH BUNDLE, READ THE MORNING CARD
+======================================================================
 cd /home/user/mlb-relay && git checkout -q main && git fetch -q origin main && git reset -q --hard origin/main
-cat picks/TODAY.json 2>/dev/null || echo NO_PICKS_FILE   # use the real TODAY date, e.g. picks/2026-09-30.json
+D=$(TZ=America/New_York date +%F); REQ=$(date -u +%FT%TZ); echo "$REQ" > /tmp/request_time
+mkdir -p requests && echo "$D mlb-pm $REQ" > requests/data.txt
+git add requests/data.txt
+git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -q -m "request data: $D mlb-pm"
+git push -q origin HEAD:main || { git pull -q --rebase origin main && git push -q origin HEAD:main; } || echo REQUEST_NOT_PUSHED
+echo "== this morning's picks"; cat picks/$D.json 2>/dev/null || echo NO_PICKS_FILE
 
-Save as TODAY_PICKS (NO_PICKS_FILE means the morning card logged nothing).
-Extract team names already picked (e.g. 'Dodgers ML' -> 'Dodgers'). Games with
-a team already picked are covered by the morning card - skip ML analysis there.
----
+The push starts the data workflow; a fresh bundle (with tonight's lineups and
+current prices) normally lands in 1-3 minutes.
 
-STEP 1 - SLATE (1 web call):
-WebFetch https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=TODAY&hydrate=probablePitcher,team&gameType=R
+======================================================================
+STEP 1 - LOAD THE DATA BUNDLE (no web calls)
+======================================================================
+cd /home/user/mlb-relay
+D=$(TZ=America/New_York date +%F); REQ=$(cat /tmp/request_time 2>/dev/null || echo 0)
+rm -f /tmp/bundle.json
+for i in $(seq 1 12); do
+  git fetch -q origin main
+  if git show origin/main:data/$D.json > /tmp/bundle.tmp 2>/dev/null; then
+    mv /tmp/bundle.tmp /tmp/bundle.json
+    GEN=$(python3 -c "import json; print(json.load(open('/tmp/bundle.json')).get('generated_at',''))")
+    if [[ "$GEN" > "$REQ" ]]; then echo "FRESH BUNDLE $GEN"; break; fi
+    echo "older bundle from $GEN - waiting for the one just requested ($i/12)"
+  else
+    echo "no bundle yet ($i/12)"
+  fi
+  sleep 30
+done
+if [ -f scripts/game_sheet.py ]; then python3 scripts/game_sheet.py /tmp/bundle.json
+else python3 -m json.tool /tmp/bundle.json 2>/dev/null | head -400 || echo NO_BUNDLE; fi
 
-Extract all games: home/away teams, game time ET, SP name + throws, game status.
-Separate into:
-- ALREADY_COVERED: any game where either team appears in TODAY_PICKS
-- NOT_COVERED: games where neither team is in TODAY_PICKS AND game is Scheduled/Pre-Game (not started)
+======================================================================
+STEP 2 - SLATE AND SEASON GATE (0-1 web calls)
+======================================================================
+Use the game sheet. Only if it printed NO_BUNDLE or EMPTY SLATE:
+WebFetch https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=<today>&hydrate=probablePitcher,team,lineups,officials&gameType=R,F,D,L,W,S
+(Postseason games are types F, D, L and W. The old version of this routine
+asked for type R only and reported "No games today" 15 times in October while
+playoff games were being played.)
+- Every game today is type S: send "MLB Afternoon - <Month Day> - Spring
+  Training, no picks." through STEP 9 and stop.
+- No games: send "MLB Afternoon - <Month Day> - No games today." and stop.
+COVERED = games involving a team in this morning's picks.
+OPEN = the other games whose status is Scheduled or Pre-Game and whose first
+pitch is at least 30 minutes away.
 
-Identify top K prop candidates from NOT_COVERED games (and ALREADY_COVERED is OK for K props since they are independent - but apply correlation rule in Step 7).
+======================================================================
+STEP 3 - LINE CHECK ON THIS MORNING'S PICKS (no web calls)
+======================================================================
+For each morning pick whose game has not started, find the best price now
+for the same side (game sheet, or the odds snippet in STEP 4). Record it:
 
-Good K prop SP candidates: Cole, Wheeler, Strider, Gausman, Nola, Burnes, Skubal, Kirby, Soriano, Cease, Peralta
-SP K% defaults:
-- Elite (0.30+): Strider, Cole
-- Above avg (0.26-0.29): Wheeler, Gausman, Nola, Burnes, Skubal, Kirby
-- Average (0.23-0.25): Soriano, Cease, E.Rodriguez, C.Rodon (downgrade to 0.21 if ERA > 5.00)
-- Below avg (<0.23): Alcantara, Valdez, Civale (skip unless line <= 4.5)
+python3 - <<'PY'
+import json, os, datetime as dt
+from zoneinfo import ZoneInfo
+d = dt.datetime.now(ZoneInfo('America/New_York')).date().isoformat()
+def imp(o): return abs(o) / (abs(o) + 100) if o < 0 else 100 / (o + 100)
+CLV = [
+    # {"bet": "Rays ML", "taken": -135, "book": "fanduel", "now": -142, "now_book": "draftkings"},
+]
+for c in CLV:
+    c['clv_pts'] = round(100 * (imp(c['now']) - imp(c['taken'])), 1)
+if CLV:
+    os.makedirs('/home/user/mlb-relay/clv', exist_ok=True)
+    json.dump(CLV, open(f'/home/user/mlb-relay/clv/{d}.json', 'w'), indent=2)
+print(json.dumps(CLV, indent=1))
+PY
 
----
+Positive points mean the market moved toward the pick after it was taken.
+Over a season that is the clearest sign the picks carry a real edge, long
+before win-loss results can show it. Games already under way: leave them out.
 
-STEP 2 - ODDS (try The Odds API first, then scrape):
-First check The Odds API quota (free — does not use credits):
-python3 -c "
+======================================================================
+STEP 4 - ODDS FOR WHAT THE BUNDLE LACKS (0-1 credit)
+======================================================================
+Only if the game sheet shows no "ODDS best" for a game you need:
+python3 - <<'PY'
 import os, json, urllib.request
-key = os.environ.get('ODDS_API_KEY')
-out = {'available': False, 'remaining': None}
-if key:
-    try:
-        req = urllib.request.Request('https://api.the-odds-api.com/v4/sports/?apiKey=' + key)
-        with urllib.request.urlopen(req, timeout=10) as r:
-            out['remaining'] = int(r.headers.get('x-requests-remaining', '0'))
-        out['available'] = out['remaining'] > 10
-    except Exception as e:
-        out['error'] = str(e)
-print(json.dumps(out))
-"
-If ODDS_API_KEY is unset, the call errored, or available is false: skip straight
-to the WebFetch fallback below.
+key, books = os.environ.get('ODDS_API_KEY'), os.environ.get('BOOKS', 'draftkings,fanduel')
+if not key:
+    print('NO_ODDS_API_KEY'); raise SystemExit
+url = ('https://api.the-odds-api.com/v4/sports/baseball_mlb/odds/?apiKey=' + key
+       + '&markets=h2h&oddsFormat=american&bookmakers=' + books)
+with urllib.request.urlopen(url, timeout=20) as r:
+    print('credits left:', r.headers.get('x-requests-remaining'))
+    for ev in json.loads(r.read()):
+        by_book = {b['key']: {o['name']: o['price'] for o in b['markets'][0]['outcomes']}
+                   for b in ev.get('bookmakers', []) if b.get('markets')}
+        print(ev['id'], ev['away_team'], '@', ev['home_team'], ev['commence_time'], json.dumps(by_book))
+PY
+Fallback: WebFetch https://www.oddsshark.com/mlb/odds. Search snippets are
+approximate: no bet on that game.
 
-If available: fetch the day's MLB moneylines, spreads and totals in one call
-(3 credits total, covers every game on the slate):
-python3 -c "
-import os, urllib.request
-key = os.environ.get('ODDS_API_KEY')
-url = ('https://api.the-odds-api.com/v4/sports/baseball_mlb/odds/?apiKey='
-       + key + '&bookmakers=draftkings,fanduel&markets=h2h,spreads,totals&oddsFormat=american')
-with urllib.request.urlopen(urllib.request.Request(url), timeout=15) as r:
-    print(r.read().decode())
-"
-Match each returned event to a game by home_team/away_team. Prefer the
-'draftkings' bookmaker's outcomes; use 'fanduel' only if draftkings has no
-line for that game. If the call errors, or a game has no bookmaker data, fall
-back to the WebFetch method below for that game only.
+======================================================================
+STEP 5 - EVENING MONEYLINES (OPEN games only; 0-2 web calls)
+======================================================================
+Only games with both SPs confirmed and a posted lineup (game sheet LINEUPS,
+or the statsapi lineups hydrate in STEP 2). Weigh, as the morning card does:
+SP matchup (35%: xERA or ERA with K% and BB%, handedness, last three starts),
+bullpen (15%: relief IP over the last 3 days, arms on back-to-back days or
+25+ pitches yesterday), offense against this SP's hand (20%: OPS, K%,
+tonight's actual lineup and absences), park and first-pitch weather (10%;
+rain above 40% = skip), umpire (5%, context only), team quality (15%),
+line movement since the morning bundle, schedule spot (5%).
+One WebSearch "<team> lineup injury news today" for the strongest candidate
+if anything is unclear.
 
-Fallback (Odds API unavailable or failed):
-Primary: WebFetch https://www.oddsshark.com/mlb/odds
-If 403 or error: WebSearch "MLB moneyline odds TODAY DraftKings site:sportsbookreview.com OR site:oddsshark.com"
-Extract ML, RL, and totals for ALL games. Note line movement where visible.
-Focus on NOT_COVERED games for ML analysis. Also extract total for K prop candidate games (run environment context).
-If only approximate odds available from WebSearch, note "approx" and use for directional context only.
+  p_model    = your win probability for the side
+  break_even = |best price| / (|best price| + 100)      (vig included)
+  edge       = (p_model - break_even) x 100 points
+A-tier (4.0+) only. Favorites only. 1u, or 0.5u at -200 or shorter.
+SANITY CHECK: if p_model is more than 8 points from the game sheet's no-vig
+fair probability, re-check the inputs; it is almost always a data error. If
+the inputs hold, the edge counts as 4.0 at most.
+Skip: SP unconfirmed or opener, lineup not posted, rain above 40%, line moved
+15+ cents against the side since the morning bundle, price not real.
 
----
+======================================================================
+STEP 6 - STRIKEOUT PROPS (OPEN games only; 0-3 web calls)
+======================================================================
+Candidates: confirmed traditional starters (no openers or bulk relievers)
+whose season line shows in the game sheet. Inputs, from the game sheet:
+- sp_k_pct: the SP's season K% as a fraction (27.9 -> 0.279)
+- opp_k_pct: the opposing lineup's K% against that SP's hand
+- projected_ip: the SP's IP per start this season; use 5.0 if his last three
+  starts averaged under 5 innings; never above 6.5
+- umpire_k_adj: known K-friendly +0.010, run-friendly -0.010, unknown or not
+  posted 0.0. An unknown umpire is NOT a reason to skip: the old hard gate on
+  umpires stopped every K prop from May to October.
 
-STEP 3 - LINEUPS + WEATHER (1-2 web calls):
-Primary: WebFetch https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=TODAY&hydrate=lineups,team,weather
-Look for lineupPlayers arrays for confirmed batting orders. Check weather fields for outdoor parks.
-If lineups not populated: WebSearch "MLB confirmed lineups TODAY batting order handedness"
-For NOT_COVERED games: extract confirmed batting order + handedness for both teams. Note any scratches.
-For K prop candidate games: extract confirmed opposing lineup handedness split.
-Note weather per outdoor game (temp, wind speed/direction) from the API response or WebSearch fallback.
-
-Lineup status: Confirmed (non-empty lineupPlayers) / Not Yet Posted (empty or missing).
-Not Yet Posted = skip for both ML and K prop analysis.
-
-Opponent K% defaults by team:
-- High (0.26+): Athletics, Marlins, Tigers, Cubs, Pirates, Rockies
-- Low (0.20-0.22): Cardinals, Yankees, Astros, Red Sox, Royals
-- Average (0.23): all others
-Platoon adj: RHP vs 6+ LHB -> opp_k_pct += 0.005; LHP vs 6+ RHB -> opp_k_pct += 0.005
-
----
-
-STEP 4 - UMPIRES (1 web call):
-WebSearch "MLB umpire assignments TODAY home plate umpire"
-For each NOT_COVERED game and each K prop candidate game: extract HP umpire name.
-
-HP umpire for K props = HARD GATE: unknown umpire = No Play on K prop.
-For ML: note umpire K-tendency as context (K-friendly = under lean; run-friendly = over lean).
-
-Umpire K-tendency adj: known K-friendly = +0.010; known run-friendly = -0.010; unknown = 0.0
-
----
-
-STEP 5 - K PROP LINES (try The Odds API first, then WebSearch):
-Player props cost credits per EVENT (not one bulk call for the whole day like
-STEP 2), so this step is paced separately and more conservatively — it must
-stay on pace with an even 500-credits-across-the-month budget, not just clear
-a low floor, so the free tier lasts the whole month instead of running out
-early from props alone.
-
-First check quota AND pace (free call — does not use credits):
+Line and price. First check The Odds API pace (free call, no credits):
 python3 -c "
 import os, json, urllib.request, datetime, calendar
-key = os.environ.get('ODDS_API_KEY')
-out = {'pace_ok': False, 'remaining': None}
+key = os.environ.get('ODDS_API_KEY'); out = {'pace_ok': False}
 if key:
     try:
-        req = urllib.request.Request('https://api.the-odds-api.com/v4/sports/?apiKey=' + key)
-        with urllib.request.urlopen(req, timeout=10) as r:
-            remaining = int(r.headers.get('x-requests-remaining', '0'))
-        today = datetime.date.today()
-        days_in_month = calendar.monthrange(today.year, today.month)[1]
-        days_left = days_in_month - today.day + 1
-        expected_remaining = 500 * (days_left / days_in_month)
-        out['remaining'] = remaining
-        out['pace_ok'] = remaining > 10 and remaining >= expected_remaining
+        with urllib.request.urlopen('https://api.the-odds-api.com/v4/sports/?apiKey=' + key, timeout=10) as r:
+            rem = int(r.headers.get('x-requests-remaining', '0'))
+        t = datetime.date.today(); dim = calendar.monthrange(t.year, t.month)[1]
+        out = {'remaining': rem, 'pace_ok': rem > 10 and rem >= 500 * (dim - t.day + 1) / dim}
     except Exception as e:
         out['error'] = str(e)
 print(json.dumps(out))
 "
-If ODDS_API_KEY is unset, the call errored, or pace_ok is false: skip straight
-to the WebSearch fallback below — this is the expected, normal way quota gets
-conserved later in the month, not an error.
-
-If pace_ok: look up event IDs for today's slate (free — does not use credits):
-python3 -c "
+If pace_ok, for each candidate's game (event id from STEP 4's output, or the
+free events list https://api.the-odds-api.com/v4/sports/baseball_mlb/events/?apiKey=KEY):
+python3 - <<'PY'
 import os, urllib.request
-key = os.environ.get('ODDS_API_KEY')
-url = 'https://api.the-odds-api.com/v4/sports/baseball_mlb/events/?apiKey=' + key
-with urllib.request.urlopen(urllib.request.Request(url), timeout=10) as r:
-    print(r.read().decode())
-"
-Match each K prop candidate's game to its event id by home_team/away_team.
-Then for each candidate (one call per pitcher, 1 credit each):
-python3 -c "
-import os, urllib.request
-key = os.environ.get('ODDS_API_KEY')
-event_id = 'EVENT_ID_HERE'   # substitute the matched event id
+key, books = os.environ['ODDS_API_KEY'], os.environ.get('BOOKS', 'draftkings,fanduel')
+event_id = 'EVENT_ID_HERE'   # one call per game, 1 credit
 url = ('https://api.the-odds-api.com/v4/sports/baseball_mlb/events/' + event_id
-       + '/odds?apiKey=' + key + '&bookmakers=draftkings,fanduel&markets=pitcher_strikeouts&oddsFormat=american')
-with urllib.request.urlopen(urllib.request.Request(url), timeout=15) as r:
+       + '/odds?apiKey=' + key + '&markets=pitcher_strikeouts&oddsFormat=american&bookmakers=' + books)
+with urllib.request.urlopen(url, timeout=15) as r:
     print(r.read().decode())
-"
-Prefer the 'draftkings' bookmaker's line; use 'fanduel' only if draftkings has
-no line for that pitcher. If a candidate's event has no pitcher_strikeouts
-market (coverage is limited to select games), fall back to WebSearch for that
-candidate only.
+PY
+Otherwise, or when a game has no market: WebSearch "<pitcher> strikeout prop
+<Month Day> over under". No confirmed same-day line AND price: no play.
 
-Fallback (pace_ok false, Odds API unavailable, or a specific candidate has no line):
-WebSearch "MLB pitcher strikeout props today over under DraftKings TODAY [names of K prop candidates]"
-If the search returns thin results: WebSearch "[SP1 name] strikeout prop TODAY" individually for top 1-2 candidates.
-
-For each K prop candidate: extract K over/under line, over price, under price from whichever source was used above.
-If NO confirmed line found for a candidate: mark SP as No Line - No Play. Do NOT publish without a confirmed line.
-If no K prop data found at all: mark ALL K prop candidates as No Line - No Play and skip K props entirely.
-
----
-
-STEP 6 - ANALYZE EVENING ML (0 web calls - use data from Steps 1-4):
-
-For each NOT_COVERED game with confirmed lineups and confirmed SPs, run this analysis:
-
-LAYER 1 - SP MATCHUP (35%):
-- xFIP tier from ERA proxy: ERA < 3.20 = Elite, 3.20-3.60 = Above avg, 3.60-4.20 = Average, 4.20-4.80 = Below avg, > 4.80 = Poor
-- Classify SP tier for each side. SP tier gap drives ML edge.
-- Handedness vs lineup: note platoon advantage
-
-LAYER 2 - OFFENSE vs SP (20%):
-- Use wRC+ proxy: confirmed lineup with heavy high-OBP bats vs poor SP = offense advantage
-- K-prone lineup vs elite SP = pitcher advantage
-
-LAYER 3 - TEAM QUALITY BASELINE (15%):
-- Use implied win prob from ML line as baseline team quality signal
-- Favorite at -150 = ~60% implied. Adjust from SP matchup.
-
-LAYER 4 - PARK + WEATHER (10%):
-- Dome parks: neutral. Coors: +1.5 runs both sides.
-- Wind > 15 mph out: +0.5 runs. Wind > 15 mph in: -0.5 runs. Temp < 55F: -0.2. Temp > 85F: +0.2
-
-LAYER 5 - UMPIRE (5%):
-- K-friendly: -0.3 total lean. Run-friendly: +0.3 total lean.
-
-EDGE CALC:
-- Estimate model win prob from SP tier gap + lineup advantage + context
-- Compare to covers.com implied win prob (convert ML line to implied %)
-- Edge = model prob - implied prob
-- A-tier >= 4%, B-tier 2.5-3.9%, C-tier 1.0-2.4%
-
-STAKING GUARDRAILS (apply to evening ML picks):
-- Cap at 1.0u standard. Underdogs (+odds): cap 0.75u.
-- Heavy favorites (-160+): cap 0.5u.
-- 2+ favorites at -140+ on same slate: cap each at 0.75u (clustering rule).
-- A-tier edge required minimum. Skip B/C-tier if SP data is thin.
-
-SKIP conditions: SP unconfirmed, rain > 40%, line moved significantly against pick, no edge after full analysis.
-
----
-
-STEP 7 - K PROP MODEL (inline Python - 0 web calls):
-
-python3 << 'PYEOF'
+python3 - <<'PY'
 import json, math
-
-LEAGUE_K_PCT = 0.233
 CALIBRATION = 0.82
+LEAGUE_K_PCT = 0.225   # replace with the PA-weighted league K% if the bundle's team splits give it
 
-def poisson_p_over(line, mu):
-    if mu <= 0: return 0.0
-    k = int(line)
-    cdf, term = 0.0, math.exp(-mu)
+def p_over(line, mu):
+    k, cdf, term = int(line), 0.0, math.exp(-mu)
     for i in range(k + 1):
         cdf += term
-        if i < k: term *= mu / (i + 1)
+        term *= mu / (i + 1)
     return max(0.0, min(1.0, 1.0 - cdf))
+def imp(o): return abs(o) / (abs(o) + 100) if o < 0 else 100 / (o + 100)
+def tier(e): return 'A' if e >= 4 else 'B' if e >= 2.5 else 'C' if e >= 1 else 'Pass'
 
-def calibrate(p): return 0.5 + CALIBRATION * (p - 0.5)
-def implied(o): return (abs(o)/(abs(o)+100) if o < 0 else 100/(o+100)) if o else None
-def tier(e): return ('A' if e>=0.04 else 'B' if e>=0.025 else 'C' if e>=0.01 else 'Pass') if e is not None else 'No Data'
-
-# Fill from Steps 1-5:
-candidates = [
-    # {'name':'Gerrit Cole','team':'Yankees','opponent':'Blue Jays',
-    #  'line':7.5,'over_price':-120,'under_price':-100,
-    #  'sp_k_pct':0.29,'opp_k_pct':0.20,'projected_ip':6.0,'umpire_k_adj':0.0},
+CANDIDATES = [
+    # {'name': 'Tarik Skubal', 'line': 7.5, 'over': -120, 'under': -105, 'book': 'fanduel',
+    #  'sp_k_pct': 0.31, 'opp_k_pct': 0.24, 'projected_ip': 6.2, 'umpire_k_adj': 0.0},
 ]
+for c in CANDIDATES:
+    k_rate = max(0.05, min(0.50, c['sp_k_pct'] * c['opp_k_pct'] / LEAGUE_K_PCT + c['umpire_k_adj']))
+    mu = k_rate * c['projected_ip'] * 4.3          # ~4.3 batters faced per inning
+    po = 0.5 + CALIBRATION * (p_over(c['line'], mu) - 0.5)
+    e_over, e_under = 100 * (po - imp(c['over'])), 100 * ((1 - po) - imp(c['under']))
+    print(json.dumps({'name': c['name'], 'line': c['line'], 'mean_k': round(mu, 2), 'p_over': round(po, 3),
+                      'edge_over': round(e_over, 1), 'tier_over': tier(e_over),
+                      'edge_under': round(e_under, 1), 'tier_under': tier(e_under)}))
+PY
+Publish only A-tier, 0.5u, at most 2 per day, never on a COVERED game.
 
-for c in candidates:
-    adj = max(0.05, min(0.50, c['sp_k_pct']*(c['opp_k_pct']/LEAGUE_K_PCT)+c.get('umpire_k_adj',0.0)))
-    mu = adj * c['projected_ip'] * 4.35
-    p_over = calibrate(poisson_p_over(c['line'], mu))
-    p_under = 1.0 - p_over
-    imp_o, imp_u = implied(c.get('over_price')), implied(c.get('under_price'))
-    e_o = round(p_over-imp_o,4) if imp_o else None
-    e_u = round(p_under-imp_u,4) if imp_u else None
-    print(json.dumps({'player':c['name'],'team':c['team'],'opponent':c['opponent'],
-        'line':c['line'],'mean_k':round(mu,2),'p_over':round(p_over,4),'p_under':round(p_under,4),
-        'edge_over':e_o,'edge_under':e_u,'tier_over':tier(e_o),'tier_under':tier(e_u),
-        'over_price':c.get('over_price'),'under_price':c.get('under_price')}))
-PYEOF
+======================================================================
+STEP 7 - FORMAT (plain ASCII, no emoji)
+======================================================================
+MLB Picks - <Month Day> (Afternoon)
 
-Projected IP: Ace healthy = 6.0; Average SP = 5.5; Recent short outings = 5.0; Opener/bulk = skip.
+LINE CHECK
+  Rays ML taken -135, now -142 at DraftKings: +1.3 pts
 
-K PROP GATES:
-HARD (any fail = No Play): SP confirmed, lineup Expected or better, IP >= 5.0, umpire identity confirmed, K line confirmed same-day from BettingPros, A-tier edge, 0.5u cap.
-SOFT (flag only): Umpire K-tendency unknown -> use 0.0, note 'neutral assumed'.
+EVENING ML  [omit the section if none]
+<Nick> ML <price> at <Book> vs <OppNick> | Bet 1u -> Win <x.xx>u
+<SP> vs <SP>. <1-2 sentences: SP gap, tonight's lineup vs hand, bullpen
+state>. Edge <x.x> pts (A).
 
-CORRELATION: If morning ML pick on same game at 1.0u -> skip K prop. If morning ML at 0.5u or less -> K prop OK, flag 'correlated'. No morning pick -> proceed freely.
+K PROPS  [omit the section if none]
+<Last name> K Over 6.5 <price> at <Book> | Bet 0.5u -> Win <x.xx>u
+K% <x>, opp K% vs <hand> <x>, proj <x.x> IP, mean <x.x> K, umpire <name or
+"neutral">. Edge <x.x> pts (A).
 
----
+No Play: <each with a short reason, e.g. "already on the morning card",
+"underdog side", "no same-day K line", "B-tier edge">
 
-STEP 8 - FORMAT COMBINED OUTPUT (plain ASCII, no emoji):
+Nothing new: "MLB Afternoon - <Month Day> - No new plays." followed by the
+LINE CHECK lines, if any.
+Bet names: "[Nickname] ML" with nicknames as the morning card uses them
+(Athletics, not A's), and "<Last name> K Over 6.5" / "K Under 6.5".
 
-[Only include Evening ML section if new ML picks qualified. Only include K Props section if K props qualified.]
+======================================================================
+STEP 8 - ADD NEW PICKS TO TODAY'S FILE (no web calls)
+======================================================================
+python3 - <<'PY'
+import json, os, datetime as dt
+from zoneinfo import ZoneInfo
+d = dt.datetime.now(ZoneInfo('America/New_York')).date().isoformat()
+path = f'/home/user/mlb-relay/picks/{d}.json'
+NEW = [
+    # {"bet": "Dodgers ML", "odds": -128, "units": 1, "book": "draftkings"},
+    # {"bet": "Skubal K Over 7.5", "odds": -120, "units": 0.5, "book": "fanduel"},
+]
+for p in NEW:
+    if p['bet'].endswith(' ML'):
+        assert p['odds'] < 0, f"{p['bet']}: favorites only"
+        assert p['units'] <= (0.5 if p['odds'] <= -200 else 1), f"{p['bet']}: stake cap"
+    else:
+        assert p['units'] <= 0.5, f"{p['bet']}: K props are 0.5u"
+picks = json.load(open(path)) if os.path.exists(path) else []
+have = {p['bet'] for p in picks}
+picks += [p for p in NEW if p['bet'] not in have]
+if NEW:
+    json.dump(picks, open(path, 'w'), indent=2)
+print(json.dumps(picks, indent=1))
+PY
+The morning entries stay; the file is rewritten at the same dated path.
+If an assert fires, fix the pick; do not delete the assert.
 
-MLB Picks - [Month Day] (Afternoon)
-
-EVENING ML [omit section if none]
-[Team] ML [odds] | Bet Xu -> Win Yu
-[SP] vs [SP]. [1-2 sentences with SP tier gap, lineup context, park/weather/umpire]
-Final edge: X% ([tier])
-
-K PROPS [omit section if none]
-[Player] K Over/Under [line] [odds] | Bet 0.5u -> Win Xu
-[SP] vs [opponent]. [K-rate, opp K%, umpire, proj IP, mean Ks, edge]
-Umpire: [Name] ([K-tendency or 'neutral assumed'])
-Final edge: X% (A-tier)
-
-No Play: [each with reason - e.g. 'already in morning card', 'K line unavailable', 'B-tier edge', 'SP unconfirmed']
-
-If nothing qualifies at all: 'MLB Afternoon - [Month Day] - No new plays. Morning card covers the slate.'
-
----
-
-STEP 9 - ADD NEW PICKS TO TODAY'S PICKS FILE (0 web calls - only if new picks exist):
-
-The morning card already wrote /home/user/mlb-relay/picks/TODAY.json — the real
-dated file, e.g. /home/user/mlb-relay/picks/2026-09-30.json. Read that exact
-dated file, append today's new afternoon picks to that JSON array, and write the
-combined array back to the SAME dated path with the Write tool. Do not drop the
-morning entries, and do not write a separate file literally named TODAY.json.
-If the file does not exist yet, create it at the dated path with just the new picks.
-Do not commit yet - STEP 10 pushes everything at once.
-
-ML bet name format: '[Nickname] ML' e.g. {"bet":"Dodgers ML","odds":-128,"units":1.0}
-K prop format: '[Last Name] K Over/Under [line]' e.g. {"bet":"Strider K Over 6.5","odds":-115,"units":0.5}
-Nicknames: Diamondbacks, Orioles, Red Sox, Cubs, White Sox, Reds, Guardians, Rockies, Tigers, Astros, Royals, Angels, Dodgers, Marlins, Brewers, Twins, Mets, Yankees, A's, Phillies, Pirates, Padres, Giants, Mariners, Cardinals, Rays, Rangers, Blue Jays, Nationals, Braves
-
----
-
-STEP 10 - COMMIT AND PUSH (this is what delivers your Telegram message):
-
-1. Always send a message. If at least one pick qualified, use the formatted
-   output from STEP 8. If nothing qualified, use:
-   "MLB Afternoon - [Month Day] - No new plays. Morning card covers the slate."
-
-2. Use the Write tool to save it to /home/user/mlb-relay/messages/TODAY-afternoon.txt
-
-3. Send it to Telegram directly. The token comes from this environment's
-   variables, never from this prompt:
-
-python3 - <<'TG'
-import json, os, urllib.parse, urllib.request
-tok  = os.environ.get('TELEGRAM_TOKEN')
-chat = os.environ.get('TELEGRAM_CHAT_ID')
-msg  = open('/home/user/mlb-relay/messages/TODAY-afternoon.txt').read().strip()
-if not tok or not chat:
-    print('SEND_FAILED: TELEGRAM_TOKEN or TELEGRAM_CHAT_ID is not set in this environment')
-    raise SystemExit(1)
-ok_all = bool(msg)
-while msg:
-    cut = msg.rfind(chr(10), 0, 3900) if len(msg) > 3900 else len(msg)
-    if cut <= 0:
-        cut = min(3900, len(msg))
-    part, msg = msg[:cut], msg[cut:].lstrip(chr(10))
-    data = urllib.parse.urlencode({'chat_id': chat, 'text': part}).encode()
-    req  = urllib.request.Request(
-        'https://api.telegram.org/bot' + tok + '/sendMessage', data=data)
+======================================================================
+STEP 9 - SEND, THEN RECORD IN GIT
+======================================================================
+python3 - <<'PY'
+import json, os, urllib.parse, urllib.request, datetime as dt
+from zoneinfo import ZoneInfo
+d = dt.datetime.now(ZoneInfo('America/New_York')).date().isoformat()
+MSG = r'''
+<paste the full message here>
+'''.strip()
+root = '/home/user/mlb-relay'
+os.makedirs(f'{root}/messages', exist_ok=True)
+open(f'{root}/messages/{d}-afternoon.txt', 'w').write(MSG + '\n')
+tok, chat = os.environ.get('TELEGRAM_TOKEN'), os.environ.get('TELEGRAM_CHAT_ID')
+ok, text = bool(tok and chat and MSG), MSG
+while ok and text:
+    cut = text.rfind('\n', 0, 3900) if len(text) > 3900 else len(text)
+    cut = cut if cut > 0 else min(3900, len(text))
+    part, text = text[:cut], text[cut:].lstrip('\n')
     try:
+        req = urllib.request.Request(
+            f'https://api.telegram.org/bot{tok}/sendMessage',
+            data=urllib.parse.urlencode({'chat_id': chat, 'text': part}).encode())
         with urllib.request.urlopen(req, timeout=30) as r:
-            ok = json.loads(r.read()).get('ok')
-            print('chunk ok=', ok)
-            ok_all = ok_all and bool(ok)
+            ok = bool(json.loads(r.read()).get('ok'))
     except Exception as e:
-        print('chunk failed:', e)
-        ok_all = False
-print('SEND_OK' if ok_all else 'SEND_FAILED')
-TG
+        print('direct send failed:', e)
+        ok = False
+if ok:
+    print('SEND_OK direct')
+else:
+    os.makedirs(f'{root}/dispatch', exist_ok=True)
+    open(f'{root}/dispatch/{d}-afternoon.txt', 'w').write(MSG + '\n')
+    print('SEND_VIA_RELAY: wrote dispatch file; the relay workflow texts it when the push lands')
+PY
 
-4. If that printed SEND_OK the text is delivered - go to step 6.
-
-5. Only if it printed SEND_FAILED or errored, fall back to the GitHub relay:
-   use the Write tool to copy the same message to
-   /home/user/mlb-relay/dispatch/TODAY-afternoon.txt
-   The relay workflow sends any changed dispatch/*.txt. Do NOT write this file
-   when the direct send worked, or the message goes out twice.
-
-6. Record everything in git. The text is already sent, so a git failure costs
-   the record but not the message:
 cd /home/user/mlb-relay
-git add -A picks grades dispatch messages
-git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -m "afternoon: TODAY"   # use the real date in the message, e.g. "afternoon: 2026-09-30"
-git push origin main || git push origin HEAD:claude/auto
+D=$(TZ=America/New_York date +%F)
+git add -A picks grades clv dispatch messages
+git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -q -m "afternoon: $D"
+pushed=no
+for i in 1 2 3; do
+  if git pull -q --rebase origin main && git push -q origin HEAD:main; then pushed=main; break; fi
+  sleep 5
+done
+if [ $pushed = no ] && git push -q origin HEAD:claude/auto; then pushed=claude/auto; fi
+echo "PUSHED: $pushed"
 
-7. In your final response state: whether the text went directly or via the
-   relay fallback, whether the push succeeded and to which branch, and quote
-   any git error verbatim.
+In your final response, state: whether the text went directly or through the
+relay, which branch the push reached, and any git error verbatim.
 
-Routine sessions are only guaranteed push access to claude/-prefixed branches,
-so if the push to main is refused the fallback lands the same commit on
-claude/auto. Delivery is unaffected either way: the relay and sheets workflows
-have no branch filter and fire on whichever branch received the push. Say in
-your final response which of the two succeeded, and quote any git error.
-
-That push texts the message via the MLB Relay workflow and logs any new picks
-to the MLB tab (the sheets workflow dedupes against the morning card).
-If the push is rejected, run `git pull -q --rebase origin main` and retry once.
-Report the exact git error text if it still fails.
-
-DELIVERY CONTRACT (read before touching any step that writes to GitHub):
+DELIVERY CONTRACT
 - NEVER call api.github.com to write. The contents API and repository_dispatch
-  are both blocked by the execution proxy and always return 403 Forbidden,
-  no matter what token is used. A 403 here is NOT an expired or revoked token.
-- There is no API token in this prompt and none is needed.
-- The ONLY supported write path is `git push` over the clone's preconfigured
-  remote at /home/user/mlb-relay.
-- The Telegram message does NOT depend on GitHub. It is sent directly from
-  this session using TELEGRAM_TOKEN from the environment, before any git
-  command runs, so a push failure can never cost you the text. Writing a
-  dispatch/*.txt file is only a fallback for when that direct send fails.
-- The push still matters for the record: the sheets workflow logs any changed
-  picks/ and grades/ files to Google Sheets.
-- If a step fails, report the exact error text. Do not guess at a cause and do
-  not tell the user to rotate credentials.
+  are blocked by the execution proxy and always return 403, whatever token is
+  used. A 403 there is NOT an expired or revoked token. Never tell the user to
+  rotate credentials.
+- The only write path is git push from /home/user/mlb-relay. One push fires
+  the relay workflow (texts any changed dispatch/*.txt) and the sheets
+  workflow (logs changed picks/ and grades/ files; it skips picks already on
+  the sheet, so the morning entries are not duplicated).
+- The relay and sheets workflows have no branch filter, so a push that lands
+  on claude/auto still texts and logs.
+- If a step fails, report the exact error text. Do not guess at causes.
