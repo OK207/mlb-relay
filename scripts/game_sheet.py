@@ -44,7 +44,7 @@ def side_line(g: dict, side: str, sp_stats: dict, splits: dict, standings: dict)
         f" ERA {season.get('era') or s.get('era', '?')} xERA {s.get('xera') or '?'}"
         f" K% {pct(season.get('k_pct')) if season else s.get('k_pct') or '?'}"
         f" BB% {pct(season.get('bb_pct')) if season else s.get('bb_pct') or '?'}"
-        f" IP {season.get('ip') or s.get('ip', '?')} ({season.get('ip_per_start', '?')} per start){form}"
+        f" IP {season.get('ip') or s.get('ip', '?')} ({season.get('ip_per_start') or '?'} per start){form}"
         f"\n       bats vs {opp_hand}HP: OPS {split.get('ops', '?')} K% {pct(split.get('k_pct'))}"
         f" | pen last 3 days {pen.get('relief_ip_last3', '?')} IP;"
         f" back-to-back: {', '.join(pen.get('pitched_back_to_back') or []) or 'none'};"

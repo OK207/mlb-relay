@@ -193,7 +193,8 @@ def _sp_form(person: dict) -> dict:
                 "ip_per_start": round(outs / 3 / gs, 1) if gs else None,
             }
         elif kind == "gameLog":
-            starts = [s for s in splits if (s.get("stat", {}).get("gamesStarted") or 0) > 0][-3:]
+            all_starts = [s for s in splits if (s.get("stat", {}).get("gamesStarted") or 0) > 0]
+            starts = all_starts[-3:]
             if starts:
                 outs = sum(_ip_to_outs(s["stat"].get("inningsPitched")) for s in starts)
                 er = sum(s["stat"].get("earnedRuns") or 0 for s in starts)
@@ -204,6 +205,12 @@ def _sp_form(person: dict) -> dict:
                     "k": sum(s["stat"].get("strikeOuts") or 0 for s in starts),
                     "bb": sum(s["stat"].get("baseOnBalls") or 0 for s in starts),
                 }
+                # Season IP / GS overstates length for anyone who also
+                # relieved, so take it from the starts themselves.
+                start_outs = sum(_ip_to_outs(s["stat"].get("inningsPitched")) for s in all_starts)
+                out["ip_per_start_from_starts"] = round(start_outs / 3 / len(all_starts), 1)
+    if "ip_per_start_from_starts" in out:
+        out.setdefault("season", {})["ip_per_start"] = out.pop("ip_per_start_from_starts")
     return out
 
 
