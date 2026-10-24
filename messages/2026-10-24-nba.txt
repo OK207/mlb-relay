@@ -1,0 +1,14 @@
+NBA Picks - October 24
+
+VALUE PLAYS
+Heat ML -152 | Bet 1.0u -> Win +0.66u
+Triple blend: 61.8% (ML 63.9% | Poly N/A | SB 57.9%). Edge: +3.9%. Dimers simulation and SB both favor Heat; Charlotte is a rebuilding team and Miami carries clear roster depth advantage on the road.
+
+Skipped: 7 games
+- Bucks/76ers: LeBron James Q (back management) - load management risk unresolved
+- Nets/Cavaliers: Calibrated model shows negative edge after -500 juice absorption
+- Spurs/Mavericks: No edge at -650; market priced correctly for top-tier Spurs
+- Wizards/Bulls: Near-even line, toss-up, insufficient edge signal
+- Rockets/Hawks: Sportsbook ML line unconfirmed from direct source
+- Pelicans/Nuggets: Cam Johnson OUT (ankle) and S. Jones OUT (hamstring) create injury uncertainty; conflicting cover models (Dimers vs Covers)
+- Warriors/Suns: Spread varies 4 pts across sources (5.5 to 9.5), early season noise
