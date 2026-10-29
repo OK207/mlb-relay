@@ -1,0 +1,17 @@
+NBA Results Oct 28, 2026:
+  L  Bulls ML  +220 | 0.5u -> -0.5u
+Day P&L: -0.5u  (0W-1L)
+
+NBA Picks - October 29
+
+Games: Cavaliers @ Hawks (8 PM ET), Kings @ Pelicans (8 PM ET), Grizzlies @ Blazers (10 PM ET)
+
+No strong plays today.
+
+Cavaliers/Hawks: Near pick-em (CLE -108 road, ATL +112). No Polymarket data. Model edge under 2% — does not clear C-tier threshold with negative-odds ML. Pass.
+
+Kings/Pelicans: New Orleans favored by ~5.5 at home. Two models diverge sharply (DRatings: NOP 58% / Dimers model: SAC 52.7%). No Polymarket data confirmed and edge under 3% with single signal — skip rule triggered.
+
+Grizzlies/Blazers: Portland large home favorite (-7.5, ~-285 ML). All three signals agree Portland wins (~71-77%). Edge for Portland ML is C-tier (~2.3%) at negative odds — plus-money-only restriction at C-tier. Memphis ML model has negative edge vs. break-even. Pass both sides.
+
+Skipped: 3 games — insufficient edge, no Polymarket data, diverging models.
