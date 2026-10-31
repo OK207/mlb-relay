@@ -1,0 +1,7 @@
+{
+  "event": "UFC Fight Night: Moicano vs. Nolan",
+  "event_date": "2026-10-31",
+  "picks": [
+    {"bet": "Nolan ML", "odds": 100, "units": 0.5}
+  ]
+}
