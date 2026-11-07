@@ -1,0 +1,39 @@
+UFC Picks - UFC 334: Gane vs. Hokit - November 14
+
+UFC Results - UFC Fight Night: Moicano vs. Nolan:
+  W  Nolan ML +100 | 0.5u -> +0.50u
+Day P&L: +0.50u  (1W-0L)
+
+---
+
+EVENT: UFC 334: Gane vs. Hokit
+DATE: Saturday, November 14, 2026
+VENUE: Madison Square Garden, New York, NY
+
+MAIN CARD:
+  Heavyweight Title: Ciryl Gane (c, 14-2) vs. Josh Hokit (10-0, #4)
+  Women's BW Title: Kayla Harrison (c, 19-1) vs. Amanda Nunes (23-5)
+  Middleweight:     Caio Borralho (18-2, #5) vs. Yousri Belgaroui (11-3)
+  Welterweight:     Uros Medic (#12) vs. Kevin Holland
+  Note: Yanez vs. Diaz cancelled - Yanez withdrawal, no replacement confirmed
+
+---
+
+VALUE PLAYS
+
+Harrison ML -210 (target - line dependent)
+Confidence: 6/10 | Units: 0.5u | Win target: +0.24u
+Why: Elite defensive efficiency (SApM 1.1 vs Nunes 2.6), 100% TD defense
+neutralizes Nunes grappling, accuracy advantage (62% vs 51%), Nunes at 38
+with higher ring wear and declining SDS (1.9 vs Harrison 3.2). Line opened
+-210; edge exists at -220 or better, evaporates above -250.
+Edge: ~2.5% at -210 (B-tier) | Qualified: check current DK/FD - play only at -220 or better
+
+---
+
+No Play: Gane vs. Hokit - vig-free market (67/33) aligns with model; no edge.
+  Gane statistical case: SApM 2.31 (elite defense), precision vs Hokit SApM 5.28.
+  Hokit case: undefeated, wrestling 3.7 TD/15min at 47% acc vs Gane 47% TD def.
+  Market priced correctly at -230/-265 range.
+No Play: Borralho vs. Belgaroui - Borralho #5 MW heavy favorite, no line available.
+No Play: Holland vs. Medic - insufficient stats and no line confirmed.
