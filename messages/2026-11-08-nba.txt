@@ -1,0 +1,13 @@
+NBA Picks - November 8
+
+VALUE PLAYS
+Jazz/Timberwolves Under 224.5 (-110) | Bet 1.0u -> Win 0.91u
+Triple blend: Under ~63% (ML 72% under | Poly: no data | SB 50%). Edge: B-tier +10pt. Anthony Edwards (25 PPG) confirmed out with knee injury (procedure Oct 28). Jazz are a poor offensive team (bottom-5 in scoring). Expected combined total ~210-215 vs line of 224.5. Predictem independently recommends Under citing same factor. Market appears only partially adjusted for Edwards' absence.
+
+Skipped: 6 games
+- 76ers/Bulls: Embiid injury status unresolved (likely ruled out per multiple reports, skip condition triggered)
+- Lakers/Pistons: No actionable edge, C-tier at best, no Polymarket
+- Nets/Mavericks: C-tier edge on Nets, no Polymarket, falls below 3% no-Poly threshold
+- Pelicans/Clippers: Toss-up between struggling teams (Clippers 1-7, Missi out), no clear edge
+- Heat/Kings: Conflicting spread data, C-tier confidence only
+- Celtics/Bucks: Insufficient odds data to run analysis
