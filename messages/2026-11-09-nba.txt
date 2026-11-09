@@ -1,0 +1,19 @@
+NBA Results November 8:
+  W  Jazz/Timberwolves Under 224.5 -110 | 1.0u -> +0.91u
+Day P&L: +0.91u (1W-0L)
+
+NBA Picks - November 9
+
+8-game slate: Lakers/Hawks, Cavaliers/Hornets, Wizards/Pistons, Grizzlies/Raptors, Pacers/Mavericks, Nuggets/Rockets, Spurs/Suns, Pelicans/Warriors.
+
+Note: Polymarket API, basketball-reference, covers.com, and rotowire.com are all blocked in this cloud session. Analysis uses sportsbook lines and third-party model signals only - no ELO/SRS layer. Confidence reduced accordingly; stakes capped at 0.5u.
+
+VALUE PLAYS
+Suns +8.5 +104 | Bet 0.5u -> Win 0.52u
+Dimers model flags Suns +8.5 as their strongest play of the day. San Antonio is a -310 ML favorite with an aggressive -8.5 spread. Suns getting points at plus-money (+104) with a top model signal. No Polymarket confirmation; edge estimated at ~4-5%, reduced to 0.5u.
+
+LEAN
+Grizzlies ML +129 | Bet 0.5u -> Win 0.65u
+Multiple models (The Lines top pick, Sports Gambling Podcast) favor Memphis at Toronto. Raptors -156 implied, but Grizzlies +3.5 at -114 and ML at +129 offer plus-money value with consistent directional signal across sources.
+
+Skipped: 6 games - Lakers/Hawks (DraftKings and FanDuel show opposite sides, conflicting lines); Cavaliers/Hornets and Pistons/Wizards (large spreads, no edge); Nuggets/Rockets (Jokic and Murray injury status unconfirmed per Predictem note); Pacers/Mavericks (no model signal); Pelicans/Warriors (no line data retrieved).
