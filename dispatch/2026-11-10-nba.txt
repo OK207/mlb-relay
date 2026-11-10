@@ -1,0 +1,12 @@
+NBA Results November 9:
+  L  Suns +8.5  +104 | 0.5u -> -0.5u
+  W  Grizzlies ML  +129 | 0.5u -> +0.65u
+Day P&L: +0.15u (1W-1L)
+
+NBA Picks - November 10 - No strong plays today.
+
+Skipped: 6 games
+- Bucks/Knicks: Bucks 1-9 with Herro/Trent/Jones all questionable, Knicks -1205 no ML value
+- Celtics/76ers: Embiid status unconfirmed (load management risk), near 50/50 line
+- Thunder/Blazers: Thunder injuries to key stars unconfirmed, C-tier edge only, not plus-money
+- Clippers/Suns, Heat/Jazz, Magic/Kings: Insufficient odds data for full 3-layer model
