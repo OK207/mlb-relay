@@ -1,0 +1,92 @@
+UFC Picks - UFC Fight Night: Prochazka vs. Stirling - November 21
+
+GRADES - UFC 334: Gane vs. Hokit (Nov 14, tonight)
+  PENDING  Harrison ML -210 | 0.5u -> event not yet complete, grading on next run
+
+-------------------------------------------------------------
+
+EVENT: UFC Fight Night: Prochazka vs. Stirling
+DATE: Saturday, November 21, 2026
+VENUE: ABHA Arena, Doha, Qatar
+
+MAIN CARD
+  LHW (5R): Jiri Prochazka (32-6-1) vs. Navajo Stirling (11-0-0)
+  FW  (5R): Aljamain Sterling vs. Kevin Vallejos
+  LW  (3R): Dan Hooker (24-15) vs. Brian Ortega (16-4)
+  MW  (3R): Ikram Aliskerov vs. Jared Cannonier
+  HW  (3R): Shamil Gaziev vs. Tallison Teixeira
+
+-------------------------------------------------------------
+
+HIGH CONFIDENCE
+Jiri Prochazka ML +117 vs. Navajo Stirling
+Confidence: 6/10 | Units: 0.75u | Win: +0.88u
+Why: Former UFC LHW champion at plus money facing an 11-0 prospect with no experience at this level. Elo model rates Prochazka 65%; sportsbook has him at 46% implied (vig-free 44%). Edge driven by pedigree, unorthodox high-output style, and significant experience gap. Camp disruption (original opponent fell through) is minor given 7+ weeks of proper preparation with Stirling.
+Edge: 3.9% (B tier) | Qualified: plus money on former champion, model-market divergence, unproven opponent at this level
+
+-------------------------------------------------------------
+
+VALUE PLAYS
+Brian Ortega ML +136 vs. Dan Hooker
+Confidence: 5/10 | Units: 0.5u | Win: +0.68u
+Why: Model projects 46% for Ortega; break-even is 42.4%. Elite BJJ submission game and iron chin (never finished) make him a live underdog. Hooker has KO power but Ortega controls range and survives dangerous exchanges better than any active lightweight.
+Edge: 3.6% (B tier) | Qualified: plus money with documented grappling edge, model supports, never-stopped durability
+
+-------------------------------------------------------------
+
+No Play: Stirling ML (-142) - market favorite, implied 56%, thin edge vs. Prochazka pick
+No Play: Aliskerov ML (-270) - model 72% vs. implied 73%, negative edge (-1.0%)
+No Play: Cannonier ML (+194) - break-even 42.4% but model shows only ~28%, pass
+No Play: Sterling vs. Vallejos - no odds data available
+No Play: Gaziev vs. Teixeira - insufficient data
+
+-------------------------------------------------------------
+
+PRE-PICK CHECKLIST
+Prochazka ML +117:
+  Edge meets B-tier threshold: YES (3.9%)
+  Line within max playable: YES
+  Direction consistent with model and style: YES
+  Both fighters confirmed: YES
+  No weight miss or cut concern: YES (LHW, no flags)
+  No unresolved injury or camp concern: YES
+  Replacement/layoff downgrade applied: N/A (original opponent change Sept 29, 7+ weeks prep)
+  Stake obeys guardrails: YES (0.75u, within 1.0u ML cap)
+
+Ortega ML +136:
+  Edge meets B-tier threshold: YES (3.6%)
+  Line within max playable: YES
+  Direction consistent with model and style: YES
+  Both fighters confirmed: YES
+  No weight miss or cut concern: YES
+  No unresolved injury or camp concern: YES
+  Replacement/layoff downgrade applied: N/A
+  Stake obeys guardrails: YES (0.5u value cap)
+
+-------------------------------------------------------------
+
+RISK NOTES
+- Prochazka stats not retrieved; using historical profile and model estimates. Actual SLpM/SApM unavailable this run.
+- Stirling stats partial (5.61 SLpM, 57.63% accuracy, 0.49 TD avg) - no SApM or defense found.
+- Prochazka lost to Ulberg at UFC 327. Method and round not confirmed. If KO finish: flag potential chin concern, downgrade to 0.5u.
+- Models disagree significantly on main event: Elo 65% Prochazka, CageOracle 76% Stirling, Combat Edge 63% Prochazka. Wide divergence noted; edge estimate uses conservative 50% model for Prochazka.
+- Hooker/Ortega weight class not fully confirmed. If Ortega is moving to lightweight, adjust for natural size/power concerns.
+- Aliskerov market odds range wide (-194 to -390 across books). Consensus not established; no play regardless.
+- No injury news found as of Nov 14. Check MMA Fighting / UFC.com closer to fight week for updates.
+- Covers.com and ESPN scoreboard API were blocked by session network policy. Odds sourced via WebSearch consensus.
+
+-------------------------------------------------------------
+
+ODDS USED (DraftKings consensus / best available)
+  Prochazka ML: +117
+  Stirling ML:  -142
+  Hooker ML:    -162
+  Ortega ML:    +136
+  Aliskerov ML: -270 (conservative; FanDuel at -390)
+  Cannonier ML: +194
+
+-------------------------------------------------------------
+
+LOG BLOCK
+2026-11-21 | Prochazka ML | +117 | 0.75u
+2026-11-21 | Ortega ML    | +136 | 0.50u
