@@ -1,0 +1,13 @@
+NBA Results Nov 14:
+  L  Timberwolves ML  -350 | 1.5u -> -1.5u
+  W  Pelicans +11.5   -105 | 1.0u -> +0.95u
+  L  Mavericks ML     +115 | 1.0u -> -1.0u
+Day P&L: -1.55u (1W-2L)
+
+NBA Picks - Nov 15
+
+HIGH CONFIDENCE
+Pacers +6.5 -102 | Bet 1.0u -> Win 0.98u
+Triple blend: 54% cover (ML 57% | No Polymarket | SB 50%). Edge: +4.9%. Both Joel Embiid (foot, out) and Tyrese Haliburton (hamstring, out) are confirmed out today; without Embiid, PHI's effective margin drops from 6.5+ to ~4-5 pts, making Indiana a strong cover.
+
+Skipped: 5 games - LAL/PHX (Doncic DTD unconfirmed, load management risk), OKC/SAC (SB price fair, OKC -467 no value), NYK/TOR (model edge -0.8%, pass), DAL/BOS (no current odds found), remaining games (insufficient injury/odds data)
