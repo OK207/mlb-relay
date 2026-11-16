@@ -11,8 +11,17 @@ They are kept in git so a change is diffable instead of guesswork.
 | `ufc-weekly-sat.txt` | UFC Weekly Fight Card | see "UFC timing" below |
 | `cbb-daily-1030am.txt` | CBB Daily Picks (not scheduled yet) | suggested `30 15 * * *` |
 
-Editing a file here does **not** change the live routine; the routine keeps
-its own copy of the prompt. Keep the two in sync.
+**The files here on `main` are the instructions.** Each routine's stored
+prompt should be nothing more than a pointer to its file, e.g.
+
+> Run `cd /home/user/mlb-relay && git checkout -q main && git fetch -q origin main && git reset -q --hard origin/main`, then read `routines/nba-daily-1015am.txt` in full and follow it exactly.
+
+so a prompt never has to be pasted again: edit the file, merge to `main`,
+and the next run uses it. The routines were created in the web UI, which
+means only their owner can change the stored prompt or the schedule
+(claude.ai/code/routines); sessions cannot. Until a routine's stored prompt
+is replaced with its pointer, the repo's `CLAUDE.md` tells a routine that
+arrives with an old prompt to follow the file instead.
 
 ## What was wrong, and what changed (2026-11-16)
 
