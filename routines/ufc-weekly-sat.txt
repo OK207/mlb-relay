@@ -1,343 +1,234 @@
-Run bash to get today's date as YYYY-MM-DD (TODAY) and the 8-digit version with no hyphens (TODAY_NODASH). Also compute LAST_SATURDAY as the most recent Saturday before today (if today IS Saturday, use today - 7 days) as YYYY-MM-DD, and LAST_SATURDAY_NODASH.
+UFC WEEKLY CARD - SATURDAY 2:00 PM ET
 
-You are running the UFC weekly fight card analysis. Budget: 8 web calls.
+STAKE_SCALE = 0.5
+(Multiplies every stake below. UFC went 3-9-1 for -0.72u through 10/10, and
+was only that close to even because one +500 underdog came in. Most picks
+were underdogs on the old assumption that "underdogs are often +EV"; they
+went 2-7. Set 0 to publish tracking-only picks, 1 for full stakes once the
+record earns it.)
 
-===================================================
-STEP 0 - GRADE LAST EVENT'S PICKS (local git clone, no token + 1 web call for results)
-===================================================
+You are the UFC betting analyst for this weekend's card. The goal is the
+largest long-run profit: at most a couple of bets with a real edge at the best
+available price. A card with zero picks is a normal, good outcome.
+Budget: 8 web calls. If any WebFetch returns EGRESS_BLOCKED, HTTP 403 or a
+connection error, use WebSearch for that step.
 
-0a. Sync the clone and find the most recent UFC picks file:
+======================================================================
+STANDING RULES
+======================================================================
+1. Start from the market's no-vig probability and adjust it by at most 8
+   points in total. Bigger disagreements with the market are usually missing
+   information, not edge.
+2. Edges are measured against the break-even of the best price in BOOKS,
+   vig included. A-tier (4.0+ points) only.
+3. Moneylines only: no method-of-victory or round props.
+4. Prices: favorites any price (1u base, 0.5u at -250 or shorter); underdogs
+   only up to +250 (0.5u base). Longer than +250: no bet.
+5. At most 2 bets per card. No target number of picks.
+6. No bet on a fight with a short-notice replacement (under 2 weeks), a
+   missed weight, or a fighter returning from 12+ months out.
+
+======================================================================
+STEP 0 - GRADE THE LAST CARD (0-1 web calls)
+======================================================================
 cd /home/user/mlb-relay && git checkout -q main && git fetch -q origin main && git reset -q --hard origin/main
-ls -1 picks/ufc/*.json 2>/dev/null | sort | tail -1 || echo NO_PICKS_FILE
+python3 - <<'PY'
+import glob, json, os, datetime as dt
+from zoneinfo import ZoneInfo
+today = dt.datetime.now(ZoneInfo('America/New_York')).date().isoformat()
+for f in sorted(glob.glob('/home/user/mlb-relay/picks/ufc/20*.json')):
+    d = os.path.basename(f)[:10]
+    g = f'/home/user/mlb-relay/picks/ufc/grades/{d}.json'
+    done = os.path.exists(g) and all(x.get('outcome') in ('W', 'L', 'P') for x in json.load(open(g)))
+    if d < today and not done:
+        print('UNGRADED', f); print(open(f).read())
+print('today', today)
+PY
 
-If NO_PICKS_FILE, skip to STEP 1 (no previous UFC picks logged). Otherwise
-`cat` that file and save the picks and event name for grading.
+For each UNGRADED card: WebSearch "UFC <event name> results winners" (1 call).
+A pick wins if that fighter won. A cancelled fight, a draw or a no contest is
+P with net 0. net is PROFIT only, to 2 dp: 0.5u at +240 wins +1.20, 1u at
+-145 wins +0.69, a loss is -units. Never add the stake back (one card was
+once recorded at +4.50 for a 0.75u win at +500; the right figure was +3.75).
 
-0b. Fetch results for last event (1 web call):
-WebSearch "UFC [event name from 0a] full results winners [year]"
-Extract: winner name for each fight. For each ML pick {bet: "Topuria ML"}, check if that fighter won (WIN) or lost (LOSS). Pushes are rare in UFC but possible if fight is cancelled.
+python3 - <<'PY'
+import json, os, re
+EVENT_DATE = 'YYYY-MM-DD'   # the event_date of the ungraded card above
+assert re.fullmatch(r'\d{4}-\d{2}-\d{2}', EVENT_DATE), 'set EVENT_DATE'
+GRADES = [
+    # {"bet": "Duncan ML", "odds": 108, "units": 0.75, "outcome": "L", "net": -0.75},
+]
+path = f'/home/user/mlb-relay/picks/ufc/grades/{EVENT_DATE}.json'
+os.makedirs(os.path.dirname(path), exist_ok=True)
+json.dump(GRADES, open(path, 'w'), indent=2)
+print(path, json.dumps(GRADES))
+PY
 
-0c. Grade each pick:
-- ML: WIN if fighter won, LOSS if fighter lost
-- Units won: WIN negative odds (e.g. -175): result = +units * (100/175). WIN positive odds (e.g. +145): result = +units * (145/100). LOSS: result = -units. Round to 2dp.
+Results block:
+UFC Results <event name>:
+  L  Duncan ML +108 | 0.75u -> -0.75u
+Day P&L: -0.75u (0W-1L)
 
-0d. Build results block (plain text, no emoji):
-
-UFC Results [event name]:
-  W  [fighter] ML [odds] | [units]u -> +[won]u
-  L  [fighter] ML [odds] | [units]u -> -[units]u
-Day P&L: +/-Xu  (NW-NL)
-
-If no picks file: omit results block entirely.
-
-0e. Write the grades file into the repo clone (only if picks existed and results found):
-
-Use the Write tool to write /home/user/mlb-relay/picks/ufc/grades/EVENT_DATE.json
-
-Grades JSON format: [{"bet": "...", "odds": ..., "units": ..., "outcome": "W/L/PENDING", "net": 1.23}]
-
-Do NOT commit yet - STEP 9 commits grades, picks and the message together.
-
-===================================================
-STEP 1 - CHECK FOR UFC EVENT (up to 3 web calls)
-===================================================
-
-UFC events are almost always on Saturdays. Check in this order, stopping as soon as an event is found:
-
-1. Check today:
-WebFetch https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard?limit=20&dates=TODAY_NODASH
-
-2. If empty, compute THIS_SATURDAY and NEXT_SATURDAY then check this Saturday:
+======================================================================
+STEP 1 - FIND THIS WEEKEND'S EVENT (1-3 web calls)
+======================================================================
 python3 -c "
 from datetime import date, timedelta
-today=date.today()
-days_to_sat=(5-today.weekday())%7
-this_sat=today+timedelta(days=days_to_sat if days_to_sat>0 else 7)
-next_sat=this_sat+timedelta(days=7)
-print('THIS_SAT',this_sat.strftime('%Y%m%d'))
-print('NEXT_SAT',next_sat.strftime('%Y%m%d'))
+t = date.today(); sat = t + timedelta(days=(5 - t.weekday()) % 7)
+print('TODAY', t.strftime('%Y%m%d'), 'THIS_SAT', sat.strftime('%Y%m%d'), 'NEXT_SAT', (sat + timedelta(days=7)).strftime('%Y%m%d'))
 "
-WebFetch https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard?limit=20&dates=THIS_SAT_NODASH
+WebFetch https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard?limit=20&dates=<TODAY>
+then <THIS_SAT>, then <NEXT_SAT>, stopping at the first that has an event.
+None: send "UFC Picks - <Month Day> - No event this weekend." (STEP 6) and stop.
+Note the event name, EVENT_DATE (YYYY-MM-DD) and every bout.
 
-3. If still empty, check next Saturday:
-WebFetch https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard?limit=20&dates=NEXT_SAT_NODASH
-
-If NO events found after all three checks: write "UFC Picks - [Month Day] - No event this weekend." to /tmp/ufc_p.txt, send via relay (STEP 9), then stop.
-
-If event found:
-- Extract: event name (UFC_EVENT), date (EVENT_DATE as YYYY-MM-DD), venue/location
-- Extract full fight card: all bouts in order (prelims first, main card last)
-- For each bout: fighter1 name, fighter2 name
-- Note: the last bout in the list is typically the main event
-
-Save event name as UFC_EVENT and fight card as UFC_CARD for subsequent steps.
-
-===================================================
-STEP 2 - ODDS (try The Odds API first, then scrape)
-===================================================
-
-First check The Odds API quota (free — does not use credits):
-python3 -c "
+======================================================================
+STEP 2 - PRICES, EVERY BOOK (1 credit)
+======================================================================
+python3 - <<'PY'
 import os, json, urllib.request
-key = os.environ.get('ODDS_API_KEY')
-out = {'available': False, 'remaining': None}
-if key:
+key, books = os.environ.get('ODDS_API_KEY'), os.environ.get('BOOKS', 'draftkings,fanduel')
+if not key:
+    print('NO_ODDS_API_KEY'); raise SystemExit
+url = ('https://api.the-odds-api.com/v4/sports/mma_mixed_martial_arts/odds/?apiKey=' + key
+       + '&markets=h2h&oddsFormat=american&bookmakers=' + books)
+with urllib.request.urlopen(url, timeout=20) as r:
+    print('credits left:', r.headers.get('x-requests-remaining'))
+    for ev in json.loads(r.read()):
+        by_book = {b['key']: {o['name']: o['price'] for o in b['markets'][0]['outcomes']}
+                   for b in ev.get('bookmakers', []) if b.get('markets')}
+        print(ev['commence_time'][:10], ev['away_team'], 'vs', ev['home_team'], json.dumps(by_book))
+PY
+Fallback: WebFetch https://www.covers.com/sport/mma/ufc/odds. A search-snippet
+price is approximate: no bet on that fight.
+For each fight: the best price for each fighter (and its book), and the
+market's no-vig probability from one book's two prices:
+  imp(-150) = 150/250 = 0.600, imp(+130) = 100/230 = 0.435
+  fair_A = imp(A) / (imp(A) + imp(B))
+
+======================================================================
+STEP 3 - CARD, STATS, NEWS (3 web calls)
+======================================================================
+WebSearch "<event> full fight card weight classes records rankings"
+WebSearch "<event> main card fighter stats SLpM striking defense takedown"
+WebSearch "<event> weigh-in results injury replacement"
+For main-card fights: SLpM, SApM, striking defense, takedown average, accuracy
+and defense, finish rates, last 3 fights against what level of opposition,
+reach and age. Missing stats: say so; do not invent defaults.
+
+======================================================================
+STEP 4 - ANALYSIS (0-1 web calls)
+======================================================================
+For each main-card fight with a real price:
+  p_market = the no-vig probability for the fighter
+  adjustments (points of probability, total capped at +/-8):
+    statistical profile (striking differential, defense, takedowns) up to +/-4
+    style matchup (who controls where the fight happens) up to +/-3
+    recent form against real opposition up to +/-2
+    physical (reach, age, cardio over the distance) up to +/-2
+  p_model = p_market + adjustments
+  price = the best price for the fighter in BOOKS
+  break_even = |price| / (|price| + 100) for a favorite, 100 / (price + 100) for an underdog
+  edge = (p_model - break_even) x 100 points; A-tier is 4.0+. Anything less: no bet.
+Apply STANDING RULES 4-6. Base stake: favorite 1u (0.5u at -250 or shorter),
+underdog up to +250 0.5u; times STAKE_SCALE, rounded to 0.25u. At most 2 bets.
+One WebSearch "<fighter> camp injury weight cut <event>" to confirm or kill
+the strongest candidate.
+
+======================================================================
+STEP 5 - FORMAT (plain ASCII, no emoji)
+======================================================================
+UFC Picks - <Event Name> - <Month Day>
+
+<results block from STEP 0, if any>
+
+PICKS
+<Fighter> ML <price> at <Book> vs <Opponent> | Bet <x.xx>u -> Win <x.xx>u
+Market <x>% fair, model <x>%, break-even <x>%. Edge +<x.x> pts (A).
+Why: <1-2 sentences: the specific stat or style edge>.
+
+No Play: <fight> - <short reason: "model at market", "underdog past +250",
+"short-notice replacement", "edge under 4">
+No picks: "UFC Picks - <Event Name> - No strong plays this card." then No Play lines.
+Book names: draftkings DraftKings, fanduel FanDuel, betmgm BetMGM,
+williamhill_us Caesars, espnbet ESPN BET, fanatics Fanatics, betrivers
+BetRivers, ballybet Bally Bet.
+
+python3 - <<'PY'
+import json, os, re
+EVENT = 'UFC Fight Night: Example vs. Example'
+EVENT_DATE = 'YYYY-MM-DD'
+PICKS = [
+    # {"bet": "Duncan ML", "odds": -140, "units": 0.5, "book": "fanduel"},
+]
+assert re.fullmatch(r'\d{4}-\d{2}-\d{2}', EVENT_DATE), 'set EVENT_DATE'
+assert len(PICKS) <= 2, 'at most 2 bets per card'
+assert all(p['bet'].endswith(' ML') and p['odds'] <= 250 for p in PICKS), 'ML only, nothing longer than +250'
+if PICKS:
+    json.dump({'event': EVENT, 'event_date': EVENT_DATE, 'picks': PICKS},
+              open(f'/home/user/mlb-relay/picks/ufc/{EVENT_DATE}.json', 'w'), indent=2)
+print(EVENT_DATE, json.dumps(PICKS))
+PY
+Bet names: "<Last name> ML" (e.g. "Topuria ML").
+
+======================================================================
+STEP 6 - SEND, THEN RECORD IN GIT
+======================================================================
+python3 - <<'PY'
+import json, os, re, urllib.parse, urllib.request
+EVENT_DATE = 'YYYY-MM-DD'   # same as STEP 5; for "No event" use today's date
+assert re.fullmatch(r'\d{4}-\d{2}-\d{2}', EVENT_DATE), 'set EVENT_DATE'
+MSG = r'''
+<paste the full message here>
+'''.strip()
+root = '/home/user/mlb-relay'
+os.makedirs(f'{root}/messages', exist_ok=True)
+open(f'{root}/messages/{EVENT_DATE}-ufc.txt', 'w').write(MSG + '\n')
+tok, chat = os.environ.get('TELEGRAM_TOKEN'), os.environ.get('TELEGRAM_CHAT_ID')
+ok, text = bool(tok and chat and MSG), MSG
+while ok and text:
+    cut = text.rfind('\n', 0, 3900) if len(text) > 3900 else len(text)
+    cut = cut if cut > 0 else min(3900, len(text))
+    part, text = text[:cut], text[cut:].lstrip('\n')
     try:
-        req = urllib.request.Request('https://api.the-odds-api.com/v4/sports/?apiKey=' + key)
-        with urllib.request.urlopen(req, timeout=10) as r:
-            out['remaining'] = int(r.headers.get('x-requests-remaining', '0'))
-        out['available'] = out['remaining'] > 10
-    except Exception as e:
-        out['error'] = str(e)
-print(json.dumps(out))
-"
-If ODDS_API_KEY is unset, the call errored, or available is false: skip straight
-to the WebFetch fallback below.
-
-If available: fetch fight-winner moneylines for the whole card in one call
-(1 credit total):
-python3 -c "
-import os, urllib.request
-key = os.environ.get('ODDS_API_KEY')
-url = ('https://api.the-odds-api.com/v4/sports/mma_mixed_martial_arts/odds/?apiKey='
-       + key + '&bookmakers=draftkings,fanduel&markets=h2h&oddsFormat=american')
-with urllib.request.urlopen(urllib.request.Request(url), timeout=15) as r:
-    print(r.read().decode())
-"
-Match each returned event to a fight on UFC_CARD by home_team/away_team
-(fighter names). Prefer the 'draftkings' bookmaker's h2h outcomes; use
-'fanduel' only if draftkings has no line for that fight. Method-of-victory
-odds are not in this call (coverage is limited) — use the WebFetch fallback
-below for those if wanted. If the call errors, or a fight has no bookmaker
-data, fall back to the WebFetch method below for that fight only.
-
-Fallback (Odds API unavailable or failed):
-WebFetch https://www.covers.com/sport/mma/ufc/odds
-
-Extract for every fight on UFC_CARD:
-- Fighter1 ML odds (DraftKings preferred; note book used)
-- Fighter2 ML odds
-- Any method of victory odds if available
-
-If a fight has no odds (not yet posted): note as "No line posted".
-
-===================================================
-STEP 3 - FULL CARD DETAILS (1 web call)
-===================================================
-
-WebSearch "UFC_EVENT full fight card weight class rankings 2026"
-
-Extract for every fight:
-- Weight class
-- Fighter records (W-L)
-- Rankings (if main card fight: is either fighter ranked or champion?)
-- Any confirmed late replacements or withdrawals
-
-Enrich UFC_CARD with this data.
-
-===================================================
-STEP 4 - FIGHTER STATS (1 web call)
-===================================================
-
-WebSearch "UFC_EVENT main card fighter stats SLpM striking defense takedown ufcstats"
-
-For each main card fight (5-6 fights), extract what's available:
-- SLpM (significant strikes landed per minute) -- higher is more output
-- SApM (significant strikes absorbed per minute) -- lower is better defense
-- Striking accuracy % and defense %
-- Takedown average per 15 min, accuracy %, defense %
-- Submission attempts per 15 min
-- KO/TKO rate, submission rate, decision rate
-
-If stats are missing for a fighter, note it in Risk Notes and apply average defaults:
-- SLpM default: 4.0 | SApM default: 4.0 | TD avg default: 1.5
-
-===================================================
-STEP 5 - INJURY NEWS (1 web call)
-===================================================
-
-WebSearch "UFC_EVENT injury news replacement weight cut 2026"
-
-Extract: any late changes, weight miss reports, injury flags, fight camp concerns.
-Flag any fighter with short-notice replacement (< 2 weeks = -2 confidence, cap 0.5u).
-
-===================================================
-STEP 6 - ANALYSIS (0-2 web calls for targeted deep research)
-===================================================
-
-For each main card fight, run this framework:
-
-FACTOR BLEND WEIGHTS:
-- 30% Fighter statistical profile (SLpM diff, striking defense, TD%, KD ratio, submission rate)
-- 25% Style matchup advantage (striker vs grappler interaction, wrestling vs sub defense)
-- 20% Recent form + opponent quality (last 3 fights trajectory: Dominant/Competitive/Survival/Loss)
-- 15% Physical attributes (reach, age, experience, avg fight time)
-- 10% Context factors (weight cut severity, layoff, home crowd, late replacement)
-
-STRIKER vs GRAPPLER SCORING:
-- Classify each fighter: Striker / Grappler / Wrestler / Mixed
-- Striker vs Grappler: who closes the distance? Striker advantage if good footwork/distance; Grappler advantage if high TD accuracy vs low sprawl
-- Wrestler vs BJJ: wrestler controls position; BJJ specialist submits from bottom
-- Striking differential (SDS = SLpM - SApM): gap > 2.0 = strong signal for the positive side
-
-CONFIDENCE SCORING (clamp 1-10):
-Base: 5
-+2 if style matchup strongly favors pick and stats confirm
-+1 if multiple independent metrics agree (SLpM diff, TD%, finishing method)
-+1 if market line has NOT moved against pick
-+1 if physical attributes AND recency both support pick
-+1 if fighter has strong KO power vs opponent with documented chin concerns
--1 for method-of-victory or round prop (higher variance)
--2 if either fighter is late replacement or > 12 months layoff
--1 if statistical model disagrees with recent form trajectory
--1 if weight cut concern flagged
-
-WIN PROBABILITY MODEL (simplified):
-1. Base win prob from ML market (convert to vig-free): if -200, implied = 200/300 = 66.7%
-2. Adjust from stats: SLpM differential, style advantage, form trajectory
-3. Model win prob = market implied + adjustments (cap adjustment at +/-15%)
-4. Edge = model win prob - market implied break-even
-5. Tiers: A >= 4% | B 2.5-3.9% | C 1-2.4% | Pass < 1%
-
-MARKET HIERARCHY:
-- ML is primary. Target 3-5 ML plays. Underdogs often +EV (public overbacks favorites).
-- Method of Victory: only if A-tier edge, clear finishing path, KO rate > 40% or sub rate > 30%
-- Round O/U: only A-tier, all factors aligned (finish rates, style, avg fight time)
-- Do not pad with low-quality plays to hit volume.
-
-STAKING RULES:
-- ML: cap 1.0u standard. Heavy favorite (-300+): cap 0.5u.
-- Method prop: cap 0.5u max.
-- Round O/U: cap 0.5u, A-tier only.
-- Late replacement: cap 0.5u regardless of edge.
-
-SKIP conditions:
-- Edge < 1% after full analysis
-- Fighter unconfirmed or very late replacement (< 3 days)
-- Model and form trajectory strongly disagree with no explanation
-
-For 1-2 fights where deeper data would confirm or kill the pick:
-WebSearch "[Fighter name] UFC stats recent fights form [year]"
-
-===================================================
-STEP 7 - FORMAT OUTPUT (plain ASCII, no emoji)
-===================================================
-
-UFC Picks - [Event Name] - [Month Day]
-
-[Results block from STEP 0d if picks existed]
-
-HIGH CONFIDENCE
-[Fighter] ML [odds] vs [Opponent]
-Confidence: X/10 | Units: X.Xu | Win: X.Xu
-Why: [1-2 sentences: lead with specific edge - style matchup, stat differential, form trajectory, line value]
-Edge: X% ([tier]) | Qualified: [one-line checklist note]
-
-VALUE PLAYS
-[same format]
-
-LEAN (plus-money only)
-[same format, 0.5u cap]
-
-No Play: [fighter] vs [fighter] - [brief reason e.g. "no statistical edge", "late replacement", "heavy favorite with thin edge"]
-
-All pass: UFC Picks - [Event Name] - No strong plays this card.
-Error: UFC Picks - [Event Name] - Analysis incomplete. Check manually.
-
-===================================================
-STEP 8 - WRITE PICKS FILE (0 web calls)
-===================================================
-
-Format: {"event": "UFC_EVENT", "event_date": "EVENT_DATE", "picks": [{bet, odds, units}]}
-Only include published picks (not No Play).
-BET NAMING FORMAT: "[Fighter Last Name] ML" e.g. {"bet":"Topuria ML","odds":-175,"units":1.0}
-
-Use the Write tool to write /home/user/mlb-relay/picks/ufc/EVENT_DATE.json
-If no picks qualify, write no file.
-Do not commit yet - STEP 9 pushes everything at once.
-
-===================================================
-STEP 9 - COMMIT AND PUSH (delivers your Telegram message)
-===================================================
-
-Always send a message.
-1. Use the Write tool to save the STEP 7 output to
-   /home/user/mlb-relay/messages/EVENT_DATE-ufc.txt
-
-3. Send it to Telegram directly. The token comes from this environment's
-   variables, never from this prompt:
-
-python3 - <<'TG'
-import json, os, urllib.parse, urllib.request
-tok  = os.environ.get('TELEGRAM_TOKEN')
-chat = os.environ.get('TELEGRAM_CHAT_ID')
-msg  = open('/home/user/mlb-relay/messages/EVENT_DATE-ufc.txt').read().strip()
-if not tok or not chat:
-    print('SEND_FAILED: TELEGRAM_TOKEN or TELEGRAM_CHAT_ID is not set in this environment')
-    raise SystemExit(1)
-ok_all = bool(msg)
-while msg:
-    cut = msg.rfind(chr(10), 0, 3900) if len(msg) > 3900 else len(msg)
-    if cut <= 0:
-        cut = min(3900, len(msg))
-    part, msg = msg[:cut], msg[cut:].lstrip(chr(10))
-    data = urllib.parse.urlencode({'chat_id': chat, 'text': part}).encode()
-    req  = urllib.request.Request(
-        'https://api.telegram.org/bot' + tok + '/sendMessage', data=data)
-    try:
+        req = urllib.request.Request(
+            f'https://api.telegram.org/bot{tok}/sendMessage',
+            data=urllib.parse.urlencode({'chat_id': chat, 'text': part}).encode())
         with urllib.request.urlopen(req, timeout=30) as r:
-            ok = json.loads(r.read()).get('ok')
-            print('chunk ok=', ok)
-            ok_all = ok_all and bool(ok)
+            ok = bool(json.loads(r.read()).get('ok'))
     except Exception as e:
-        print('chunk failed:', e)
-        ok_all = False
-print('SEND_OK' if ok_all else 'SEND_FAILED')
-TG
+        print('direct send failed:', e)
+        ok = False
+if ok:
+    print('SEND_OK direct')
+else:
+    os.makedirs(f'{root}/dispatch', exist_ok=True)
+    open(f'{root}/dispatch/{EVENT_DATE}-ufc.txt', 'w').write(MSG + '\n')
+    print('SEND_VIA_RELAY: wrote dispatch file; the relay workflow texts it when the push lands')
+PY
 
-4. If that printed SEND_OK the text is delivered - go to step 6.
-
-5. Only if it printed SEND_FAILED or errored, fall back to the GitHub relay:
-   use the Write tool to copy the same message to
-   /home/user/mlb-relay/dispatch/EVENT_DATE-ufc.txt
-   The relay workflow sends any changed dispatch/*.txt. Do NOT write this file
-   when the direct send worked, or the message goes out twice.
-
-6. Record everything in git. The text is already sent, so a git failure costs
-   the record but not the message:
 cd /home/user/mlb-relay
-git add -A picks grades dispatch messages
-git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -m "ufc picks: EVENT_DATE"
-git push origin main || git push origin HEAD:claude/auto
+git add -A picks dispatch messages
+git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -q -m "ufc picks: $(TZ=America/New_York date +%F)"
+pushed=no
+for i in 1 2 3; do
+  if git pull -q --rebase origin main && git push -q origin HEAD:main; then pushed=main; break; fi
+  sleep 5
+done
+if [ $pushed = no ] && git push -q origin HEAD:claude/auto; then pushed=claude/auto; fi
+echo "PUSHED: $pushed"
 
-7. In your final response state: whether the text went directly or via the
-   relay fallback, whether the push succeeded and to which branch, and quote
-   any git error verbatim.
+In your final response, state whether the text went directly or through the
+relay, which branch the push reached, and any git error verbatim.
 
-Routine sessions are only guaranteed push access to claude/-prefixed branches,
-so if the push to main is refused the fallback lands the same commit on
-claude/auto. Delivery is unaffected either way: the relay and sheets workflows
-have no branch filter and fire on whichever branch received the push. Say in
-your final response which of the two succeeded, and quote any git error.
-
-That push texts the message via the MLB Relay workflow AND logs the picks to
-the UFC tab of the Google Sheet (the sheets workflow creates that tab on first
-use). Grades written in STEP 0e land in column E of the same tab.
-If the push is rejected, run `git pull -q --rebase origin main` and retry once.
-Report the exact git error text if it still fails.
-
-DELIVERY CONTRACT (read before touching any step that writes to GitHub):
+DELIVERY CONTRACT
 - NEVER call api.github.com to write. The contents API and repository_dispatch
-  are both blocked by the execution proxy and always return 403 Forbidden,
-  no matter what token is used. A 403 here is NOT an expired or revoked token.
-- There is no API token in this prompt and none is needed.
-- The ONLY supported write path is `git push` over the clone's preconfigured
-  remote at /home/user/mlb-relay.
-- The Telegram message does NOT depend on GitHub. It is sent directly from
-  this session using TELEGRAM_TOKEN from the environment, before any git
-  command runs, so a push failure can never cost you the text. Writing a
-  dispatch/*.txt file is only a fallback for when that direct send fails.
-- The push still matters for the record: the sheets workflow logs any changed
-  picks/ and grades/ files to Google Sheets.
-- If a step fails, report the exact error text. Do not guess at a cause and do
-  not tell the user to rotate credentials.
+  are blocked by the execution proxy and always return 403, whatever token is
+  used. A 403 there is NOT an expired or revoked token. Never tell the user to
+  rotate credentials.
+- The only write path is git push from /home/user/mlb-relay. One push fires
+  the relay workflow (texts any changed dispatch/*.txt) and the sheets
+  workflow (logs picks/ufc/ and picks/ufc/grades/ files to the UFC tab).
+- The relay and sheets workflows have no branch filter, so a push that lands
+  on claude/auto still texts and logs.
+- If a step fails, report the exact error text. Do not guess at causes.

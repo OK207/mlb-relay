@@ -14,12 +14,111 @@ Editing a file here does **not** change the live routine. The routines were
 created through the web UI, so the prompt has to be pasted into the routine's
 settings by hand. Keep the two in sync.
 
+## The record, and the rules it produced (review of 2026-10-22)
+
+Everything the routines published from 5/12 to 10/20, graded: **194 bets,
+100-90-4, -0.98u on 228.75u staked.** MLB carries it; NBA and UFC lose.
+The hand-entered 4/25-5/11 rows in the MLB tab (about +8u) are not in the repo
+and are not counted here.
+
+| Segment | Bets | Record | Units | ROI |
+|---|---|---|---|---|
+| MLB, all | 168 | 92-73-3 | +5.25 | +2.5% |
+| MLB favorites | 125 | 79-45-1 | +18.35 | +11.2% |
+| MLB underdogs / even money | 42 | 12-28-2 | -13.58 | -33.1% |
+| MLB 2u (HIGH CONFIDENCE) | 47 | 32-15 | +15.87 | +16.9% |
+| MLB 1u (VALUE) | 100 | 49-48-3 | -11.20 | -11.2% |
+| MLB 1u underdogs alone | 23 | 5-16 | -10.57 | -46.0% |
+| MLB 0.5u (LEAN, mostly plus money) | 15 | 7-8 | -0.72 | -9.6% |
+| MLB afternoon session | 18 | 11-6-1 | +1.91 | +13.2% |
+| NBA | 13 | 5-8 | -5.51 | -40.8% |
+| UFC (Gaethje corrected to +3.75) | 13 | 3-9-1 | -0.72 | -7.8% |
+
+Across all 168 MLB bets the picks won 55.8% of decisions against a 55.8%
+break-even: as a whole they won exactly as often as the prices said they
+would. The profit is all in the favorites, and in the 2u tier. With ~170 bets
+the standard error on ROI is about +/-7%, so read the smaller rows as hints,
+not facts. Day of week, month and team splits were checked and are noise.
+
+What the prompts now do about it:
+
+- **MLB: favorites only.** The underdog rows above are the whole of the loss.
+  The LEAN tier (0.5u plus-money) is gone. 2u HIGH CONFIDENCE stays as is;
+  -200 or shorter caps at 1u.
+- **Best price, not DraftKings only.** Each pick names the best price among the
+  books in `BOOKS`. Five cents better on every MLB bet would have turned +5.25u
+  into +8.6u with the same picks.
+- **No pick counts to hit.** "Target 2-4 plays" (MLB), "1-3 picks" (NBA) and
+  "3-5 plays" (UFC) are gone; zero picks is a normal outcome.
+- **Only verified games, only real prices.** On 10/4 a pick went out on the
+  Rays, who had no game that day (ALDS games 1 and 2 were 10/3 and 10/5).
+- **A sanity check against the market.** A model probability more than 8
+  points from the no-vig market line is treated as a data error first.
+- **Line check (CLV).** The 5:15pm session records how each morning pick's
+  price has moved (`clv/<date>.json`) and texts it. Beating later prices is
+  the earliest reliable sign of a real edge; win-loss takes thousands of bets.
+- **NBA:** the old edge was measured against a no-vig price, which overstates
+  every edge by about two points. Now measured against the price actually bet.
+  No bets until teams have played 10 games (opening night lost 3u at 1.5u
+  each). Moneylines only, at most 2 a day, `STAKE_SCALE = 0.5`.
+- **UFC:** the built-in belief that "underdogs are often +EV" is gone (they went
+  2-7). The model starts at the no-vig market line and moves at most 8 points;
+  A-tier only, nothing longer than +250, at most 2 a card, `STAKE_SCALE = 0.5`.
+- **Afternoon:** asked statsapi for regular-season games only, so it reported
+  "No games today" 15 times in October while playoff games were on. Fixed.
+  Its K props needed a confirmed umpire, which never came, so none were
+  published from May to October; an unknown umpire is now neutral.
+
+`STAKE_SCALE` at the top of the NBA and UFC prompts is the dial. 0 publishes
+tracking-only picks; 1 is full stakes. Expected value says those two sports
+should sit at 0 until the line check shows an edge; 0.5 is the compromise.
+
+## The data bundle, and why it never reached the 11am card
+
+`data.yml` was scheduled for 9:00 AM ET. GitHub started it between 12:15 and
+5:40 PM ET on every day from 9/22 to 10/22, so the bundle landed after the
+11 AM card 27 times out of 27. On top of that, every bundle fell back from
+Baseball Savant (the CSV's byte-order mark failed a header check), so xERA,
+K% and BB% were never in it, and the multi-book "best" prices mixed run-line
+and total juice in with moneylines.
+
+Now the routines ask for the bundle by pushing a line to `requests/data.txt`;
+a push starts the workflow within seconds and the bundle lands in 1-3 minutes.
+Each game carries the best price per side and its book, the no-vig fair line,
+SP handedness, season line and last three starts, bullpen use over three days,
+the HP umpire once posted, lineup splits against the SP's hand, and the
+forecast for the hour of first pitch. `scripts/game_sheet.py` prints it as one
+block per game.
+
+## Setup checklist (2026-10-22 changes)
+
+1. **Merge this branch into `main`.** The routines read `main`.
+2. **Paste the two workflow files.** These sessions cannot push to
+   `.github/workflows/`, so the new versions are in `routines/workflows/`.
+   On GitHub, open `.github/workflows/data.yml` -> Edit -> replace everything
+   with `routines/workflows/data.yml`; same for `grade.yml`.
+3. **Paste the four prompts** into the routines (Instructions box).
+4. **Environment variable `BOOKS`** (claude.ai routine environment): the books
+   you have accounts with, as The Odds API names them, e.g.
+   `draftkings,fanduel,betmgm,williamhill_us` (Caesars is `williamhill_us`).
+   Also add it as a repository **variable** `BOOKS` on GitHub (Settings ->
+   Secrets and variables -> Actions -> Variables).
+5. **Repository secret `ODDS_API_KEY`** on GitHub (same page, Secrets), with
+   the same key the routines already use. Without it the bundle falls back to
+   the covers.com scrape and has no per-book prices.
+6. **Delete the disabled routine named "test".** Its prompt holds the
+   Telegram bot token in plain text.
+7. **Optional:** move the NBA, UFC and afternoon routines from Sonnet 4.6 to
+   the model the 11 AM card uses or newer (routine settings -> model).
+
 ## How delivery works
 
 Everything is driven by one `git push` to `main`:
 
 ```
 routine session
+  pushes requests/data.txt ------------> .github/workflows/data.yml
+                                           -> data/<date>.json (1-3 min)
   writes picks/<date>.json, grades/<date>.json, dispatch/<date>.txt
   git push origin main
         |
@@ -27,7 +126,10 @@ routine session
         |      -> Telegram sendMessage
         |
         +--> .github/workflows/sheets.yml  (on push to picks/**.json, grades/**.json)
-               -> Google Sheets (MLB tab = sheet1, NBA tab)
+               -> Google Sheets (MLB tab = sheet1, NBA tab, UFC tab)
+
+nightly: .github/workflows/grade.yml grades MLB picks from MLB's API and
+         fills column E; the 11 AM card uses those grades when present.
 ```
 
 No API token is involved anywhere. The clone's `origin` remote is already
@@ -196,3 +298,17 @@ on 2026-10-06 and added to `picks/ufc/2026-06-14.json` and its grades file.
 The same day, the hand-graded 7/11, 7/18 and 10/3 results were copied from
 the tab into `picks/ufc/grades/`. The repo and the tab now agree: 12 bets,
 +0.78u.
+
+**Open (2026-10-22):** the Gaethje result is the total return, not the
+profit. 0.75u at +500 wins +3.75u; +4.5u adds the stake back. Both the tab and
+`picks/ufc/grades/2026-06-14.json` overstate UFC by 0.75u until corrected.
+
+## Known gaps in the MLB record (2026-10-22)
+
+- **8/28 Yankees ML -165 1u (W, +0.61u)** and **8/31 Braves ML -163 1u (L,
+  -1.00u)** were texted, but the routine wrote them to `picks/TODAY.json`, so
+  neither reached the sheet. 8/31's grade exists; neither picks file does.
+- **Never graded:** 7/19 A's ML +125 0.75u (the routine wrote "A's", which no
+  grader matches; the prompts now say "Athletics"), 8/20 Rays ML -170 1u, and
+  8/1 Yankees ML and Dodgers ML (doubleheader splits, still PENDING).
+- **10/4 Rays ML** was removed on 10/6: the Rays had no game that day.
