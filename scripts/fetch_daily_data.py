@@ -876,6 +876,12 @@ def main():
             gm["weather_first_pitch"] = wx
 
     out_path = out / f"{d}.json"
+    # The scheduled GitHub workflow commits whatever lands in data/. On a day
+    # with no games that was an empty bundle committed every day of the
+    # off-season; write nothing there instead.
+    if os.environ.get("GITHUB_ACTIONS") and not slate and not out_path.exists():
+        print("\nNo games today - nothing written.")
+        return
     out_path.write_text(json.dumps(bundle, indent=2))
     print(f"\nWrote {out_path} ({out_path.stat().st_size // 1024} KB)")
 

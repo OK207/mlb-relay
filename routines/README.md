@@ -94,13 +94,25 @@ dozen bets is the earliest honest sign of an edge; negative means stop.
   **The UFC tab in the Sheet still shows +4.5 in that row** - change it by hand.
 - Dates, file names, payouts and the Telegram send are all computed by
   scripts; nothing in a prompt types a date.
-- `data.yml` no longer runs on a schedule. GitHub started it 5-10 hours late
-  every day, it reached the 11 AM card zero times, and it committed an empty
-  bundle daily all off-season. The MLB routines fetch the same data
-  themselves now.
+- `data.yml` (GitHub started its schedule 5-10 hours late every day, so the
+  bundle reached the 11 AM card zero times) is no longer used by the
+  routines: they fetch the same data themselves. On a day with no games it
+  now writes nothing instead of committing an empty bundle.
 - The site reads cards from `messages/` as well as `dispatch/`, and has a CBB tab.
 - `grades/2026-08-31.json` (Braves ML, L) has no matching picks file: the
   pick was texted but never logged. It is in the Sheet, not in the totals above.
+
+## Two workflow files to paste by hand
+
+Sessions like the one that made these changes are not allowed to push to
+`.github/workflows/`. Two updated workflows are in `routines/workflows/`;
+on GitHub open the live file -> Edit -> replace everything -> Commit.
+
+- `routines/workflows/sheets.yml` -> `.github/workflows/sheets.yml`. Adds a
+  CBB tab. **Needed before the CBB routine is switched on**, otherwise its
+  picks are saved and texted but never reach the Sheet.
+- `routines/workflows/data.yml` -> `.github/workflows/data.yml`. Removes the
+  daily schedule. Optional tidy-up.
 
 ## The scripts
 
