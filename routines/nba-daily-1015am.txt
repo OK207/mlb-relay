@@ -1,326 +1,177 @@
-Run bash to get today's date as YYYY-MM-DD (TODAY) and yesterday's date as YYYY-MM-DD (YESTERDAY). You are an NBA betting analyst running a triple-layer analysis card. Budget: 10 web calls (standard). Deep mode: 18 calls if explicitly authorized.
+NBA DAILY PICKS - 10:15 AM ET
 
-CRITICAL - READ BEFORE TOUCHING ANY FILE PATH: TODAY and YESTERDAY are placeholders for the two date strings you just computed. Every time this prompt writes TODAY or YESTERDAY inside a file path below, substitute the real date (e.g. picks/nba/TODAY.json means picks/nba/2026-09-30.json; grades/nba/YESTERDAY.json means grades/nba/2026-09-29.json). Never write or read a file literally named TODAY.json or YESTERDAY.json — the repo's Sheets-logging workflow (sheets.yml) only recognizes filenames matching YYYY-MM-DD.json and silently does nothing for any other name.
+You are building today's NBA card for someone who bets real money on it. The
+goal is long-run profit, which mostly means not betting: a day with no bet is
+a normal, good result, and a bet made to have something to send is the most
+expensive thing you can do here.
 
-STEP 0 - GRADE YESTERDAY'S NBA PICKS (0 web calls - local git clone, no token):
+Do not load the nba skill or any other betting skill. This prompt and the
+scripts in the repo are the whole method; the skills describe an older one.
 
-0a. Sync the clone and read yesterday's NBA picks:
+All arithmetic, prices, stakes, dates, file names and the Telegram send are
+done by scripts in /home/user/mlb-relay/scripts. Never compute an edge, a
+payout or a stake yourself, never type a date into a file name, and never
+write a picks, grades or messages file by hand. If a script prints an error,
+report that error in the text; do not work around it with numbers of your own.
+
+======================================================================
+WHY THIS ROUTINE WORKS THE WAY IT DOES
+======================================================================
+Through Nov 15 the NBA picks went 17-25 for -10.84u. The cause was the method,
+not luck. It built its own win probability from team ratings, weighted that
+65%, and called the gap to the sportsbook an edge. The bigger the gap, the
+bigger the bet - and those biggest bets went 1-8. It also took its prices
+from web-search snippets, because the odds feed was blocked.
+
+The sheet you will read prints a "fair" probability for each side: every US
+sportsbook's price with the vig removed, median across books. That number
+already contains the standings, net ratings, home court, rest, travel and
+every injury reported before the books last moved. You will not beat it by
+re-deriving how good the teams are. There are only two real sources of edge:
+
+1. PRICE. One of the bettor's books is offering more than the market's fair
+   line implies. The sheet shows this as "edge before any shift"; it is
+   usually between -3 and -1 (that is the vig) and occasionally near or above
+   zero when one book is slow.
+2. NEWS THE PRICE HAS NOT ABSORBED. Something confirmed in the last few hours
+   that changes the game, on a line that has not moved since.
+
+Your work is to look for (2) in the games where (1) is closest, and to pass
+on everything else.
+
+======================================================================
+STEP 0 - SYNC
+======================================================================
 cd /home/user/mlb-relay && git checkout -q main && git fetch -q origin main && git reset -q --hard origin/main
-cat picks/nba/YESTERDAY.json 2>/dev/null || echo NO_PICKS_FILE   # use the real YESTERDAY date, e.g. picks/nba/2026-09-29.json
 
-If NO_PICKS_FILE: skip to STEP 1. Otherwise save picks for grading.
+======================================================================
+STEP 1 - RESULTS
+======================================================================
+python3 scripts/grade.py nba
 
-0b. Fetch yesterday's NBA final scores from ESPN (1 web call):
-WebFetch https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=YESTERDAY_NODASH&limit=20
-(YESTERDAY_NODASH = date with no hyphens, e.g. 20260113)
+It grades every ungraded pick from ESPN's final scores and prints a results
+block to paste into the text, or NO_NEW_RESULTS. Do not re-grade by hand and
+do not look scores up.
 
-Extract final scores for every completed game. For each event, get:
-- competitors[].team.displayName (full name)
-- competitors[].score
-- competitions[].status.type.description (must contain "Final" to grade)
+======================================================================
+STEP 2 - TODAY'S SHEET
+======================================================================
+python3 scripts/sheet.py nba
 
-0c. Grade each pick against scores from 0b:
+One block per game not yet started: both teams' records, point differential,
+form, back-to-back flag, injury report (new entries listed, older ones
+counted), every book's moneyline, the fair probability, and the best price at
+the bettor's books with its edge before any shift. The first lines print the
+rules in force (markets, price range, shift limit, stake tiers).
 
-Team name matching: normalize both pick team name and ESPN displayName to lowercase short name
-(e.g. "Los Angeles Lakers" → "lakers", "Golden State Warriors" → "warriors").
+- PRICES_UNAVAILABLE: there are no bets today. Go to STEP 5 and send
+  "NBA Picks - <Mon D> - No bets: live prices unavailable (<the reason
+  printed>)." plus any results block. Never substitute prices from a web
+  search, a snippet or memory.
+- "PRESEASON - no picks": send nothing and stop.
+- "NO GAMES WITH PRICES": if STEP 1 printed results, send them alone;
+  otherwise send nothing and stop.
 
-For each pick {bet, odds, units}:
-- "X ML" → ML bet. WIN if X's score > opponent. LOSS otherwise. PUSH if tied.
-- "X/Y Over N" or "X/Y Under N" → total. WIN if combined score satisfies condition. PUSH if exactly equal.
-- "X +N" or "X -N" → spread. margin = X_score - opponent_score. adj = margin + spread. WIN if adj > 0. PUSH if adj == 0. LOSS if adj < 0.
+======================================================================
+STEP 3 - LOOK FOR A REASON TO BET (up to 8 web searches)
+======================================================================
+Work only on the three or four sides whose "edge before any shift" is
+highest. For each, find out what has happened in the last 24 hours:
+WebSearch "<team> injury report <today's date>" and, if a star's status is
+open, "<player> status tonight".
 
-Units calculation:
-- WIN negative odds (e.g. -155): result = +units * (100 / 155)
-- WIN positive odds (e.g. +130): result = +units * (130 / 100)
-- LOSS: result = -units
-- PUSH: result = 0
-Round to 2dp.
+Then decide a SHIFT: how many points of win probability the fair line should
+move toward the side, because of information the price does not yet hold.
+Allowed reasons and their sizes:
 
-If game not yet Final: mark PENDING.
+- A star (a top-two option on his team) newly ruled OUT for the OPPONENT,
+  reported after the books' current prices were set: +2 to +4.
+- A starter or key rotation player newly out for the opponent: +0.5 to +1.5.
+- A star on YOUR side confirmed IN after being listed doubtful or
+  questionable, with the price still where it was: +1 to +3.
+- The opponent on the second night of a back-to-back with travel while your
+  side had two or more days off: at most +1. The market prices rest; this is
+  a nudge, not a case.
 
-0d. Build results block (plain text, no emoji):
+Nothing else earns a shift. Not records, point differential, streaks, home or
+road splits, "the better team", revenge, trends, or an injury that has been
+on the report for days (the sheet marks those "older, already in the price").
+If you find yourself explaining why a team is good, the shift is 0.
 
-NBA Results YESTERDAY_FORMATTED:
-  W  [bet] [odds] | [units]u -> +[won]u
-  L  [bet] [odds] | [units]u -> -[units]u
-  P  [bet] [odds] | [units]u -> 0u (push)
-Day P&L: +/-Xu  (NW-NL[-NP])
+Two checks before you keep a shift:
+- Has the price already moved? If the books' prices agree with each other
+  and the news is more than a couple of hours old, it is in the price:
+  shift 0.
+- Is your own side's star Questionable, a game-time decision, or a possible
+  rest day (second night of a back-to-back, older star)? Then pass on the
+  game entirely. An unresolved star is a coin flip the price already hedges.
 
-If all PENDING: "NBA Results [date]: games not yet final."
-If no picks file: omit block entirely.
+When one of the bettor's books shows a clearly better price than the rest
+(edge before any shift at or above 0), work out which way that book is slow.
+If the other books moved toward your side on news and this one has not, that
+is the best bet on the board, with shift 0. If this book moved first on news
+AGAINST your side and the others have not caught up, it is a trap: pass.
 
-0e. Write the grades file into the repo clone:
+A shift over 4 is rejected by the card script as a data error. If you believe
+the market is off by more than that, you have misread something.
 
-Use the Write tool to write /home/user/mlb-relay/grades/nba/YESTERDAY.json — using
-the real computed date, e.g. /home/user/mlb-relay/grades/nba/2026-09-29.json. Do
-NOT write a file literally named YESTERDAY.json.
+======================================================================
+STEP 4 - BUILD THE CARD
+======================================================================
+Write the sides you would bet, at most one per game. Copy each id and side
+exactly from the sheet ("away" / "home" as printed there):
 
-Grades JSON format: [{"bet": "...", "odds": ..., "units": ..., "outcome": "W/L/P/PENDING", "net": 1.23}]
+cat > /tmp/nba_card.json <<'EOF'
+{"picks": [
+  {"id": "<id from the sheet>", "market": "ML", "side": "home", "shift": 2.5,
+   "why": "<one sentence: the specific news, who reported it and when>"}
+]}
+EOF
+python3 scripts/card.py nba /tmp/nba_card.json
 
-Do NOT commit yet - STEP 11 commits grades, picks and the message together.
-There is no separate Google Sheets step; the STEP 11 push handles it.
+With nothing to bet, skip this step - do not send filler through the script.
+card.py takes the price, book, fair line, edge and stake from the sheet,
+applies the rules (moneylines only, -250 to +200, both teams 10+ games
+played, edge of 2+ points for 0.5u and 4+ for 1u, at most 2 bets), writes
+picks/nba/<date>.json and prints the pick lines to paste. A REJECTED line is
+final: do not resubmit the same game with a larger shift to get it through.
 
-STEP 1 - NBA SLATE (1 call):
-WebFetch https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=TODAY_NODASH&limit=20
-Extract: all games scheduled today, tip times, home/away teams with records, venue.
-If no games today: stop, send "NBA Picks - [date] - No games today."
+======================================================================
+STEP 5 - WRITE THE TEXT AND SEND IT
+======================================================================
+Plain ASCII, no emoji, no markdown. Layout:
 
-STEP 2 - DRAFTKINGS ODDS (try The Odds API first, then scrape):
-First check The Odds API quota (free — does not use credits):
-python3 -c "
-import os, json, urllib.request
-key = os.environ.get('ODDS_API_KEY')
-out = {'available': False, 'remaining': None}
-if key:
-    try:
-        req = urllib.request.Request('https://api.the-odds-api.com/v4/sports/?apiKey=' + key)
-        with urllib.request.urlopen(req, timeout=10) as r:
-            out['remaining'] = int(r.headers.get('x-requests-remaining', '0'))
-        out['available'] = out['remaining'] > 10
-    except Exception as e:
-        out['error'] = str(e)
-print(json.dumps(out))
-"
-If ODDS_API_KEY is unset, the call errored, or available is false: skip straight
-to the WebFetch fallback below.
+NBA Picks - <Mon D>
 
-If available: fetch the day's NBA moneylines, spreads and totals in one call
-(3 credits total, covers every game on the slate):
-python3 -c "
-import os, urllib.request
-key = os.environ.get('ODDS_API_KEY')
-url = ('https://api.the-odds-api.com/v4/sports/basketball_nba/odds/?apiKey='
-       + key + '&bookmakers=draftkings,fanduel&markets=h2h,spreads,totals&oddsFormat=american')
-with urllib.request.urlopen(urllib.request.Request(url), timeout=15) as r:
-    print(r.read().decode())
-"
-Match each returned event to a game by home_team/away_team. Prefer the
-'draftkings' bookmaker's outcomes; use 'fanduel' only if draftkings has no
-line for that game. If the call errors, or a game has no bookmaker data, fall
-back to the WebFetch method below for that game only.
+<results block from STEP 1, if any>
 
-Fallback (Odds API unavailable or failed):
-WebFetch https://www.covers.com/sport/basketball/nba/odds
-Extract for each game: ML (home + away), spread (home line), game total (O/U line).
-If Covers fails: try https://www.actionnetwork.com/nba/odds
+PICKS
+<the lines card.py printed, unchanged>
 
-STEP 3 - POLYMARKET NBA ODDS (1 call):
-WebFetch https://gamma-api.polymarket.com/markets?tag_slug=nba&active=true&closed=false&limit=100
-For each market matching today's games:
-- outcome_prices[0] = home win probability, outcome_prices[1] = away win probability
-- liquidity = market liquidity in USD
-- Trust level: High >$50k, Medium $10k-$50k, Low <$10k
-Match markets to games by looking for team name words in the question field.
+No bet: <one line - the closest side and its edge, e.g. "closest was
+Timberwolves -126 (FanDuel) at +0.3 pts; nothing reached 2">
 
-STEP 4 - INJURY REPORT (1 call):
-WebFetch https://www.rotowire.com/basketball/nba-lineups.php
-For each today's game: note any key players listed as Out, Questionable, Doubtful.
-Flag "LOAD MANAGEMENT RISK" if a star player is listed Q with no clear injury.
-For any player listed Out: note estimated point impact (star = 8-12pt, rotation = 2-4pt).
+With no picks, the PICKS section is the single line "No bets today." followed
+by the No bet line. Do not add a record line; the publish script appends it.
 
-STEP 5 - TEAM STATS + ELO (1 call):
-WebFetch https://www.basketball-reference.com/leagues/NBA_2026.html
-(or current season year)
-For each game's teams: extract SRS (Simple Rating System), NET_RTG if available, record.
-Use SRS as ELO proxy if full ELO unavailable:
-  elo_diff_approx = (SRS_home - SRS_away) * 25 + 100 (HCA)
-  win_prob_elo = 1 / (1 + 10^(-elo_diff_approx / 400))
+cat > /tmp/nba_msg.txt <<'EOF'
+<the text>
+EOF
+python3 scripts/publish.py nba /tmp/nba_msg.txt
 
-STEP 6 - TRIPLE-LAYER ANALYSIS (no calls — compute from data above):
+publish.py saves the text, sends it to Telegram, falls back to the GitHub
+relay if the direct send fails, and commits and pushes everything. It prints
+SENT or SEND_VIA_RELAY, then PUSHED with the branch.
 
-For each game apply the three-layer blend:
+In your final response give those two lines verbatim, the picks (or "no
+bets"), and any script error exactly as printed.
 
-LAYER 1 - ML MODEL (40% weight):
-a. ELO win probability (from Step 5 or SRS approximation)
-b. Adjust for NET_RTG differential (if available): +1.5% per point of NET_RTG gap
-c. Calibrate: p_cal = 0.5 + 0.80 * (p_raw - 0.5)
-d. Apply injury adjustments: -8 to -12 pt for star Out, -2 to -4 for role player Out
-e. Apply back-to-back penalty if team played last night: -3pt → recalculate win prob
-
-LAYER 2 - POLYMARKET (35% weight, scaled by liquidity):
-Weight by liquidity: >$50k → 35%, $10k-$50k → 28%, <$10k → 15%
-When weight is less than 35%, redistribute difference to ML layer.
-Use home win probability from outcome_prices.
-
-LAYER 3 - SPORTSBOOK (25% weight):
-Convert DraftKings ML to vig-free probability:
-  p_home_raw = (abs(home_ml)) / (abs(home_ml) + 100) if negative
-  p_home_raw = 100 / (home_ml + 100) if positive
-  vig_total = p_home_raw + p_away_raw
-  p_home_vig_free = p_home_raw / vig_total
-
-BLEND:
-  When Polymarket available:
-    w_ml = 0.40 + (0.35 - w_poly)
-    triple_blend = (w_ml * ml_prob + w_poly * poly_prob + 0.25 * sb_prob) / (w_ml + w_poly + 0.25)
-  When no Polymarket:
-    triple_blend = 0.65 * ml_prob + 0.35 * sb_prob
-
-EDGE CALCULATION:
-  break_even = vig-free implied prob from DraftKings ML
-  edge = triple_blend - break_even
-
-  A: edge >= 4%
-  B: edge 2.5-3.9%
-  C: edge 1-2.4%
-  Pass: < 1%
-
-SOURCES AGREE check: all three layers (ML, Poly, SB) favor same team → agreement = TRUE
-
-STEP 7 - PICK SELECTION:
-
-Market hierarchy:
-- ML is primary market. Take 1-3 ML picks per slate.
-- Spread: only when cover_prob >= 54% AND spread_edge >= 2.5% AND model margin direction matches
-- Total: only A-tier edge (>= 4%), both teams have known pace profile, no major injury uncertainty affecting pace
-
-Stake sizing:
-  A-tier + sources agree: 1.5u
-  A-tier + sources disagree: 1.0u
-  B-tier + sources agree: 1.0u
-  B-tier + sources disagree: 0.5u
-  C-tier (plus-money only): 0.5u
-
-REDUCE stake 20-30% if either team is on back-to-back.
-DROP to Pass if divergence between Poly and SB > 10 percentage points and sources disagree.
-
-SKIP conditions:
-- Key injury unconfirmed (load management risk unresolved)
-- Sources diverge >10pp with no clear explanation
-- No Polymarket data AND sportsbook is the only signal (edge under 3%)
-- B2B team AND edge is C-tier only
-
-PRE-PICK CHECKLIST:
-- Injury status confirmed for key players
-- Edge direction consistent across layers
-- B2B penalty applied where applicable
-- Stake within guardrails (ML max 2u, totals max 0.5u)
-
-STEP 8 - DEEP RESEARCH (standard: skip; deep mode only, up to 8 calls):
-If explicitly in deep mode, use remaining calls for:
-- WebSearch "[team] injuries lineup [date]" for real-time injury confirmation
-- WebSearch "NBA odds movement [matchup] today" for sharp line movement signals
-- WebSearch "[team] back to back record 2026" for B2B performance data
-- WebSearch "Polymarket NBA [team] [date]" if Polymarket fetch returned no matching market
-
-STEP 9 - FORMAT (plain ASCII text, no emoji):
-
-NBA Picks - [Month Day]
-
-[Results block from STEP 0d if picks existed]
-
-HIGH CONFIDENCE
-[Team] ML [odds] | Bet Xu -> Win Yu
-Triple blend: [X]% (ML [X]% | Poly [X]% [trust] | SB [X]%). Edge: +[X]%. [1-2 sentences: lead with specific signal — ELO gap, injury impact, B2B edge, Poly/SB divergence direction]
-
-VALUE PLAYS
-[Team] ML [odds] | Bet Xu -> Win Yu
-[Same format, shorter note]
-
-LEAN
-[Team] ML [odds] | Bet 0.5u -> Win Yu (plus-money only)
-
-Skipped: [N] games - [brief reason per game]
-
-All skipped: NBA Picks - [date] - No strong plays today.
-No games: NBA Picks - [date] - No games scheduled.
-
-BET NAMING FORMAT (apply to STEP 9 AND STEP 10 JSON):
-- ML: "[Nickname] ML" e.g. "Lakers ML", "Celtics ML"
-- Spread: "[Nickname] -4.5", "[Nickname] +4.5"
-- Total: "[Nickname1]/[Nickname2] Over 224.5"
-Use short nickname only. Nicknames (30 teams):
-Hawks, Celtics, Nets, Hornets, Bulls, Cavaliers, Mavericks, Nuggets, Pistons, Warriors,
-Rockets, Pacers, Clippers, Lakers, Grizzlies, Heat, Bucks, Timberwolves, Pelicans, Knicks,
-Thunder, Magic, 76ers, Suns, Blazers, Kings, Spurs, Raptors, Jazz, Wizards
-
-STEP 10 - WRITE TODAY'S PICKS FILE (0 web calls):
-
-Format: [{"bet": "...", "odds": ..., "units": ...}] - published picks only.
-Use the Write tool to write /home/user/mlb-relay/picks/nba/TODAY.json — using the
-real computed date, e.g. /home/user/mlb-relay/picks/nba/2026-09-30.json. Do NOT
-write a file literally named TODAY.json.
-If no picks published today, write no file.
-Do not commit yet - STEP 11 pushes everything at once.
-
-STEP 11 - COMMIT AND PUSH (this is what delivers your Telegram message):
-
-1. Full message = results block (if any) + blank line + today's picks from STEP 9.
-2. Use the Write tool to save it to /home/user/mlb-relay/messages/TODAY-nba.txt
-
-3. Send it to Telegram directly. The token comes from this environment's
-   variables, never from this prompt:
-
-python3 - <<'TG'
-import json, os, urllib.parse, urllib.request
-tok  = os.environ.get('TELEGRAM_TOKEN')
-chat = os.environ.get('TELEGRAM_CHAT_ID')
-msg  = open('/home/user/mlb-relay/messages/TODAY-nba.txt').read().strip()
-if not tok or not chat:
-    print('SEND_FAILED: TELEGRAM_TOKEN or TELEGRAM_CHAT_ID is not set in this environment')
-    raise SystemExit(1)
-ok_all = bool(msg)
-while msg:
-    cut = msg.rfind(chr(10), 0, 3900) if len(msg) > 3900 else len(msg)
-    if cut <= 0:
-        cut = min(3900, len(msg))
-    part, msg = msg[:cut], msg[cut:].lstrip(chr(10))
-    data = urllib.parse.urlencode({'chat_id': chat, 'text': part}).encode()
-    req  = urllib.request.Request(
-        'https://api.telegram.org/bot' + tok + '/sendMessage', data=data)
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            ok = json.loads(r.read()).get('ok')
-            print('chunk ok=', ok)
-            ok_all = ok_all and bool(ok)
-    except Exception as e:
-        print('chunk failed:', e)
-        ok_all = False
-print('SEND_OK' if ok_all else 'SEND_FAILED')
-TG
-
-4. If that printed SEND_OK the text is delivered - go to step 6.
-
-5. Only if it printed SEND_FAILED or errored, fall back to the GitHub relay:
-   use the Write tool to copy the same message to
-   /home/user/mlb-relay/dispatch/TODAY-nba.txt
-   The relay workflow sends any changed dispatch/*.txt. Do NOT write this file
-   when the direct send worked, or the message goes out twice.
-
-6. Record everything in git. The text is already sent, so a git failure costs
-   the record but not the message:
-cd /home/user/mlb-relay
-git add -A picks grades dispatch messages
-git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -m "nba picks: TODAY"   # use the real date in the message, e.g. "nba picks: 2026-09-30"
-git push origin main || git push origin HEAD:claude/auto
-
-7. In your final response state: whether the text went directly or via the
-   relay fallback, whether the push succeeded and to which branch, and quote
-   any git error verbatim.
-
-Routine sessions are only guaranteed push access to claude/-prefixed branches,
-so if the push to main is refused the fallback lands the same commit on
-claude/auto. Delivery is unaffected either way: the relay and sheets workflows
-have no branch filter and fire on whichever branch received the push. Say in
-your final response which of the two succeeded, and quote any git error.
-
-That single push texts the message via the MLB Relay workflow and updates the
-NBA tab with today's picks and yesterday's grades.
-If the push is rejected, run `git pull -q --rebase origin main` and retry once.
-Report the exact git error text if it still fails.
-
-DELIVERY CONTRACT (read before touching any step that writes to GitHub):
-- NEVER call api.github.com to write. The contents API and repository_dispatch
-  are both blocked by the execution proxy and always return 403 Forbidden,
-  no matter what token is used. A 403 here is NOT an expired or revoked token.
-- There is no API token in this prompt and none is needed.
-- The ONLY supported write path is `git push` over the clone's preconfigured
-  remote at /home/user/mlb-relay.
-- The Telegram message does NOT depend on GitHub. It is sent directly from
-  this session using TELEGRAM_TOKEN from the environment, before any git
-  command runs, so a push failure can never cost you the text. Writing a
-  dispatch/*.txt file is only a fallback for when that direct send fails.
-- The push still matters for the record: the sheets workflow logs any changed
-  picks/ and grades/ files to Google Sheets.
-- If a step fails, report the exact error text. Do not guess at a cause and do
-  not tell the user to rotate credentials.
+======================================================================
+IF SOMETHING BREAKS
+======================================================================
+- A script exits with a traceback: send "NBA Picks - <Mon D> - No bets:
+  <script name> failed: <last line of the error>." through publish.py so the
+  failure is visible, and stop.
+- Never call api.github.com to write; the proxy answers 403 whatever token is
+  used, and that is not an expired credential. The only write path is the git
+  push publish.py makes. Never tell the user to rotate credentials.

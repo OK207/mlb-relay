@@ -1,0 +1,244 @@
+name: Update Google Sheet
+
+on:
+  push:
+    paths:
+      - 'picks/**.json'
+      - 'grades/**.json'
+  repository_dispatch:
+    types: [mlb-sheets-log-picks, mlb-sheets-grade-picks, nba-sheets-log-picks,
+            nba-sheets-grade-picks, ufc-sheets-log-picks, ufc-sheets-grade-picks,
+            cbb-sheets-log-picks, cbb-sheets-grade-picks]
+  # Manual re-run for a past date, since repository_dispatch is blocked for
+  # routine sessions and an unchanged file never shows up in a push diff.
+  workflow_dispatch:
+    inputs:
+      event:
+        description: 'What to run'
+        required: true
+        type: choice
+        options: [mlb-sheets-log-picks, mlb-sheets-grade-picks, nba-sheets-log-picks,
+                  nba-sheets-grade-picks, ufc-sheets-log-picks, ufc-sheets-grade-picks,
+                  cbb-sheets-log-picks, cbb-sheets-grade-picks]
+      date:
+        description: 'Date to process (YYYY-MM-DD)'
+        required: true
+        type: string
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    # Escape hatch for backfills: a commit tagged [skip-sheets] lands in git
+    # without appending to the sheet, so rows can be placed in date order by
+    # the reconcile workflow instead of being tacked onto the bottom.
+    if: "!contains(github.event.head_commit.message, '[skip-sheets]')"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - run: pip install gspread
+
+      - name: Update sheet
+        env:
+          CREDS: ${{ secrets.GOOGLE_SHEETS_CREDS }}
+          SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          DATE: ${{ github.event.client_payload.date || inputs.date }}
+          EVENT: ${{ github.event.action || inputs.event }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.event.after }}
+        run: |
+          python3 - << 'EOF'
+          import gspread, json, os, subprocess, re, sys
+          from datetime import datetime, timedelta
+
+          ZERO = '0' * 40
+          event_name = os.environ.get('GITHUB_EVENT_NAME', 'repository_dispatch')
+
+          def git(*args):
+              return subprocess.run(['git', *args], capture_output=True, text=True).stdout.strip()
+
+          PICKS_RE = re.compile(r'^picks/(nba/|ufc/|cbb/)?(\d{4}-\d{2}-\d{2})\.json$')
+          GRADES_RE = re.compile(r'^grades/(nba/|cbb/)?(\d{4}-\d{2}-\d{2})\.json$')
+          # UFC grades live under picks/ufc/grades/ rather than grades/ufc/.
+          UFC_GRADES_RE = re.compile(r'^picks/ufc/grades/(\d{4}-\d{2}-\d{2})\.json$')
+
+          HEADER = ['Date', 'Bet', 'Odds', 'Units Played', 'Units Won/Lost',
+                    'Totals (Winnings)', 'Total Stakes', 'Yield %', '', '', '']
+
+          def sport_of(prefix):
+              return {'nba/': 'nba', 'ufc/': 'ufc', 'cbb/': 'cbb'}.get(prefix or '', 'mlb')
+
+          def picks_path(sport, d):
+              return {'mlb': f'picks/{d}.json', 'nba': f'picks/nba/{d}.json',
+                      'ufc': f'picks/ufc/{d}.json', 'cbb': f'picks/cbb/{d}.json'}[sport]
+
+          def grades_path(sport, d):
+              return {'mlb': f'grades/{d}.json', 'nba': f'grades/nba/{d}.json',
+                      'ufc': f'picks/ufc/grades/{d}.json', 'cbb': f'grades/cbb/{d}.json'}[sport]
+
+          def unwrap(doc):
+              # UFC files are {"event":..., "picks":[...]}; MLB/NBA are a bare list.
+              return doc['picks'] if isinstance(doc, dict) else doc
+
+          def norm_bet(b):
+              # Hand-entered rows read "Gane ML vs Pereira - UFC Freedom 250" while
+              # the routine writes "Gane ML". Compare on the leading clause so the
+              # same wager is neither logged twice nor missed when grading.
+              return str(b).split(' vs ')[0].split(' - ')[0].strip().lower()
+
+          jobs = []  # (event, date_str)
+
+          if event_name == 'push':
+              before = os.environ.get('BEFORE_SHA', '')
+              after = os.environ.get('AFTER_SHA', '') or 'HEAD'
+              # A single push commonly carries yesterday's grades AND today's picks.
+              # Diff the whole push range and collect every match, not just the first.
+              have_before = (
+                  before and before != ZERO
+                  and subprocess.run(['git', 'cat-file', '-e', before + '^{commit}'],
+                                     capture_output=True).returncode == 0
+              )
+              rng = f'{before}..{after}' if have_before else 'HEAD~1..HEAD'
+              for f in git('diff', '--name-only', '--diff-filter=d', rng).split('\n'):
+                  m = UFC_GRADES_RE.match(f)
+                  if m:
+                      jobs.append(('ufc-sheets-grade-picks', m.group(1)))
+                      continue
+                  m = PICKS_RE.match(f)
+                  if m:
+                      jobs.append((sport_of(m.group(1)) + '-sheets-log-picks', m.group(2)))
+                      continue
+                  m = GRADES_RE.match(f)
+                  if m:
+                      jobs.append((sport_of(m.group(1)) + '-sheets-grade-picks', m.group(2)))
+              if not jobs:
+                  print(f'No picks/grades files changed in {rng}')
+                  sys.exit(0)
+          else:
+              event = os.environ.get('EVENT', '')
+              date_str = os.environ.get('DATE', '')
+              if not event or not date_str:
+                  sys.exit('Missing event or date')
+              jobs.append((event, date_str))
+
+          # Drop duplicates, and grade before logging so appended rows aren't rescanned.
+          jobs = list(dict.fromkeys(jobs))
+          jobs.sort(key=lambda j: 0 if 'grade' in j[0] else 1)
+
+          gc = gspread.service_account_from_dict(json.loads(os.environ['CREDS']))
+          wb = gc.open_by_key(os.environ['SHEET_ID'])
+
+          def worksheet_for(sport):
+              if sport == 'mlb':
+                  return wb.sheet1
+              title = sport.upper()
+              try:
+                  return wb.worksheet(title)
+              except gspread.WorksheetNotFound:
+                  ws = wb.add_worksheet(title=title, rows=500, cols=len(HEADER))
+                  ws.update(f'A1:K1', [HEADER], value_input_option='USER_ENTERED')
+                  print(f'created worksheet "{title}"')
+                  return ws
+
+          GS_EPOCH = datetime(1899, 12, 30)
+
+          def to_display_date(s):
+              dt = datetime.strptime(s, '%Y-%m-%d')
+              return f'{dt.month}/{dt.day}/{str(dt.year)[2:]}'
+
+          def parse_row_date(cell):
+              try:
+                  return (GS_EPOCH + timedelta(days=float(cell))).date()
+              except Exception:
+                  for fmt in ('%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y'):
+                      try:
+                          return datetime.strptime(str(cell).strip(), fmt).date()
+                      except Exception:
+                          pass
+              return None
+
+          def log_picks(ws, date_str, sport):
+              target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+              path = picks_path(sport, date_str)
+              try:
+                  with open(path) as f:
+                      picks = unwrap(json.load(f))
+              except FileNotFoundError:
+                  print(f'No picks file for {date_str}')
+                  return
+              if not picks:
+                  print('No picks to log')
+                  return
+
+              existing_bets = set()
+              for row in ws.get_all_values()[1:]:
+                  if len(row) >= 2 and parse_row_date(row[0]) == target_date and row[1].strip():
+                      existing_bets.add(norm_bet(row[1]))
+
+              new_picks = [p for p in picks if norm_bet(p['bet']) not in existing_bets]
+              if not new_picks:
+                  print(f'All {len(picks)} picks already logged for {date_str}')
+                  return
+
+              col_a = ws.col_values(1)
+              last = max((i + 1 for i, v in enumerate(col_a) if v and i > 0), default=1)
+
+              rows = []
+              for idx, p in enumerate(new_picks):
+                  n = last + 1 + idx
+                  prev = n - 1
+                  wf = f'=E{n}' if n == 2 else f'=F{prev}+E{n}'
+                  sf = f'=D{n}' if n == 2 else f'=D{n}+G{prev}'
+                  rows.append([to_display_date(date_str), p['bet'], p['odds'], p['units'],
+                               '', wf, sf, f'=(F{n}/G{n})*100', '', 'ccr-auto'])
+
+              ws.update(f'A{last+1}:J{last+len(rows)}', rows, value_input_option='USER_ENTERED')
+              print(f'Logged {len(rows)} new pick(s) for {date_str} '
+                    f'(skipped {len(picks)-len(new_picks)} duplicates)')
+
+          def grade_picks(ws, date_str, sport):
+              target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+              path = grades_path(sport, date_str)
+              try:
+                  with open(path) as f:
+                      raw = unwrap(json.load(f))
+              except FileNotFoundError:
+                  print(f'No grades file for {date_str}')
+                  return
+
+              grades = {norm_bet(g['bet']): g['net'] for g in raw
+                        if g.get('outcome') in ('W', 'L', 'P') and g.get('net') is not None}
+              if not grades:
+                  print('No gradeable picks')
+                  return
+
+              updates = []
+              for i, row in enumerate(ws.get_all_values()[1:], start=2):
+                  if len(row) < 2:
+                      continue
+                  if parse_row_date(row[0]) == target_date and norm_bet(row[1]) in grades:
+                      if len(row) < 5 or not str(row[4]).strip():
+                          updates.append({'range': f'E{i}',
+                                          'values': [[grades[norm_bet(row[1])]]]})
+
+              if updates:
+                  ws.batch_update(updates)
+                  print(f'Graded {len(updates)} pick(s) for {date_str}')
+              else:
+                  print(f'No ungraded rows found for {date_str}')
+
+          for event, date_str in jobs:
+              print(f'--- Event: {event}  Date: {date_str}')
+              sport = event.split('-')[0]
+              if sport not in ('mlb', 'nba', 'ufc', 'cbb'):
+                  print(f'Unknown sport in {event}, skipping')
+                  continue
+              ws = worksheet_for(sport)
+              if event.endswith('-sheets-log-picks'):
+                  log_picks(ws, date_str, sport)
+              elif event.endswith('-sheets-grade-picks'):
+                  grade_picks(ws, date_str, sport)
+              else:
+                  print(f'Unknown event {event}, skipping')
+          EOF

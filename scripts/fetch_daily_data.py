@@ -6,12 +6,21 @@ Writes data/YYYY-MM-DD.json to the relay repo.
 
 Sources:
   - Slate + SPs + Standings:  statsapi.mlb.com  (JSON — always works)
+    (also: SP handedness, HP umpire once assigned, bullpen usage, team splits)
   - SP stats:                  baseballsavant.mlb.com CSV  (+ MLB Stats API fallback)
+  - Odds, every book:          The Odds API when ODDS_API_KEY is set
   - Odds + SP context:         covers.com  (Playwright — JS-rendered)
   - Weather:                   wttr.in JSON per venue  (no JS needed)
+  - Weather at first pitch:    open-meteo.com hourly forecast (no key)
   - Lineups:                   rotowire.com  (requests — HTML partially works)
+
+Each game in "slate" carries everything the picks routines need for it, so a
+routine never has to join tables by team name:
+  odds (best price per side and which book has it, no-vig fair probability),
+  hp_umpire, bullpen_away/bullpen_home, weather_first_pitch.
+The older top-level keys (odds, weather, lineups, ...) are kept as they were.
 """
-import argparse, csv, io, json, re, sys
+import argparse, csv, io, json, os, re, sys, urllib.parse
 from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
 
@@ -36,12 +45,40 @@ def get(url, timeout=25, **kwargs):
 # SLATE + PROBABLE PITCHERS  (statsapi.mlb.com)
 # ---------------------------------------------------------------------------
 
+def _implied(o) -> float:
+    """Break-even probability of an American price, vig included."""
+    return abs(o) / (abs(o) + 100) if o < 0 else 100 / (o + 100)
+
+
+def _ip_to_outs(ip) -> int:
+    whole, _, frac = str(ip or "0").partition(".")
+    try:
+        return int(whole or 0) * 3 + int(frac or 0)
+    except ValueError:
+        return 0
+
+
 def fetch_slate(d: str) -> list:
-    url = (
+    # gameType S is included so the routines can see Spring Training and stop,
+    # instead of mistaking an empty regular-season slate for an off day.
+    base = (
         f"https://statsapi.mlb.com/api/v1/schedule"
-        f"?sportId=1&date={d}&hydrate=probablePitcher,venue,team&gameType=R,F,D,L,W"
+        f"?sportId=1&date={d}&gameType=R,F,D,L,W,S"
     )
-    data = SESSION.get(url, timeout=20).json()
+    data = None
+    # venue(location) and officials are richer hydrations; fall back to the
+    # plain one rather than lose the whole slate if either is ever refused.
+    for hydrate in ("probablePitcher,venue(location),team,officials",
+                    "probablePitcher,venue,team"):
+        try:
+            data = SESSION.get(f"{base}&hydrate={hydrate}", timeout=20).json()
+            if "dates" in data:
+                break
+        except Exception as e:
+            print(f"  schedule hydrate={hydrate} failed: {e}")
+            data = None
+    if data is None:
+        raise RuntimeError("schedule unavailable")
     games = []
     for day in data.get("dates", []):
         for g in day.get("games", []):
@@ -68,17 +105,113 @@ def fetch_slate(d: str) -> list:
                 except Exception:
                     pass
 
+            hp_umpire = next(
+                (o.get("official", {}).get("fullName")
+                 for o in g.get("officials", []) or []
+                 if o.get("officialType") == "Home Plate"),
+                None,
+            )
+            coords = ((g.get("venue", {}) or {}).get("location", {}) or {}).get(
+                "defaultCoordinates", {}) or {}
+
             games.append({
                 "game_id": g.get("gamePk"),
                 "time_et": time_et,
+                "game_time_utc": dt_str,
+                "game_type": g.get("gameType", ""),
+                "game_number": g.get("gameNumber", 1),
+                "series": g.get("seriesDescription", ""),
                 "away_team": at.get("team", {}).get("name", "?"),
                 "home_team": ht.get("team", {}).get("name", "?"),
+                "away_nick": at.get("team", {}).get("teamName", ""),
+                "home_nick": ht.get("team", {}).get("teamName", ""),
                 "venue": g.get("venue", {}).get("name", ""),
+                "venue_lat": coords.get("latitude"),
+                "venue_lon": coords.get("longitude"),
                 "status": g.get("status", {}).get("detailedState", ""),
+                "hp_umpire": hp_umpire,
                 "sp_away": sp(at),
                 "sp_home": sp(ht),
             })
+
+    # The schedule's probablePitcher carries no handedness (every bundle so far
+    # said throws "?"), and the season leaderboards behind sp_stats only cover
+    # qualified pitchers. One people lookup fills both for exactly today's SPs.
+    ids = [gm[s]["id"] for gm in games for s in ("sp_away", "sp_home") if gm[s]["id"]]
+    if ids:
+        try:
+            people = SESSION.get(
+                "https://statsapi.mlb.com/api/v1/people?personIds="
+                + ",".join(str(i) for i in ids)
+                + f"&hydrate=stats(group=[pitching],type=[season,gameLog],season={d[:4]})",
+                timeout=25,
+            ).json().get("people", [])
+            info = {p["id"]: (p.get("pitchHand", {}).get("code", "?"), _sp_form(p)) for p in people}
+            for gm in games:
+                for s in ("sp_away", "sp_home"):
+                    if gm[s]["id"] in info:
+                        gm[s]["throws"], form = info[gm[s]["id"]]
+                        gm[s].update(form)
+        except Exception as e:
+            print(f"  pitcher lookup failed: {e}")
+        # The batch hydrate has come back without stats; the per-pitcher
+        # stats endpoint is the dependable way to get them.
+        for gm in games:
+            for s in ("sp_away", "sp_home"):
+                sp = gm[s]
+                if sp["id"] and "season" not in sp:
+                    try:
+                        st = SESSION.get(
+                            f"https://statsapi.mlb.com/api/v1/people/{sp['id']}/stats"
+                            f"?stats=season,gameLog&group=pitching&season={d[:4]}",
+                            timeout=20,
+                        ).json()
+                        sp.update(_sp_form(st))
+                    except Exception as e:
+                        print(f"  stats for {sp['name']} failed: {e}")
+        print(f"  SP season lines: {sum('season' in gm[s] for gm in games for s in ('sp_away', 'sp_home'))}"
+              f" of {len(ids)}")
     return games
+
+
+def _sp_form(person: dict) -> dict:
+    """Season line and last three starts for one pitcher, from a people lookup."""
+    out = {}
+    for block in person.get("stats", []):
+        kind = block.get("type", {}).get("displayName")
+        splits = block.get("splits", [])
+        if kind == "season" and splits:
+            st = splits[-1].get("stat", {})
+            bf = st.get("battersFaced") or 0
+            gs = st.get("gamesStarted") or 0
+            outs = _ip_to_outs(st.get("inningsPitched"))
+            out["season"] = {
+                "era": st.get("era"), "whip": st.get("whip"), "ip": st.get("inningsPitched"),
+                "gs": gs,
+                "k_pct": round((st.get("strikeOuts") or 0) / bf, 3) if bf else None,
+                "bb_pct": round((st.get("baseOnBalls") or 0) / bf, 3) if bf else None,
+                "ip_per_start": round(outs / 3 / gs, 1) if gs else None,
+            }
+        elif kind == "gameLog":
+            all_starts = [s for s in splits if (s.get("stat", {}).get("gamesStarted") or 0) > 0]
+            starts = all_starts[-3:]
+            if starts:
+                outs = sum(_ip_to_outs(s["stat"].get("inningsPitched")) for s in starts)
+                er = sum(s["stat"].get("earnedRuns") or 0 for s in starts)
+                out["last3"] = {
+                    "dates": [s.get("date") for s in starts],
+                    "ip": f"{outs // 3}.{outs % 3}",
+                    "era": round(27 * er / outs, 2) if outs else None,
+                    "k": sum(s["stat"].get("strikeOuts") or 0 for s in starts),
+                    "bb": sum(s["stat"].get("baseOnBalls") or 0 for s in starts),
+                }
+                # Season IP / GS overstates length for anyone who also
+                # relieved, so take it from the starts themselves.
+                start_outs = sum(_ip_to_outs(s["stat"].get("inningsPitched")) for s in all_starts)
+                out["ip_per_start_from_starts"] = round(start_outs / 3 / len(all_starts), 1)
+    if "ip_per_start_from_starts" in out:
+        out.setdefault("season", {})["ip_per_start"] = out.pop("ip_per_start_from_starts")
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -117,6 +250,9 @@ def fetch_sp_stats(year: str) -> dict:
         f"&min=5&selections=p_era,xera,k_percent,bb_percent,p_formatted_ip&csv=true"
     )
     try:
+        # Savant's CSV starts with a byte-order mark. Decoding as plain UTF-8
+        # left it in front of the header, the check below failed, and every
+        # bundle since 9/22 fell back to stats with no xERA, K% or BB%.
         text = SESSION.get(
             url,
             timeout=25,
@@ -124,7 +260,7 @@ def fetch_sp_stats(year: str) -> dict:
                 "Accept": "text/csv,text/plain,*/*",
                 "Referer": "https://baseballsavant.mlb.com/leaderboard/custom",
             },
-        ).text
+        ).content.decode("utf-8-sig", errors="replace")
         # Validate: real CSV starts with the header line
         if text.strip().startswith('"last_name, first_name"') or text.strip().startswith('last_name'):
             reader = csv.DictReader(io.StringIO(text))
@@ -145,12 +281,44 @@ def fetch_sp_stats(year: str) -> dict:
                     }
             if stats:
                 return stats
+        print(f"  Savant custom leaderboard was not CSV ({text.strip()[:60]!r})")
+        stats = _fetch_xera_expected(year)
+        if stats:
+            return stats
         print("  Savant returned HTML — falling back to MLB Stats API")
     except Exception as e:
         print(f"  Savant error: {e} — falling back to MLB Stats API")
 
     # Fallback: MLB Stats API season pitching stats
     return _fetch_sp_stats_mlbapi(year)
+
+
+def _fetch_xera_expected(year: str) -> dict:
+    """xERA from Savant's expected-statistics leaderboard, the second source."""
+    try:
+        text = SESSION.get(
+            "https://baseballsavant.mlb.com/leaderboard/expected_statistics"
+            f"?type=pitcher&year={year}&position=&team=&filterType=bip&min=25&csv=true",
+            timeout=25,
+            headers={"Accept": "text/csv,text/plain,*/*"},
+        ).content.decode("utf-8-sig", errors="replace")
+        rows = list(csv.DictReader(io.StringIO(text)))
+        if not rows or "xera" not in rows[0]:
+            print(f"  Savant expected stats was not CSV ({text.strip()[:60]!r})")
+            return {}
+        stats = {}
+        for row in rows:
+            name = row.get("last_name, first_name", "")
+            if "," in name:
+                last, first = name.split(",", 1)
+                name = f"{first.strip()} {last.strip()}"
+            if name:
+                stats[name] = {"era": row.get("era", ""), "xera": row.get("xera", ""),
+                               "k_pct": "", "bb_pct": "", "ip": "", "source": "savant-expected"}
+        return stats
+    except Exception as e:
+        print(f"  Savant expected stats error: {e}")
+        return {}
 
 
 def _fetch_sp_stats_mlbapi(year: str) -> dict:
@@ -237,20 +405,29 @@ def fetch_odds_playwright() -> dict:
                             else:
                                 home_mls.append(val)
 
-                    if not away_mls or not home_mls:
+                    # Cells past the first pair are not reliably moneylines:
+                    # run-line and total juice gets picked up too, which is how
+                    # "best" prices like +118 on both sides got into bundles.
+                    # Keep only pairs whose two sides form a real two-way
+                    # market (implied probabilities summing to 100-110%).
+                    pairs = [
+                        (a, h) for a, h in zip(away_mls, home_mls)
+                        if 1.0 <= _implied(a) + _implied(h) <= 1.10
+                    ]
+                    if not pairs:
                         continue
 
                     key = f"{away_abbr} vs {home_abbr}"
                     odds[key] = {
                         "away_abbr": away_abbr,
                         "home_abbr": home_abbr,
-                        "away_ml":   away_mls[0],
-                        "home_ml":   home_mls[0],
-                        "away_ml_best": max(away_mls),
-                        "home_ml_best": max(home_mls),
+                        "away_ml":   pairs[0][0],
+                        "home_ml":   pairs[0][1],
+                        "away_ml_best": max(a for a, _ in pairs),
+                        "home_ml_best": max(h for _, h in pairs),
                         "away_sp": {"name": away_sp, "throws": away_hand, "era": away_era},
                         "home_sp": {"name": home_sp, "throws": home_hand, "era": home_era},
-                        "books_count": len(away_mls),
+                        "books_count": len(pairs),
                     }
                 except Exception:
                     continue
@@ -403,6 +580,231 @@ def fetch_lineups() -> dict:
 
 
 # ---------------------------------------------------------------------------
+# ODDS, EVERY BOOK  (The Odds API — needs the ODDS_API_KEY secret)
+# ---------------------------------------------------------------------------
+
+# Bookmaker keys as The Odds API spells them. Set the BOOKS repository
+# variable to the books you actually hold accounts with; a best price at a
+# book you can't use is worth nothing.
+DEFAULT_BOOKS = "draftkings,fanduel,betmgm,williamhill_us,espnbet,fanatics,betrivers,ballybet"
+
+
+def fetch_odds_api() -> dict:
+    key = os.environ.get("ODDS_API_KEY", "").strip()
+    if not key:
+        print("  ODDS_API_KEY not set - skipping (covers.com odds still run)")
+        return {}
+    books = (os.environ.get("BOOKS") or DEFAULT_BOOKS).replace(" ", "")
+    # h2h only, and at most 10 books, so each call costs exactly 1 credit.
+    url = (
+        "https://api.the-odds-api.com/v4/sports/baseball_mlb/odds/"
+        f"?apiKey={key}&markets=h2h&oddsFormat=american&bookmakers={books}"
+    )
+    r = SESSION.get(url, timeout=25)
+    r.raise_for_status()
+    events = {}
+    for ev in r.json():
+        away, home = ev.get("away_team"), ev.get("home_team")
+        prices = {}
+        for bk in ev.get("bookmakers", []):
+            for mk in bk.get("markets", []):
+                if mk.get("key") != "h2h":
+                    continue
+                o = {x.get("name"): x.get("price") for x in mk.get("outcomes", [])}
+                if isinstance(o.get(away), (int, float)) and isinstance(o.get(home), (int, float)):
+                    prices[bk["key"]] = {"away": int(o[away]), "home": int(o[home])}
+        if not prices:
+            continue
+        # No-vig probability per book, averaged: the market's fair line.
+        fair_away = sum(
+            _implied(p["away"]) / (_implied(p["away"]) + _implied(p["home"]))
+            for p in prices.values()
+        ) / len(prices)
+        best_away = max(prices, key=lambda b: prices[b]["away"])
+        best_home = max(prices, key=lambda b: prices[b]["home"])
+        events[ev.get("id")] = {
+            "away_team": away,
+            "home_team": home,
+            "commence_time": ev.get("commence_time"),
+            "best_away": prices[best_away]["away"],
+            "best_away_book": best_away,
+            "best_home": prices[best_home]["home"],
+            "best_home_book": best_home,
+            "fair_away": round(fair_away, 4),
+            "fair_home": round(1 - fair_away, 4),
+            "books": prices,
+        }
+    remaining = r.headers.get("x-requests-remaining")
+    print(f"  odds-api: {len(events)} events, {remaining} credits left")
+    return {"events": events, "credits_remaining": remaining, "books_requested": books}
+
+
+def _same_team(slate_name: str, slate_nick: str, odds_name: str) -> bool:
+    return bool(odds_name) and (odds_name == slate_name
+                                or (slate_nick and odds_name.endswith(slate_nick)))
+
+
+def attach_odds(slate: list, odds_api: dict) -> None:
+    for gm in slate:
+        t0 = gm.get("game_time_utc")
+        for ev in (odds_api or {}).get("events", {}).values():
+            if not (_same_team(gm["away_team"], gm.get("away_nick"), ev["away_team"])
+                    and _same_team(gm["home_team"], gm.get("home_nick"), ev["home_team"])):
+                continue
+            # Doubleheaders list the same teams twice: match on start time too.
+            if t0 and ev.get("commence_time"):
+                a = datetime.fromisoformat(t0.replace("Z", "+00:00"))
+                b = datetime.fromisoformat(ev["commence_time"].replace("Z", "+00:00"))
+                if abs((a - b).total_seconds()) > 4 * 3600:
+                    continue
+            gm["odds"] = {k: v for k, v in ev.items() if k not in ("away_team", "home_team")}
+            break
+
+
+# ---------------------------------------------------------------------------
+# TEAM BATTING SPLITS vs RHP / LHP  (statsapi.mlb.com)
+# ---------------------------------------------------------------------------
+
+def fetch_team_splits(year: str) -> dict:
+    # One request per split: asked for together, the API returns the first 50
+    # of the 60 rows and ten teams silently lose a split.
+    out = {}
+    blocks = []
+    for code in ("vr", "vl"):
+        url = (
+            "https://statsapi.mlb.com/api/v1/teams/stats?stats=statSplits&group=hitting"
+            f"&season={year}&sitCodes={code}&leagueIds=103,104&limit=100"
+        )
+        blocks += SESSION.get(url, timeout=20).json().get("stats", [])
+    for block in blocks:
+        for s in block.get("splits", []):
+            team = s.get("team", {}).get("name")
+            side = {"vr": "vs_RHP", "vl": "vs_LHP"}.get(s.get("split", {}).get("code"))
+            st = s.get("stat", {})
+            pa = st.get("plateAppearances") or 0
+            if team and side:
+                out.setdefault(team, {})[side] = {
+                    "ops": st.get("ops"),
+                    "k_pct": round((st.get("strikeOuts") or 0) / pa, 3) if pa else None,
+                    "pa": pa,
+                }
+    return out
+
+
+# ---------------------------------------------------------------------------
+# BULLPEN USAGE, LAST 3 DAYS  (statsapi.mlb.com boxscores)
+# ---------------------------------------------------------------------------
+
+def fetch_bullpen(d: str, slate: list) -> dict:
+    day = date.fromisoformat(d)
+    yday, day_before = (day - timedelta(days=1)).isoformat(), (day - timedelta(days=2)).isoformat()
+    sched = SESSION.get(
+        "https://statsapi.mlb.com/api/v1/schedule?sportId=1&gameType=R,F,D,L,W"
+        f"&startDate={(day - timedelta(days=3)).isoformat()}&endDate={yday}",
+        timeout=20,
+    ).json()
+    wanted = {gm[k] for gm in slate for k in ("away_team", "home_team")}
+    usage = {}
+    for dd in sched.get("dates", []):
+        for g in dd.get("games", []):
+            if g.get("status", {}).get("abstractGameState") != "Final":
+                continue
+            if not {g["teams"][s]["team"]["name"] for s in ("away", "home")} & wanted:
+                continue
+            box = SESSION.get(
+                f"https://statsapi.mlb.com/api/v1/game/{g['gamePk']}/boxscore", timeout=20
+            ).json()
+            for side in ("away", "home"):
+                t = box["teams"][side]
+                team = t["team"]["name"]
+                if team not in wanted:
+                    continue
+                u = usage.setdefault(team, {"outs": 0, "days": {}})
+                # pitchers[] is in order of appearance; the first is the starter.
+                for pid in t.get("pitchers", [])[1:]:
+                    p = t.get("players", {}).get(f"ID{pid}", {})
+                    st = p.get("stats", {}).get("pitching", {})
+                    u["outs"] += _ip_to_outs(st.get("inningsPitched"))
+                    name = p.get("person", {}).get("fullName", str(pid))
+                    u["days"].setdefault(dd["date"], {})[name] = st.get("numberOfPitches") or 0
+    out = {}
+    for team, u in usage.items():
+        y, b = u["days"].get(yday, {}), u["days"].get(day_before, {})
+        out[team] = {
+            "relief_ip_last3": f"{u['outs'] // 3}.{u['outs'] % 3}",
+            "pitched_yesterday": sorted(y),
+            "pitched_back_to_back": sorted(set(y) & set(b)),
+            "25plus_pitches_yesterday": sorted(n for n, pc in y.items() if pc >= 25),
+        }
+    return out
+
+
+# ---------------------------------------------------------------------------
+# WEATHER AT FIRST PITCH  (open-meteo.com — hourly forecast, no key)
+# ---------------------------------------------------------------------------
+
+def fetch_weather_first_pitch(slate: list) -> dict:
+    """Forecast for the hour each outdoor game starts, keyed by game_id.
+
+    wttr.in above reports conditions at fetch time, which for a bundle built
+    in the morning says little about a 7pm first pitch, and its precip field is
+    millimetres, not a probability. This gives the rain probability the
+    routines' >40% skip rule actually needs.
+    """
+    out = {}
+    geo_cache = {}
+    for gm in slate:
+        gid = str(gm.get("game_id"))
+        venue = gm.get("venue", "")
+        if venue in VENUE_CITY and VENUE_CITY[venue] is None:
+            out[gid] = {"dome": True}
+            continue
+        lat, lon = gm.get("venue_lat"), gm.get("venue_lon")
+        if lat is None or lon is None:
+            city = VENUE_CITY.get(venue)
+            if not city:
+                continue
+            if city not in geo_cache:
+                q = urllib.parse.quote(city.replace(" DC", ""))
+                res = SESSION.get(
+                    f"https://geocoding-api.open-meteo.com/v1/search?count=1&name={q}",
+                    timeout=15,
+                ).json().get("results") or [{}]
+                geo_cache[city] = (res[0].get("latitude"), res[0].get("longitude"))
+            lat, lon = geo_cache[city]
+        t = gm.get("game_time_utc")
+        if lat is None or lon is None or not t:
+            continue
+        start = datetime.fromisoformat(t.replace("Z", "+00:00"))
+        try:
+            hourly = SESSION.get(
+                "https://api.open-meteo.com/v1/forecast"
+                f"?latitude={lat}&longitude={lon}&timezone=UTC"
+                "&hourly=temperature_2m,precipitation_probability,wind_speed_10m,wind_direction_10m"
+                "&temperature_unit=fahrenheit&wind_speed_unit=mph"
+                f"&start_date={start.date().isoformat()}"
+                f"&end_date={(start + timedelta(days=1)).date().isoformat()}",
+                timeout=15,
+            ).json().get("hourly", {})
+            times = hourly.get("time", [])
+            if not times:
+                continue
+            target = start.replace(minute=0, second=0, tzinfo=None)
+            i = min(range(len(times)),
+                    key=lambda k: abs((datetime.fromisoformat(times[k]) - target).total_seconds()))
+            out[gid] = {
+                "hour_utc": times[i],
+                "temp_f": hourly.get("temperature_2m", [None])[i],
+                "precip_prob": hourly.get("precipitation_probability", [None])[i],
+                "wind_mph": hourly.get("wind_speed_10m", [None])[i],
+                "wind_from_deg": hourly.get("wind_direction_10m", [None])[i],
+            }
+        except Exception as e:
+            out[gid] = {"error": str(e)}
+    return out
+
+
+# ---------------------------------------------------------------------------
 # MAIN
 # ---------------------------------------------------------------------------
 
@@ -410,6 +812,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", default=date.today().isoformat())
     parser.add_argument("--out-dir", default="data")
+    parser.add_argument("--no-odds", action="store_true",
+                        help="skip prices; scripts/sheet.py mlb fetches them for the card")
     args = parser.parse_args()
 
     d = args.date
@@ -420,7 +824,9 @@ def main():
     bundle = {
         "date": d,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "source": "github-actions-prefetch",
+        "source": "fetch_daily_data.py",
+        # "schedule", or the line a routine pushed to requests/data.txt
+        "requested_by": os.environ.get("REQUESTED_BY", "schedule"),
     }
 
     # Fetch slate first (weather needs it for venue list)
@@ -436,9 +842,15 @@ def main():
     steps = [
         ("standings", lambda: fetch_standings(year)),
         ("sp_stats",  lambda: fetch_sp_stats(year)),
-        ("odds",      fetch_odds_playwright),
+        ("team_splits", lambda: fetch_team_splits(year)),
+        # covers.com is the fallback for when The Odds API is not configured;
+        # it needs a browser, which is slow to install while a routine waits.
+        ("odds",      (lambda: {}) if (args.no_odds or os.environ.get("ODDS_API_KEY")) else fetch_odds_playwright),
+        ("odds_api",  (lambda: {}) if args.no_odds else fetch_odds_api),
         ("weather",   lambda: fetch_weather_wttr(bundle.get("slate", []))),
+        ("weather_first_pitch", lambda: fetch_weather_first_pitch(bundle.get("slate", []))),
         ("lineups",   fetch_lineups),
+        ("bullpen",   lambda: fetch_bullpen(d, bundle.get("slate", []))),
     ]
 
     for key, fn in steps:
@@ -453,7 +865,23 @@ def main():
             bundle[key] = {}
             bundle[f"{key}_error"] = str(e)
 
+    # Put each game's odds, bullpen and first-pitch weather on the game itself.
+    slate = bundle.get("slate", [])
+    attach_odds(slate, bundle.get("odds_api"))
+    for gm in slate:
+        gm["bullpen_away"] = bundle.get("bullpen", {}).get(gm["away_team"])
+        gm["bullpen_home"] = bundle.get("bullpen", {}).get(gm["home_team"])
+        wx = bundle.get("weather_first_pitch", {}).get(str(gm.get("game_id")))
+        if wx:
+            gm["weather_first_pitch"] = wx
+
     out_path = out / f"{d}.json"
+    # The scheduled GitHub workflow commits whatever lands in data/. On a day
+    # with no games that was an empty bundle committed every day of the
+    # off-season; write nothing there instead.
+    if os.environ.get("GITHUB_ACTIONS") and not slate and not out_path.exists():
+        print("\nNo games today - nothing written.")
+        return
     out_path.write_text(json.dumps(bundle, indent=2))
     print(f"\nWrote {out_path} ({out_path.stat().st_size // 1024} KB)")
 

@@ -5,5 +5,12 @@
     "units": 2,
     "outcome": "W",
     "net": 1.57
+  },
+  {
+    "bet": "A's ML",
+    "odds": 125,
+    "units": 0.75,
+    "outcome": "L",
+    "net": -0.75
   }
 ]
