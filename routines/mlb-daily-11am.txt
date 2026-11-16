@@ -51,6 +51,10 @@ STEP 2 - TODAY'S GAMES AND PRICES
 ======================================================================
 D=$(TZ=America/New_York date +%F)
 python3 scripts/fetch_daily_data.py --date $D --out-dir /tmp/mlb --no-odds && python3 scripts/game_sheet.py /tmp/mlb/$D.json
+
+If that prints EMPTY SLATE there is no MLB today (off day or off-season): do
+not run the next command, it would spend an odds credit on nothing.
+
 python3 scripts/sheet.py mlb
 
 The first command prints one block per game from MLB's own data: [G#] label,
@@ -62,9 +66,8 @@ umpire if posted, and the forecast at first pitch.
 The second prints the prices: every book's moneyline, the fair probability,
 and the best price at the bettor's books with its edge before any shift.
 
-- No games in the first block and "NO GAMES WITH PRICES" in the second (off
-  day or off-season): if STEP 1 printed results, send them alone; otherwise
-  send nothing at all and stop.
+- EMPTY SLATE, or "NO GAMES WITH PRICES" from the second command: if STEP 1
+  printed results, send them alone; otherwise send nothing at all and stop.
 - Every game is type S (Spring Training): send nothing and stop.
 - PRICES_UNAVAILABLE: send "MLB Picks - <Mon D> - No bets: live prices
   unavailable (<reason printed>)." plus any results. Never use prices from a

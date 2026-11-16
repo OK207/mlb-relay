@@ -42,12 +42,16 @@ STEP B - MLB EVENING GAMES (skip entirely when there is no MLB today)
 ======================================================================
 D=$(TZ=America/New_York date +%F)
 python3 scripts/fetch_daily_data.py --date $D --out-dir /tmp/mlb --no-odds && python3 scripts/game_sheet.py /tmp/mlb/$D.json
-python3 scripts/sheet.py mlb
-cat picks/$D.json 2>/dev/null || echo NO_MORNING_PICKS
 
-If the first block has no games and the second says "NO GAMES WITH PRICES"
-(off day or off-season), or every game is type S (Spring Training), or prices
-are unavailable: there is nothing to do in STEP B. Go to STEP C.
+If that prints EMPTY SLATE there is no MLB today (off day or off-season): do
+not run the next command, it would spend an odds credit on nothing.
+
+python3 scripts/sheet.py mlb
+cat picks/$(TZ=America/New_York date +%F).json 2>/dev/null || echo NO_MORNING_PICKS
+
+On EMPTY SLATE, "NO GAMES WITH PRICES", every game being type S (Spring
+Training), or prices being unavailable: there is nothing to do in STEP B.
+Go to STEP C.
 
 The prices sheet lists only games that have not started. Leave out any game
 the morning card already bet (card.py refuses a second bet on a game anyway).
