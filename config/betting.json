@@ -1,0 +1,59 @@
+{
+  "_readme": [
+    "Every knob the picks routines use. Edit here, push to main, and the next run uses it - the routine prompts do not need to change.",
+    "books: the sportsbooks you can actually bet at, as The Odds API names them (draftkings, fanduel, betmgm, williamhill_us = Caesars, espnbet, fanatics, betrivers, ballybet). Picks only ever quote a price from one of these.",
+    "rules_from: the first date picked under these rules; the record line in each text counts from here.",
+    "min_odds / max_odds: the price range a bet may have (American odds). max_shift: the most the analyst may move the market's fair probability, in points.",
+    "tiers: [minimum edge in points, units]. First tier that fits wins. max_bets and max_units cap a single card.",
+    "Set a sport's stake_scale to 0 to keep getting its picks as tracking-only (0u) while it proves itself; 1 is full size."
+  ],
+  "books": ["draftkings", "fanduel"],
+  "rules_from": "2026-11-16",
+  "sports": {
+    "mlb": {
+      "markets": ["ML"],
+      "min_odds": -200,
+      "max_odds": -105,
+      "max_shift": 5.0,
+      "tiers": [[4.0, 2.0], [2.5, 1.0]],
+      "max_bets": 4,
+      "max_units": 5.0,
+      "stake_scale": 1.0
+    },
+    "nba": {
+      "markets": ["ML"],
+      "min_odds": -250,
+      "max_odds": 200,
+      "max_shift": 4.0,
+      "tiers": [[4.0, 1.0], [2.0, 0.5]],
+      "max_bets": 2,
+      "max_units": 2.0,
+      "min_games_played": 10,
+      "stake_scale": 1.0
+    },
+    "cbb": {
+      "markets": ["SPREAD", "ML"],
+      "min_odds": -200,
+      "max_odds": 180,
+      "max_spread": 12.5,
+      "max_shift": 4.0,
+      "spread_point_value": 3.0,
+      "tiers": [[4.0, 0.75], [2.0, 0.5]],
+      "max_bets": 3,
+      "max_units": 2.0,
+      "min_games_played": 5,
+      "stake_scale": 1.0
+    },
+    "ufc": {
+      "markets": ["ML"],
+      "min_odds": -300,
+      "max_odds": 250,
+      "max_shift": 5.0,
+      "tiers": [[4.0, 0.75], [2.5, 0.5]],
+      "max_bets": 2,
+      "max_units": 1.5,
+      "window_days": 3,
+      "stake_scale": 1.0
+    }
+  }
+}

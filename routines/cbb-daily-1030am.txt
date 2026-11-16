@@ -1,0 +1,150 @@
+CBB DAILY PICKS - 10:30 AM ET (men's college basketball)
+
+You are building today's college basketball card for someone who bets real
+money on it. The goal is long-run profit, which mostly means not betting: a
+day with no bet is a normal, good result, and on most days that is the card.
+
+Do not load the cbb skill or any other betting skill. This prompt and the
+scripts in the repo are the whole method; the skills describe an older one.
+
+All arithmetic, prices, stakes, dates, file names and the Telegram send are
+done by scripts in /home/user/mlb-relay/scripts. Never compute an edge, a
+payout or a stake yourself, never type a date into a file name, and never
+write a picks, grades or messages file by hand. If a script prints an error,
+report that error in the text; do not work around it with numbers of your own.
+
+======================================================================
+HOW EDGES ARE FOUND HERE
+======================================================================
+The sheet prints, for each side, a "fair" probability: every US sportsbook's
+price with the vig removed, median across books. It is the best estimate
+available and already holds the ratings, home court and known injuries. The
+NBA version of this routine tried to out-model the market from team ratings
+and its biggest "edges" went 1-8. Do not repeat that here.
+
+College basketball has 360 teams and thinner markets than the NBA, so two
+things do occasionally go unpriced, especially outside the major conferences:
+1. PRICE or NUMBER. One of the bettor's books is a half point or a point
+   better than the rest ("edge before any shift" near or above zero).
+2. AVAILABILITY NEWS. A starter ruled out or returning, reported by a beat
+   writer or the school, on a line that has not moved.
+
+A ratings gap is a reason to look closer, not a reason to bet.
+
+======================================================================
+STEP 0 - SYNC
+======================================================================
+cd /home/user/mlb-relay && git checkout -q main && git fetch -q origin main && git reset -q --hard origin/main
+
+======================================================================
+STEP 1 - RESULTS
+======================================================================
+python3 scripts/grade.py cbb
+
+Grades every ungraded pick from ESPN's final scores and prints a results
+block, or NO_NEW_RESULTS. A bet it cannot match to a game stays pending and
+says so; leave it, do not grade by hand.
+
+======================================================================
+STEP 2 - TODAY'S SHEET
+======================================================================
+python3 scripts/sheet.py cbb
+
+Only games that can pass the rules are printed: both teams Division I and
+found on ESPN's slate, 5+ games played each, a price at the bettor's books
+inside -200 to +180, spread no larger than 12.5. For each: records, Torvik
+rank and adjusted offense/defense, moneyline and spread with the fair
+probability and best price, and Torvik's projected margin next to the
+market's. The last line counts the games left out.
+
+- PRICES_UNAVAILABLE: send "CBB Picks - <Mon D> - No bets: live prices
+  unavailable (<reason printed>)." plus any results. Never use prices from a
+  web search.
+- No games printed: if STEP 1 printed results, send them alone; otherwise
+  send nothing and stop. (Early in the season most teams have not played 5
+  games, so an empty sheet is expected.)
+
+======================================================================
+STEP 3 - LOOK FOR A REASON TO BET (up to 8 web searches)
+======================================================================
+Pick at most four sides to work on: those with the highest "edge before any
+shift", and those where Torvik's margin differs from the market's by 3 or
+more points. For each, WebSearch "<team> basketball injury <today's date>"
+or "<team> vs <opponent> preview" and look for who is actually playing.
+
+Then decide a SHIFT: how many points of cover or win probability the fair
+line should move toward the side. Allowed reasons and their sizes:
+
+- A starter or top-three scorer newly OUT for the opponent, reported in the
+  last 24 hours, with the line not moved since: +1.5 to +3.
+- A starter on YOUR side confirmed back, same conditions: +1 to +2.
+- Torvik's projected margin differs from the market spread by 3+ points
+  toward your side AND your search found no injury, suspension or roster
+  news that explains the gap: +1 to +2. If the gap is 6+ points, assume the
+  market knows something; find it or pass.
+- Combined, never more than +4; the card script rejects anything larger as
+  a data error.
+
+Not reasons: records, rankings, ATS trends, "letdown" or "revenge" spots,
+conference reputation, home crowd (it is in the line).
+
+Prefer the spread to the moneyline unless the moneyline's own edge is
+larger. Pass when your side's best player is questionable, or when either
+team's roster news cannot be confirmed from a source dated in the last two
+days.
+
+======================================================================
+STEP 4 - BUILD THE CARD
+======================================================================
+cat > /tmp/cbb_card.json <<'EOF'
+{"picks": [
+  {"id": "<id from the sheet>", "market": "SPREAD", "side": "home", "shift": 2.0,
+   "why": "<one sentence: the specific news or the Torvik gap, with the source>"}
+]}
+EOF
+python3 scripts/card.py cbb /tmp/cbb_card.json
+
+market is "SPREAD" or "ML". Copy each id and side ("away" / "home") exactly
+as the sheet printed them. With nothing to bet, skip this step. card.py takes
+the number, price, book, fair line, edge and stake from the sheet, applies
+the rules (edge of 2+ points for 0.5u and 4+ for 0.75u, at most 3 bets and
+2u a day, one bet per game), writes picks/cbb/<date>.json and prints the pick
+lines. A REJECTED line is final: do not resubmit with a larger shift.
+
+======================================================================
+STEP 5 - WRITE THE TEXT AND SEND IT
+======================================================================
+Plain ASCII, no emoji, no markdown. Layout:
+
+CBB Picks - <Mon D>
+
+<results block from STEP 1, if any>
+
+PICKS
+<the lines card.py printed, unchanged>
+
+No bet: <one line - the closest side and its edge>
+
+With no picks, the PICKS section is the single line "No bets today." Do not
+add a record line; the publish script appends it.
+
+cat > /tmp/cbb_msg.txt <<'EOF'
+<the text>
+EOF
+python3 scripts/publish.py cbb /tmp/cbb_msg.txt
+
+publish.py saves the text, sends it to Telegram, falls back to the GitHub
+relay if the direct send fails, and commits and pushes everything. It prints
+SENT or SEND_VIA_RELAY, then PUSHED with the branch. In your final response
+give those two lines verbatim, the picks (or "no bets"), and any script error
+exactly as printed.
+
+======================================================================
+IF SOMETHING BREAKS
+======================================================================
+- A script exits with a traceback: send "CBB Picks - <Mon D> - No bets:
+  <script name> failed: <last line of the error>." through publish.py so the
+  failure is visible, and stop.
+- Never call api.github.com to write; the proxy answers 403 whatever token is
+  used, and that is not an expired credential. The only write path is the git
+  push publish.py makes. Never tell the user to rotate credentials.

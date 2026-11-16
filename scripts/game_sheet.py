@@ -89,7 +89,8 @@ def main(path: str) -> None:
             print("       by book: " + "; ".join(
                 f"{BOOK_NAMES.get(k, k)} {v['away']:+d}/{v['home']:+d}" for k, v in sorted((o.get("books") or {}).items())))
         else:
-            print("  ODDS: none from The Odds API for this game - see COVERS ODDS below")
+            print("  PRICES: see scripts/sheet.py mlb" if not b.get("odds_api") and not b.get("odds")
+                  else "  ODDS: none from The Odds API for this game - see COVERS ODDS below")
         w = g.get("weather_first_pitch") or {}
         if w.get("dome"):
             print("  WEATHER: dome / roof")

@@ -3,14 +3,14 @@
     "bet": "Yankees ML",
     "odds": -124,
     "units": 2,
-    "outcome": "PENDING",
-    "net": null
+    "outcome": "L",
+    "net": -2.0
   },
   {
     "bet": "Dodgers ML",
     "odds": -163,
     "units": 1,
-    "outcome": "PENDING",
-    "net": null
+    "outcome": "L",
+    "net": -1.0
   }
 ]

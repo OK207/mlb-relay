@@ -1,139 +1,168 @@
 # Routine prompts
 
 The `.txt` files here are the stored prompts for the scheduled Claude routines.
-They are kept in git so a delivery break is diffable instead of guesswork.
+They are kept in git so a change is diffable instead of guesswork.
 
 | File | Routine | Schedule (UTC) |
 |---|---|---|
 | `mlb-daily-11am.txt` | MLB Daily Picks - 11:00 AM ET | `0 15 * * *` |
-| `mlb-afternoon-515pm.txt` | MLB Afternoon Props + Evening ML | `15 21 * * *` |
+| `mlb-afternoon-515pm.txt` | Afternoon: line check (all sports) + MLB evening games | `15 21 * * *` |
 | `nba-daily-1015am.txt` | NBA Daily Picks - 10:15 AM ET | `15 14 * * *` |
-| `ufc-weekly-sat.txt` | UFC Weekly Fight Card | `0 18 * * 6` |
+| `ufc-weekly-sat.txt` | UFC Weekly Fight Card | see "UFC timing" below |
+| `cbb-daily-1030am.txt` | CBB Daily Picks (not scheduled yet) | suggested `30 15 * * *` |
 
-Editing a file here does **not** change the live routine. The routines were
-created through the web UI, so the prompt has to be pasted into the routine's
-settings by hand. Keep the two in sync.
+Editing a file here does **not** change the live routine; the routine keeps
+its own copy of the prompt. Keep the two in sync.
 
-## The record, and the rules it produced (review of 2026-10-22)
+## What was wrong, and what changed (2026-11-16)
 
-Everything the routines published from 5/12 to 10/20, graded: **194 bets,
-100-90-4, -0.98u on 228.75u staked.** MLB carries it; NBA and UFC lose.
-The hand-entered 4/25-5/11 rows in the MLB tab (about +8u) are not in the repo
-and are not counted here.
+### 1. The routines could not reach any data
+
+The routines run in the "Default" cloud environment. Its network allowlist was
+empty, so every scripted request the prompts made was refused by the proxy:
+The Odds API (the key had **0 of 500 credits used**), ESPN and MLB scores,
+Baseball Savant, Polymarket, and the direct Telegram send. Each card was built
+from web-search snippets instead: approximate, sometimes stale prices, games
+"not found", "no current odds", and every text taking the relay fallback.
+
+The environment now allows `api.the-odds-api.com`, `api.telegram.org`,
+`statsapi.mlb.com`, `baseballsavant.mlb.com`, `site.api.espn.com`,
+`site.web.api.espn.com`, `gamma-api.polymarket.com`, `api.open-meteo.com`,
+`geocoding-api.open-meteo.com`, `www.rotowire.com`, `www.covers.com`,
+`ufcstats.com`, `www.ufcstats.com` and `barttorvik.com`. A new data source
+needs its host added there (cloud environment menu -> Edit -> Allowed domains).
+
+### 2. The method manufactured edges
+
+Graded record, 5/12 - 11/15 (every bet graded from official scores):
 
 | Segment | Bets | Record | Units | ROI |
 |---|---|---|---|---|
-| MLB, all | 168 | 92-73-3 | +5.25 | +2.5% |
-| MLB favorites | 125 | 79-45-1 | +18.35 | +11.2% |
-| MLB underdogs / even money | 42 | 12-28-2 | -13.58 | -33.1% |
-| MLB 2u (HIGH CONFIDENCE) | 47 | 32-15 | +15.87 | +16.9% |
-| MLB 1u (VALUE) | 100 | 49-48-3 | -11.20 | -11.2% |
-| MLB 1u underdogs alone | 23 | 5-16 | -10.57 | -46.0% |
-| MLB 0.5u (LEAN, mostly plus money) | 15 | 7-8 | -0.72 | -9.6% |
-| MLB afternoon session | 18 | 11-6-1 | +1.91 | +13.2% |
-| NBA | 13 | 5-8 | -5.51 | -40.8% |
-| UFC (Gaethje corrected to +3.75) | 13 | 3-9-1 | -0.72 | -7.8% |
+| MLB, all | 172 | 91-78-3 | -1.11 | -0.5% |
+| MLB favorites -120 to -249 | 112 | 71-40-1 | +15.95 | +10.9% |
+| MLB underdogs / even money | 43 | 12-29-2 | -14.33 | -34.3% |
+| NBA, all | 42 | 17-25 | -10.84 | -27.4% |
+| NBA 1.5u "high confidence" | 9 | 1-8 | -11.12 | -82.4% |
+| NBA spreads | 9 | 1-8 | -6.55 | -77.1% |
+| UFC (Gaethje corrected to +3.75) | 17 | 6-10-1 | +0.47 | +4.1% |
 
-Across all 168 MLB bets the picks won 55.8% of decisions against a 55.8%
-break-even: as a whole they won exactly as often as the prices said they
-would. The profit is all in the favorites, and in the 2u tier. With ~170 bets
-the standard error on ROI is about +/-7%, so read the smaller rows as hints,
-not facts. Day of week, month and team splits were checked and are noise.
+Across all 231 bets the picks won about as often as their prices implied -
+no edge, minus the vig. The NBA prompt is the clearest case: it built a win
+probability from team ratings, weighted it 65% (Polymarket was never
+reachable), and called the gap to the book an edge. The bigger the gap the
+bigger the stake, so its largest bets were its largest errors.
 
-What the prompts now do about it:
+Every sport now works the same way:
 
-- **MLB: favorites only.** The underdog rows above are the whole of the loss.
-  The LEAN tier (0.5u plus-money) is gone. 2u HIGH CONFIDENCE stays as is;
-  -200 or shorter caps at 1u.
-- **Best price, not DraftKings only.** Each pick names the best price among the
-  books in `BOOKS`. Five cents better on every MLB bet would have turned +5.25u
-  into +8.6u with the same picks.
-- **No pick counts to hit.** "Target 2-4 plays" (MLB), "1-3 picks" (NBA) and
-  "3-5 plays" (UFC) are gone; zero picks is a normal outcome.
-- **Only verified games, only real prices.** On 10/4 a pick went out on the
-  Rays, who had no game that day (ALDS games 1 and 2 were 10/3 and 10/5).
-- **A sanity check against the market.** A model probability more than 8
-  points from the no-vig market line is treated as a data error first.
-- **Line check (CLV).** The 5:15pm session records how each morning pick's
-  price has moved (`clv/<date>.json`) and texts it. Beating later prices is
-  the earliest reliable sign of a real edge; win-loss takes thousands of bets.
-- **NBA:** the old edge was measured against a no-vig price, which overstates
-  every edge by about two points. Now measured against the price actually bet.
-  No bets until teams have played 10 games (opening night lost 3u at 1.5u
-  each). Moneylines only, at most 2 a day, `STAKE_SCALE = 0.5`.
-- **UFC:** the built-in belief that "underdogs are often +EV" is gone (they went
-  2-7). The model starts at the no-vig market line and moves at most 8 points;
-  A-tier only, nothing longer than +250, at most 2 a card, `STAKE_SCALE = 0.5`.
-- **Afternoon:** asked statsapi for regular-season games only, so it reported
-  "No games today" 15 times in October while playoff games were on. Fixed.
-  Its K props needed a confirmed umpire, which never came, so none were
-  published from May to October; an unknown umpire is now neutral.
+- **The market is the starting point.** `scripts/sheet.py` takes every US
+  book's price, removes the vig, and prints the median as the fair
+  probability, beside the best price at the books in `config/betting.json`.
+- **The analyst may move that fair line only for a named, checkable reason**
+  (a star ruled out after the line was set, a scratched starter, a taxed
+  bullpen ...), by a bounded amount: at most 4 points NBA/CBB, 5 MLB/UFC.
+  "The better team" is not a reason.
+- **`scripts/card.py` decides, not the prompt.** It takes the price, book,
+  fair line, edge and stake from the saved sheet and rejects anything outside
+  the rules: a game not on the slate, a price nobody offers, a shift past the
+  limit, an edge under the minimum, too many bets. A pick can no longer go
+  out on a team that is not playing or at a price read off a search page.
+- **Edges are measured against the price actually bet**, vig included.
+- **No quotas.** "No bets today" is the usual card.
+- **MLB:** favorites only (-105 to -200). **NBA:** moneylines only, -250 to
+  +200, no 1.5u tier. **UFC:** -300 to +250, at most 2 a card, no "underdogs
+  are +EV". **CBB:** spreads up to 12.5 and moneylines, teams with 5+ games.
 
-`STAKE_SCALE` at the top of the NBA and UFC prompts is the dial. 0 publishes
-tracking-only picks; 1 is full stakes. Expected value says those two sports
-should sit at 0 until the line check shows an edge; 0.5 is the compromise.
+This will produce far fewer bets. That is the fix, not a side effect: the old
+volume was the cost.
 
-## The data bundle, and why it never reached the 11am card
+### 3. Nothing measured whether the picks were any good
 
-`data.yml` was scheduled for 9:00 AM ET. GitHub started it between 12:15 and
-5:40 PM ET on every day from 9/22 to 10/22, so the bundle landed after the
-11 AM card 27 times out of 27. On top of that, every bundle fell back from
-Baseball Savant (the CSV's byte-order mark failed a header check), so xERA,
-K% and BB% were never in it, and the multi-book "best" prices mixed run-line
-and total juice in with moneylines.
+Win-loss needs hundreds of bets to say anything. The 5:15 PM session now runs
+`scripts/clv.py`: for each pick made that day it re-reads the market and
+records how far the fair line has moved toward or away from the pick
+(`clv/<sport>/<date>.json`). Each text ends with the record since
+`rules_from` and the average line value. Positive line value over a few
+dozen bets is the earliest honest sign of an edge; negative means stop.
 
-Now the routines ask for the bundle by pushing a line to `requests/data.txt`;
-a push starts the workflow within seconds and the bundle lands in 1-3 minutes.
-Each game carries the best price per side and its book, the no-vig fair line,
-SP handedness, season line and last three starts, bullpen use over three days,
-the HP umpire once posted, lineup splits against the SP's hand, and the
-forecast for the hour of first pitch. `scripts/game_sheet.py` prints it as one
-block per game.
+### 4. Bookkeeping
 
-## Setup checklist (2026-10-22 changes)
+- Grading is done by `scripts/grade.py` from ESPN's final scores (MLB
+  strikeout props from MLB boxscores). Five old bets that were never graded
+  are now settled (7/19 A's L, 8/1 Yankees L and Dodgers L, 8/20 Rays L,
+  11/15 Pacers +6.5 L, 11/14 Harrison W).
+- Gaethje +500 at 0.75u was recorded as +4.50 (stake included); it is +3.75.
+  **The UFC tab in the Sheet still shows +4.5 in that row** - change it by hand.
+- Dates, file names, payouts and the Telegram send are all computed by
+  scripts; nothing in a prompt types a date.
+- `data.yml` no longer runs on a schedule. GitHub started it 5-10 hours late
+  every day, it reached the 11 AM card zero times, and it committed an empty
+  bundle daily all off-season. The MLB routines fetch the same data
+  themselves now.
+- The site reads cards from `messages/` as well as `dispatch/`, and has a CBB tab.
+- `grades/2026-08-31.json` (Braves ML, L) has no matching picks file: the
+  pick was texted but never logged. It is in the Sheet, not in the totals above.
 
-1. **Merge this branch into `main`.** The routines read `main`.
-2. **Paste the two workflow files.** These sessions cannot push to
-   `.github/workflows/`, so the new versions are in `routines/workflows/`.
-   On GitHub, open `.github/workflows/data.yml` -> Edit -> replace everything
-   with `routines/workflows/data.yml`; same for `grade.yml`.
-3. **Paste the four prompts** into the routines (Instructions box).
-4. **Environment variable `BOOKS`** (claude.ai routine environment): the books
-   you have accounts with, as The Odds API names them, e.g.
-   `draftkings,fanduel,betmgm,williamhill_us` (Caesars is `williamhill_us`).
-   Also add it as a repository **variable** `BOOKS` on GitHub (Settings ->
-   Secrets and variables -> Actions -> Variables).
-5. **Repository secret `ODDS_API_KEY`** on GitHub (same page, Secrets), with
-   the same key the routines already use. Without it the bundle falls back to
-   the covers.com scrape and has no per-book prices.
-6. **Delete the disabled routine named "test".** Its prompt holds the
-   Telegram bot token in plain text.
-7. **Optional:** move the NBA, UFC and afternoon routines from Sonnet 4.6 to
-   the model the 11 AM card uses or newer (routine settings -> model).
+## The scripts
+
+| Script | What it does |
+|---|---|
+| `scripts/sheet.py <sport>` | Slate, prices from every book, fair line, best price, context. Saves `lines/<sport>/<date>.json`. 1 credit (2 for cbb). |
+| `scripts/card.py <sport> <file>` | Validates the analyst's candidates against the rules and writes the picks file. |
+| `scripts/grade.py <sport\|all>` | Grades ungraded picks from official scores. |
+| `scripts/clv.py` | Line check for open picks. 1 credit per sport with open picks. |
+| `scripts/publish.py <sport> <file>` | Saves the text, sends to Telegram (relay fallback), commits, pushes. |
+| `scripts/fetch_daily_data.py`, `game_sheet.py` | MLB starters, splits, bullpens, weather. |
+
+Odds API use is about 2 credits a day for NBA, 3-4 for CBB, 2 for MLB in
+season and 2 a week for UFC: roughly 200-250 of the 500 free credits a month
+with everything running.
+
+## The knobs: `config/betting.json`
+
+- `books`: the sportsbooks you can bet at. Picks only quote these. Add
+  `betmgm`, `williamhill_us` (Caesars), `espnbet`, `fanatics`, `betrivers`
+  if you have them: each extra book improves the best price.
+- Per sport: allowed price range, shift limit, stake tiers, daily caps, and
+  `stake_scale` (0 = keep sending picks as tracking-only at 0u).
+- `rules_from`: the date the record line in each text counts from.
+
+Changing this file on `main` takes effect on the next run; no prompt changes.
+
+## UFC timing
+
+The routine fired Saturdays at 18:00 UTC (1 PM ET in winter). Cards in Europe,
+the Gulf and Asia have started by then, so it reached for the following
+week's card and priced it seven days out. `sheet.py ufc` only looks three
+days ahead and only at bouts that have not started. Run it on **Friday 22:00
+UTC** (`0 22 * * 5`): after weigh-ins, before every Saturday card.
+
+## The claude.ai skills
+
+`skills/` holds updated copies of the mlb, nba, ufc and cbb skills used in
+claude.ai chats. They carried the same method as the old prompts (own-model
+probabilities, pick quotas, "underdogs are often +EV", a stale "32-12, +29.5%
+ROI" record). Upload each `SKILL.md` over the existing skill in claude.ai
+(Settings -> Capabilities -> Skills). The routines do not load them.
 
 ## How delivery works
 
-Everything is driven by one `git push` to `main`:
-
 ```
-routine session
-  pushes requests/data.txt ------------> .github/workflows/data.yml
-                                           -> data/<date>.json (1-3 min)
-  writes picks/<date>.json, grades/<date>.json, dispatch/<date>.txt
-  git push origin main
-        |
-        +--> .github/workflows/relay.yml   (on push to dispatch/*.txt)
-        |      -> Telegram sendMessage
-        |
-        +--> .github/workflows/sheets.yml  (on push to picks/**.json, grades/**.json)
-               -> Google Sheets (MLB tab = sheet1, NBA tab, UFC tab)
-
-nightly: .github/workflows/grade.yml grades MLB picks from MLB's API and
-         fills column E; the 11 AM card uses those grades when present.
+routine session (network open to the hosts listed above)
+  scripts/grade.py, sheet.py, card.py     -> picks/, grades/, lines/
+  scripts/publish.py
+     -> messages/<date><tag>.txt
+     -> Telegram sendMessage, directly
+        (only if that fails: dispatch/<date><tag>.txt)
+     -> git push origin main  (falls back to claude/auto)
+           |
+           +--> .github/workflows/relay.yml   (on push to dispatch/*.txt)
+           |      -> Telegram sendMessage
+           +--> .github/workflows/sheets.yml  (on push to picks/**.json, grades/**.json)
+                  -> Google Sheets (MLB = sheet1; NBA, UFC, CBB tabs)
 ```
 
-No API token is involved anywhere. The clone's `origin` remote is already
-authenticated by the execution environment.
+No GitHub API token is involved anywhere. The clone's `origin` remote is
+already authenticated by the execution environment.
 
 ## Why the REST API is not used any more
 
@@ -172,13 +201,17 @@ from the local clone instead.
 
 ## Debugging a missed text
 
-1. Did a commit land on `main` for that date? `git log --oneline -5 origin/main`
-   - No commit -> the routine failed before the push. Check the routine's run
-     transcript for the `git push` output.
-2. Did the relay workflow run? Actions tab -> "MLB Relay".
-   - The job now **fails loudly** if Telegram rejects the message. It used to
-     pipe `curl` output to nowhere, so a rejected send looked like success.
-3. Did the sheets workflow run? Actions tab -> "Update Google Sheet".
+1. Open the routine's run and read its final response: `publish.py` prints
+   `SENT: direct to Telegram` or `SEND_VIA_RELAY: ...` with the reason, then
+   `PUSHED: main`.
+2. Is the text in `messages/<date><tag>.txt` on `main`? If not, the routine
+   stopped before publishing; its transcript shows which script failed.
+3. Relay fallback only: Actions tab -> "MLB Relay". The job fails loudly if
+   Telegram rejects the message.
+4. `PRICES_UNAVAILABLE` or `... is not on this environment's allowed hosts`
+   in a text means the environment's network allowlist lost a host (see
+   "What was wrong" above).
+5. Did the sheets workflow run? Actions tab -> "Update Google Sheet".
 
 ## Workflow behaviour worth knowing
 
@@ -195,38 +228,6 @@ from the local clone instead.
 - UFC pick files are `{"event":..., "picks":[...]}` rather than a bare list,
   and UFC grades live at `picks/ufc/grades/<date>.json`. Both workflows
   unwrap the former and special-case the latter.
-
-## The Odds API (optional, added 2026-09-30)
-
-MLB, NBA and UFC odds steps now try [The Odds API](https://the-odds-api.com)
-before falling back to WebFetch/WebSearch scraping. This is opt-in: if
-`ODDS_API_KEY` isn't set in the routine's environment variables, every step
-silently skips straight to the existing scrape/WebSearch path — no behavior
-change, no error.
-
-**Why:** one call returns DraftKings' (and FanDuel's) odds for the *entire*
-day's slate as structured JSON, instead of scraping oddsshark/covers.com or
-falling back to WebSearch. Free tier is 500 credits/month, reset on the 1st
-of each calendar month; `h2h`/`spreads`/`totals` cost 1 credit per market
-(e.g. `markets=h2h,spreads` = 2 credits for every game that day).
-
-**Budget pacing:** player props (MLB K props) are billed per *event*, not
-per day, so they can burn through the monthly quota much faster than the
-bulk moneyline/spread calls. Every odds step checks `x-requests-remaining`
-(via a free, quota-exempt call to `/v4/sports`) before spending credits:
-- Bulk h2h/spreads/totals calls run whenever remaining credits are above a
-  small floor (10) — cheap enough (~200/month across all three sports) that
-  they're effectively always on.
-- Props calls additionally require being *on pace* for an even 500-credits-
-  across-the-month budget (`remaining >= 500 * days_left_in_month / days_in_month`).
-  If usage has run ahead of pace, props fall back to the existing
-  WebSearch-based method for the rest of the month rather than exhausting
-  the quota early — the point is to make the free tier last the whole month,
-  not front-load it.
-
-If a specific game/fighter/pitcher has no bookmaker line in the API response,
-that one entry falls back to the scrape/WebSearch method rather than failing
-the whole step.
 
 ## Backfill status (as of 2026-08-01)
 
@@ -303,12 +304,11 @@ the tab into `picks/ufc/grades/`. The repo and the tab now agree: 12 bets,
 profit. 0.75u at +500 wins +3.75u; +4.5u adds the stake back. Both the tab and
 `picks/ufc/grades/2026-06-14.json` overstate UFC by 0.75u until corrected.
 
-## Known gaps in the MLB record (2026-10-22)
+## Known gaps in the MLB record
 
 - **8/28 Yankees ML -165 1u (W, +0.61u)** and **8/31 Braves ML -163 1u (L,
   -1.00u)** were texted, but the routine wrote them to `picks/TODAY.json`, so
   neither reached the sheet. 8/31's grade exists; neither picks file does.
-- **Never graded:** 7/19 A's ML +125 0.75u (the routine wrote "A's", which no
-  grader matches; the prompts now say "Athletics"), 8/20 Rays ML -170 1u, and
-  8/1 Yankees ML and Dodgers ML (doubleheader splits, still PENDING).
 - **10/4 Rays ML** was removed on 10/6: the Rays had no game that day.
+- The bets listed as never graded on 10/22 (7/19 A's, 8/1 Yankees and
+  Dodgers, 8/20 Rays) were settled on 11/16 from ESPN's final scores.

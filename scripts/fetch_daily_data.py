@@ -666,13 +666,17 @@ def attach_odds(slate: list, odds_api: dict) -> None:
 # ---------------------------------------------------------------------------
 
 def fetch_team_splits(year: str) -> dict:
-    url = (
-        "https://statsapi.mlb.com/api/v1/teams/stats?stats=statSplits&group=hitting"
-        f"&season={year}&sitCodes=vr,vl&leagueIds=103,104"
-    )
-    data = SESSION.get(url, timeout=20).json()
+    # One request per split: asked for together, the API returns the first 50
+    # of the 60 rows and ten teams silently lose a split.
     out = {}
-    for block in data.get("stats", []):
+    blocks = []
+    for code in ("vr", "vl"):
+        url = (
+            "https://statsapi.mlb.com/api/v1/teams/stats?stats=statSplits&group=hitting"
+            f"&season={year}&sitCodes={code}&leagueIds=103,104&limit=100"
+        )
+        blocks += SESSION.get(url, timeout=20).json().get("stats", [])
+    for block in blocks:
         for s in block.get("splits", []):
             team = s.get("team", {}).get("name")
             side = {"vr": "vs_RHP", "vl": "vs_LHP"}.get(s.get("split", {}).get("code"))
@@ -808,6 +812,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", default=date.today().isoformat())
     parser.add_argument("--out-dir", default="data")
+    parser.add_argument("--no-odds", action="store_true",
+                        help="skip prices; scripts/sheet.py mlb fetches them for the card")
     args = parser.parse_args()
 
     d = args.date
@@ -818,7 +824,7 @@ def main():
     bundle = {
         "date": d,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "source": "github-actions-prefetch",
+        "source": "fetch_daily_data.py",
         # "schedule", or the line a routine pushed to requests/data.txt
         "requested_by": os.environ.get("REQUESTED_BY", "schedule"),
     }
@@ -839,8 +845,8 @@ def main():
         ("team_splits", lambda: fetch_team_splits(year)),
         # covers.com is the fallback for when The Odds API is not configured;
         # it needs a browser, which is slow to install while a routine waits.
-        ("odds",      (lambda: {}) if os.environ.get("ODDS_API_KEY") else fetch_odds_playwright),
-        ("odds_api",  fetch_odds_api),
+        ("odds",      (lambda: {}) if (args.no_odds or os.environ.get("ODDS_API_KEY")) else fetch_odds_playwright),
+        ("odds_api",  (lambda: {}) if args.no_odds else fetch_odds_api),
         ("weather",   lambda: fetch_weather_wttr(bundle.get("slate", []))),
         ("weather_first_pitch", lambda: fetch_weather_first_pitch(bundle.get("slate", []))),
         ("lineups",   fetch_lineups),

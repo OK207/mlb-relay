@@ -1,342 +1,133 @@
-MLB AFTERNOON - 5:15 PM ET (line check, evening moneylines, strikeout props)
+AFTERNOON SESSION - 5:15 PM ET (line check for every sport + MLB evening games)
 
-You are the MLB afternoon analyst. Lineups for night games are out by now.
-This session does three things, in order:
-  1. LINE CHECK: how this morning's picks compare with the market now.
-  2. EVENING ML: games the morning card did not bet.
-  3. K PROPS: strikeout props, only where the numbers show an edge.
-Zero new picks is a normal outcome. Budget: 8 web calls.
-If any WebFetch returns EGRESS_BLOCKED, HTTP 403 or a connection error, use
-the next source listed for that step; never stop.
+This session does two things, in this order:
+A. RESULTS AND LINE CHECK, all year: settle anything that has gone final, and
+   for every pick made today in any sport (and any open UFC pick) see whether
+   the market has since moved toward it or away.
+B. MLB EVENING GAMES, in season only: look once more at MLB games the morning
+   card did not bet, now that lineups are posted.
 
-======================================================================
-DATES - THE MECHANICAL RULE THAT MATTERS MOST
-======================================================================
-Never type a date into a file path yourself. Every command below that
-touches a dated file computes it: D=$(TZ=America/New_York date +%F) in bash,
-zoneinfo in python. Do not use the Write tool for picks/, grades/, clv/,
-messages/ or dispatch/ files; the snippets below write them. Shell variables
-do not survive between Bash calls, so each block recomputes what it needs.
+Do not load the mlb skill or any other betting skill. All arithmetic, prices,
+stakes, dates, file names and the Telegram send are done by scripts in
+/home/user/mlb-relay/scripts. Never compute an edge, a payout or a stake
+yourself, never type a date into a file name, and never write a picks, grades
+or messages file by hand. If a script prints an error, report that error in
+the text; do not work around it with numbers of your own.
 
 ======================================================================
-STANDING RULES - from the tracked record 5/12-10/15 (routines/README.md)
-======================================================================
-1. FAVORITES ONLY for moneylines (negative American odds). Underdog and
-   even-money sides went 12-28-2 for -13.6u across both MLB routines.
-2. Evening ML: A-tier only, 1u (0.5u at -200 or shorter).
-3. K props: A-tier only, 0.5u, at most 2 per day.
-4. No bet on a game the morning card already bet: no second moneyline and
-   no K prop on that game.
-5. Bet the best price among the books in BOOKS, and name the book.
-6. Only games on today's verified slate (bundle or statsapi), and only real
-   prices fetched today. Search-snippet prices mean pass.
-7. There is no target number of picks.
-
-======================================================================
-STEP 0 - SYNC, ASK FOR A FRESH BUNDLE, READ THE MORNING CARD
+STEP 0 - SYNC
 ======================================================================
 cd /home/user/mlb-relay && git checkout -q main && git fetch -q origin main && git reset -q --hard origin/main
-D=$(TZ=America/New_York date +%F); REQ=$(date -u +%FT%TZ); echo "$REQ" > /tmp/request_time
-mkdir -p requests && echo "$D mlb-pm $REQ" > requests/data.txt
-git add requests/data.txt
-git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -q -m "request data: $D mlb-pm"
-git push -q origin HEAD:main || { git pull -q --rebase origin main && git push -q origin HEAD:main; } || echo REQUEST_NOT_PUSHED
-echo "== this morning's picks"; cat picks/$D.json 2>/dev/null || echo NO_PICKS_FILE
-
-The push starts the data workflow; a fresh bundle (with tonight's lineups and
-current prices) normally lands in 1-3 minutes.
 
 ======================================================================
-STEP 1 - LOAD THE DATA BUNDLE (no web calls)
+STEP A - RESULTS AND LINE CHECK
 ======================================================================
-cd /home/user/mlb-relay
-D=$(TZ=America/New_York date +%F); REQ=$(cat /tmp/request_time 2>/dev/null || echo 0)
-rm -f /tmp/bundle.json
-for i in $(seq 1 12); do
-  git fetch -q origin main
-  if git show origin/main:data/$D.json > /tmp/bundle.tmp 2>/dev/null; then
-    mv /tmp/bundle.tmp /tmp/bundle.json
-    GEN=$(python3 -c "import json; print(json.load(open('/tmp/bundle.json')).get('generated_at',''))")
-    if [[ "$GEN" > "$REQ" ]]; then echo "FRESH BUNDLE $GEN"; break; fi
-    echo "older bundle from $GEN - waiting for the one just requested ($i/12)"
-  else
-    echo "no bundle yet ($i/12)"
-  fi
-  sleep 30
-done
-if [ -f scripts/game_sheet.py ]; then python3 scripts/game_sheet.py /tmp/bundle.json
-else python3 -m json.tool /tmp/bundle.json 2>/dev/null | head -400 || echo NO_BUNDLE; fi
+python3 scripts/grade.py all
+python3 scripts/clv.py
+
+The first command settles anything in any sport that has gone final since
+the morning routines ran (a UFC card from the weekend, a late game). The
+morning routines normally report results themselves, so do not put results
+in this text; grading here only keeps the record and the sheet current.
+
+The second, for each open pick, fetches the current prices and prints how the market's
+fair probability has moved since the pick was made, or NO_OPEN_PICKS. Keep
+the block it prints for the text. This is the number that says whether the
+picks are finding anything: picks the market later moves toward have real
+information behind them; picks it moves away from did not. Do not act on it
+today - it is a measurement, not a signal to add or hedge.
 
 ======================================================================
-STEP 2 - SLATE AND SEASON GATE (0-1 web calls)
+STEP B - MLB EVENING GAMES (skip entirely when there is no MLB today)
 ======================================================================
-Use the game sheet. Only if it printed NO_BUNDLE or EMPTY SLATE:
-WebFetch https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=<today>&hydrate=probablePitcher,team,lineups,officials&gameType=R,F,D,L,W,S
-(Postseason games are types F, D, L and W. The old version of this routine
-asked for type R only and reported "No games today" 15 times in October while
-playoff games were being played.)
-- Every game today is type S: send "MLB Afternoon - <Month Day> - Spring
-  Training, no picks." through STEP 9 and stop.
-- No games: send "MLB Afternoon - <Month Day> - No games today." and stop.
-COVERED = games involving a team in this morning's picks.
-OPEN = the other games whose status is Scheduled or Pre-Game and whose first
-pitch is at least 30 minutes away.
-
-======================================================================
-STEP 3 - LINE CHECK ON THIS MORNING'S PICKS (no web calls)
-======================================================================
-For each morning pick whose game has not started, find the best price now
-for the same side (game sheet, or the odds snippet in STEP 4). Record it:
-
-python3 - <<'PY'
-import json, os, datetime as dt
-from zoneinfo import ZoneInfo
-d = dt.datetime.now(ZoneInfo('America/New_York')).date().isoformat()
-def imp(o): return abs(o) / (abs(o) + 100) if o < 0 else 100 / (o + 100)
-CLV = [
-    # {"bet": "Rays ML", "taken": -135, "book": "fanduel", "now": -142, "now_book": "draftkings"},
-]
-for c in CLV:
-    c['clv_pts'] = round(100 * (imp(c['now']) - imp(c['taken'])), 1)
-if CLV:
-    os.makedirs('/home/user/mlb-relay/clv', exist_ok=True)
-    json.dump(CLV, open(f'/home/user/mlb-relay/clv/{d}.json', 'w'), indent=2)
-print(json.dumps(CLV, indent=1))
-PY
-
-Positive points mean the market moved toward the pick after it was taken.
-Over a season that is the clearest sign the picks carry a real edge, long
-before win-loss results can show it. Games already under way: leave them out.
-
-======================================================================
-STEP 4 - ODDS FOR WHAT THE BUNDLE LACKS (0-1 credit)
-======================================================================
-Only if the game sheet shows no "ODDS best" for a game you need:
-python3 - <<'PY'
-import os, json, urllib.request
-key, books = os.environ.get('ODDS_API_KEY'), os.environ.get('BOOKS', 'draftkings,fanduel')
-if not key:
-    print('NO_ODDS_API_KEY'); raise SystemExit
-url = ('https://api.the-odds-api.com/v4/sports/baseball_mlb/odds/?apiKey=' + key
-       + '&markets=h2h&oddsFormat=american&bookmakers=' + books)
-with urllib.request.urlopen(url, timeout=20) as r:
-    print('credits left:', r.headers.get('x-requests-remaining'))
-    for ev in json.loads(r.read()):
-        by_book = {b['key']: {o['name']: o['price'] for o in b['markets'][0]['outcomes']}
-                   for b in ev.get('bookmakers', []) if b.get('markets')}
-        print(ev['id'], ev['away_team'], '@', ev['home_team'], ev['commence_time'], json.dumps(by_book))
-PY
-Fallback: WebFetch https://www.oddsshark.com/mlb/odds. Search snippets are
-approximate: no bet on that game.
-
-======================================================================
-STEP 5 - EVENING MONEYLINES (OPEN games only; 0-2 web calls)
-======================================================================
-Only games with both SPs confirmed and a posted lineup (game sheet LINEUPS,
-or the statsapi lineups hydrate in STEP 2). Weigh, as the morning card does:
-SP matchup (35%: xERA or ERA with K% and BB%, handedness, last three starts),
-bullpen (15%: relief IP over the last 3 days, arms on back-to-back days or
-25+ pitches yesterday), offense against this SP's hand (20%: OPS, K%,
-tonight's actual lineup and absences), park and first-pitch weather (10%;
-rain above 40% = skip), umpire (5%, context only), team quality (15%),
-line movement since the morning bundle, schedule spot (5%).
-One WebSearch "<team> lineup injury news today" for the strongest candidate
-if anything is unclear.
-
-  p_model    = your win probability for the side
-  break_even = |best price| / (|best price| + 100)      (vig included)
-  edge       = (p_model - break_even) x 100 points
-A-tier (4.0+) only. Favorites only. 1u, or 0.5u at -200 or shorter.
-SANITY CHECK: if p_model is more than 8 points from the game sheet's no-vig
-fair probability, re-check the inputs; it is almost always a data error. If
-the inputs hold, the edge counts as 4.0 at most.
-Skip: SP unconfirmed or opener, lineup not posted, rain above 40%, line moved
-15+ cents against the side since the morning bundle, price not real.
-
-======================================================================
-STEP 6 - STRIKEOUT PROPS (OPEN games only; 0-3 web calls)
-======================================================================
-Candidates: confirmed traditional starters (no openers or bulk relievers)
-whose season line shows in the game sheet. Inputs, from the game sheet:
-- sp_k_pct: the SP's season K% as a fraction (27.9 -> 0.279)
-- opp_k_pct: the opposing lineup's K% against that SP's hand
-- projected_ip: the SP's IP per start this season; use 5.0 if his last three
-  starts averaged under 5 innings; never above 6.5
-- umpire_k_adj: known K-friendly +0.010, run-friendly -0.010, unknown or not
-  posted 0.0. An unknown umpire is NOT a reason to skip: the old hard gate on
-  umpires stopped every K prop from May to October.
-
-Line and price. First check The Odds API pace (free call, no credits):
-python3 -c "
-import os, json, urllib.request, datetime, calendar
-key = os.environ.get('ODDS_API_KEY'); out = {'pace_ok': False}
-if key:
-    try:
-        with urllib.request.urlopen('https://api.the-odds-api.com/v4/sports/?apiKey=' + key, timeout=10) as r:
-            rem = int(r.headers.get('x-requests-remaining', '0'))
-        t = datetime.date.today(); dim = calendar.monthrange(t.year, t.month)[1]
-        out = {'remaining': rem, 'pace_ok': rem > 10 and rem >= 500 * (dim - t.day + 1) / dim}
-    except Exception as e:
-        out['error'] = str(e)
-print(json.dumps(out))
-"
-If pace_ok, for each candidate's game (event id from STEP 4's output, or the
-free events list https://api.the-odds-api.com/v4/sports/baseball_mlb/events/?apiKey=KEY):
-python3 - <<'PY'
-import os, urllib.request
-key, books = os.environ['ODDS_API_KEY'], os.environ.get('BOOKS', 'draftkings,fanduel')
-event_id = 'EVENT_ID_HERE'   # one call per game, 1 credit
-url = ('https://api.the-odds-api.com/v4/sports/baseball_mlb/events/' + event_id
-       + '/odds?apiKey=' + key + '&markets=pitcher_strikeouts&oddsFormat=american&bookmakers=' + books)
-with urllib.request.urlopen(url, timeout=15) as r:
-    print(r.read().decode())
-PY
-Otherwise, or when a game has no market: WebSearch "<pitcher> strikeout prop
-<Month Day> over under". No confirmed same-day line AND price: no play.
-
-python3 - <<'PY'
-import json, math
-CALIBRATION = 0.82
-LEAGUE_K_PCT = 0.225   # replace with the PA-weighted league K% if the bundle's team splits give it
-
-def p_over(line, mu):
-    k, cdf, term = int(line), 0.0, math.exp(-mu)
-    for i in range(k + 1):
-        cdf += term
-        term *= mu / (i + 1)
-    return max(0.0, min(1.0, 1.0 - cdf))
-def imp(o): return abs(o) / (abs(o) + 100) if o < 0 else 100 / (o + 100)
-def tier(e): return 'A' if e >= 4 else 'B' if e >= 2.5 else 'C' if e >= 1 else 'Pass'
-
-CANDIDATES = [
-    # {'name': 'Tarik Skubal', 'line': 7.5, 'over': -120, 'under': -105, 'book': 'fanduel',
-    #  'sp_k_pct': 0.31, 'opp_k_pct': 0.24, 'projected_ip': 6.2, 'umpire_k_adj': 0.0},
-]
-for c in CANDIDATES:
-    k_rate = max(0.05, min(0.50, c['sp_k_pct'] * c['opp_k_pct'] / LEAGUE_K_PCT + c['umpire_k_adj']))
-    mu = k_rate * c['projected_ip'] * 4.3          # ~4.3 batters faced per inning
-    po = 0.5 + CALIBRATION * (p_over(c['line'], mu) - 0.5)
-    e_over, e_under = 100 * (po - imp(c['over'])), 100 * ((1 - po) - imp(c['under']))
-    print(json.dumps({'name': c['name'], 'line': c['line'], 'mean_k': round(mu, 2), 'p_over': round(po, 3),
-                      'edge_over': round(e_over, 1), 'tier_over': tier(e_over),
-                      'edge_under': round(e_under, 1), 'tier_under': tier(e_under)}))
-PY
-Publish only A-tier, 0.5u, at most 2 per day, never on a COVERED game.
-
-======================================================================
-STEP 7 - FORMAT (plain ASCII, no emoji)
-======================================================================
-MLB Picks - <Month Day> (Afternoon)
-
-LINE CHECK
-  Rays ML taken -135, now -142 at DraftKings: +1.3 pts
-
-EVENING ML  [omit the section if none]
-<Nick> ML <price> at <Book> vs <OppNick> | Bet 1u -> Win <x.xx>u
-<SP> vs <SP>. <1-2 sentences: SP gap, tonight's lineup vs hand, bullpen
-state>. Edge <x.x> pts (A).
-
-K PROPS  [omit the section if none]
-<Last name> K Over 6.5 <price> at <Book> | Bet 0.5u -> Win <x.xx>u
-K% <x>, opp K% vs <hand> <x>, proj <x.x> IP, mean <x.x> K, umpire <name or
-"neutral">. Edge <x.x> pts (A).
-
-No Play: <each with a short reason, e.g. "already on the morning card",
-"underdog side", "no same-day K line", "B-tier edge">
-
-Nothing new: "MLB Afternoon - <Month Day> - No new plays." followed by the
-LINE CHECK lines, if any.
-Bet names: "[Nickname] ML" with nicknames as the morning card uses them
-(Athletics, not A's), and "<Last name> K Over 6.5" / "K Under 6.5".
-
-======================================================================
-STEP 8 - ADD NEW PICKS TO TODAY'S FILE (no web calls)
-======================================================================
-python3 - <<'PY'
-import json, os, datetime as dt
-from zoneinfo import ZoneInfo
-d = dt.datetime.now(ZoneInfo('America/New_York')).date().isoformat()
-path = f'/home/user/mlb-relay/picks/{d}.json'
-NEW = [
-    # {"bet": "Dodgers ML", "odds": -128, "units": 1, "book": "draftkings"},
-    # {"bet": "Skubal K Over 7.5", "odds": -120, "units": 0.5, "book": "fanduel"},
-]
-for p in NEW:
-    if p['bet'].endswith(' ML'):
-        assert p['odds'] < 0, f"{p['bet']}: favorites only"
-        assert p['units'] <= (0.5 if p['odds'] <= -200 else 1), f"{p['bet']}: stake cap"
-    else:
-        assert p['units'] <= 0.5, f"{p['bet']}: K props are 0.5u"
-picks = json.load(open(path)) if os.path.exists(path) else []
-have = {p['bet'] for p in picks}
-picks += [p for p in NEW if p['bet'] not in have]
-if NEW:
-    json.dump(picks, open(path, 'w'), indent=2)
-print(json.dumps(picks, indent=1))
-PY
-The morning entries stay; the file is rewritten at the same dated path.
-If an assert fires, fix the pick; do not delete the assert.
-
-======================================================================
-STEP 9 - SEND, THEN RECORD IN GIT
-======================================================================
-python3 - <<'PY'
-import json, os, urllib.parse, urllib.request, datetime as dt
-from zoneinfo import ZoneInfo
-d = dt.datetime.now(ZoneInfo('America/New_York')).date().isoformat()
-MSG = r'''
-<paste the full message here>
-'''.strip()
-root = '/home/user/mlb-relay'
-os.makedirs(f'{root}/messages', exist_ok=True)
-open(f'{root}/messages/{d}-afternoon.txt', 'w').write(MSG + '\n')
-tok, chat = os.environ.get('TELEGRAM_TOKEN'), os.environ.get('TELEGRAM_CHAT_ID')
-ok, text = bool(tok and chat and MSG), MSG
-while ok and text:
-    cut = text.rfind('\n', 0, 3900) if len(text) > 3900 else len(text)
-    cut = cut if cut > 0 else min(3900, len(text))
-    part, text = text[:cut], text[cut:].lstrip('\n')
-    try:
-        req = urllib.request.Request(
-            f'https://api.telegram.org/bot{tok}/sendMessage',
-            data=urllib.parse.urlencode({'chat_id': chat, 'text': part}).encode())
-        with urllib.request.urlopen(req, timeout=30) as r:
-            ok = bool(json.loads(r.read()).get('ok'))
-    except Exception as e:
-        print('direct send failed:', e)
-        ok = False
-if ok:
-    print('SEND_OK direct')
-else:
-    os.makedirs(f'{root}/dispatch', exist_ok=True)
-    open(f'{root}/dispatch/{d}-afternoon.txt', 'w').write(MSG + '\n')
-    print('SEND_VIA_RELAY: wrote dispatch file; the relay workflow texts it when the push lands')
-PY
-
-cd /home/user/mlb-relay
 D=$(TZ=America/New_York date +%F)
-git add -A picks grades clv dispatch messages
-git -c user.name='mlb-agent' -c user.email='mlb-agent@auto' commit -q -m "afternoon: $D"
-pushed=no
-for i in 1 2 3; do
-  if git pull -q --rebase origin main && git push -q origin HEAD:main; then pushed=main; break; fi
-  sleep 5
-done
-if [ $pushed = no ] && git push -q origin HEAD:claude/auto; then pushed=claude/auto; fi
-echo "PUSHED: $pushed"
+python3 scripts/fetch_daily_data.py --date $D --out-dir /tmp/mlb --no-odds && python3 scripts/game_sheet.py /tmp/mlb/$D.json
+python3 scripts/sheet.py mlb
+cat picks/$D.json 2>/dev/null || echo NO_MORNING_PICKS
 
-In your final response, state: whether the text went directly or through the
-relay, which branch the push reached, and any git error verbatim.
+If the first block has no games and the second says "NO GAMES WITH PRICES"
+(off day or off-season), or every game is type S (Spring Training), or prices
+are unavailable: there is nothing to do in STEP B. Go to STEP C.
 
-DELIVERY CONTRACT
-- NEVER call api.github.com to write. The contents API and repository_dispatch
-  are blocked by the execution proxy and always return 403, whatever token is
-  used. A 403 there is NOT an expired or revoked token. Never tell the user to
-  rotate credentials.
-- The only write path is git push from /home/user/mlb-relay. One push fires
-  the relay workflow (texts any changed dispatch/*.txt) and the sheets
-  workflow (logs changed picks/ and grades/ files; it skips picks already on
-  the sheet, so the morning entries are not duplicated).
-- The relay and sheets workflows have no branch filter, so a push that lands
-  on claude/auto still texts and logs.
-- If a step fails, report the exact error text. Do not guess at causes.
+The prices sheet lists only games that have not started. Leave out any game
+the morning card already bet (card.py refuses a second bet on a game anyway).
+For the rest, the method is the morning card's, with one advantage: lineups
+and late scratches are now known.
+
+Only favorites priced from -105 to -200 can be bet, with both starters
+confirmed. Work on at most three sides, those with the highest "edge before
+any shift". Use up to 5 web searches for today's news only: WebSearch "<team>
+lineup tonight scratches".
+
+Decide a SHIFT for the favorite: how many points of win probability the fair
+line should move toward it. Allowed reasons and their sizes:
+- The opponent's announced starter scratched or replaced by an opener or
+  bulk reliever after the current prices were set: +2 to +3.
+- One or more of the opponent's best hitters out of the posted lineup, or the
+  favorite gets a key bat back: +1 to +2.
+- The opponent's high-leverage relievers pitched back-to-back days or threw
+  25+ pitches yesterday while the favorite's are rested: +1 to +2.
+- The opposing starter's last three starts clearly worse than his season
+  line, or his ERA a run or more below his xERA: +1 to +2.
+- Lineup OPS against this starter's hand .750+ for the favorite and under
+  .680 for the opponent: +1.
+- Combined, never more than +5.
+Not reasons: records, streaks, momentum, the umpire, the park, or a good
+starter simply being good. Pass when a starter is TBA, it is a bullpen game
+for your side, or rain is above 40% at first pitch.
+
+cat > /tmp/mlb_card.json <<'EOF'
+{"picks": [
+  {"id": "<id from the prices sheet>", "market": "ML", "side": "home", "shift": 3.0,
+   "why": "<1-2 sentences: both starters by name, then the specific reason>"}
+]}
+EOF
+python3 scripts/card.py mlb /tmp/mlb_card.json
+
+Copy id and side exactly from the prices sheet. With nothing to bet, skip the
+command. card.py adds any accepted pick to today's picks file alongside the
+morning card, inside the same daily caps (4 bets, 5u), and prints the pick
+lines. A REJECTED line is final.
+
+Strikeout props are not part of this session any more: in six months the old
+version never published one, and the scripts cannot price them.
+
+======================================================================
+STEP C - SEND, OR STAY SILENT
+======================================================================
+If STEP A printed NO_OPEN_PICKS and STEP B produced no pick (or did not run):
+send nothing. Run only
+python3 scripts/publish.py mlb --record-only
+and stop. A day with nothing to report gets no text.
+
+Otherwise write the text. Plain ASCII, no emoji, no markdown:
+
+Afternoon - <Mon D>
+
+<the line-check block from STEP A, if any>
+
+MLB EVENING
+<the lines card.py printed, unchanged>
+
+Leave out the MLB EVENING section when STEP B added no pick. Then:
+
+cat > /tmp/pm_msg.txt <<'EOF'
+<the text>
+EOF
+python3 scripts/publish.py mlb /tmp/pm_msg.txt --tag=-afternoon --no-record-line
+
+publish.py saves the text, sends it to Telegram, falls back to the GitHub
+relay if the direct send fails, and commits and pushes everything. It prints
+SENT or SEND_VIA_RELAY, then PUSHED with the branch. In your final response
+give those lines verbatim, what was sent (or "nothing to send"), and any
+script error exactly as printed.
+
+======================================================================
+IF SOMETHING BREAKS
+======================================================================
+- A script exits with a traceback: include "<script name> failed: <last line
+  of the error>" in the text if there is one to send; otherwise report it in
+  your final response only.
+- Never call api.github.com to write; the proxy answers 403 whatever token is
+  used, and that is not an expired credential. The only write path is the git
+  push publish.py makes. Never tell the user to rotate credentials.

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pick Relay</title>
-<meta name="description" content="Daily MLB, NBA and UFC picks with graded results, built from this repo's picks/ and grades/ files.">
+<meta name="description" content="Daily MLB, NBA, CBB and UFC picks with graded results, built from this repo's picks/ and grades/ files.">
 <style>
 :root {
   color-scheme: light;
@@ -186,8 +186,9 @@ details.block[open] > summary { margin-bottom: 8px; }
     mlb: { name: 'MLB', picks: new RegExp(`^picks/${DATE}\\.json$`),     grades: new RegExp(`^grades/${DATE}\\.json$`),           dispatch: ['', '-afternoon'] },
     nba: { name: 'NBA', picks: new RegExp(`^picks/nba/${DATE}\\.json$`), grades: new RegExp(`^grades/nba/${DATE}\\.json$`),       dispatch: ['-nba'] },
     ufc: { name: 'UFC', picks: new RegExp(`^picks/ufc/${DATE}\\.json$`), grades: new RegExp(`^picks/ufc/grades/${DATE}\\.json$`), dispatch: ['-ufc'] },
+    cbb: { name: 'CBB', picks: new RegExp(`^picks/cbb/${DATE}\\.json$`), grades: new RegExp(`^grades/cbb/${DATE}\\.json$`),       dispatch: ['-cbb'] },
   };
-  const DISPATCH = new RegExp(`^dispatch/${DATE}(-afternoon|-nba|-ufc)?\\.txt$`);
+  const DISPATCH = new RegExp(`^(dispatch|messages)/${DATE}(-afternoon|-nba|-ufc|-cbb)?\\.txt$`);
 
   const $ = (sel, root = document) => root.querySelector(sel);
   function el(tag, attrs = {}, ...kids) {
@@ -312,7 +313,9 @@ details.block[open] > summary { margin-bottom: 8px; }
       for (const [date, d] of Object.entries(days)) {
         if (d.picksPath) jobs.push(async () => { d.picks = await fetchJSON(d.picksPath); });
         if (d.gradesPath) jobs.push(async () => { d.grades = await fetchJSON(d.gradesPath); });
-        d.dispatch = sp.dispatch.map(suf => `dispatch/${date}${suf}.txt`).filter(p => fileSet.has(p));
+        d.dispatch = sp.dispatch
+          .map(suf => [`messages/${date}${suf}.txt`, `dispatch/${date}${suf}.txt`].find(p => fileSet.has(p)))
+          .filter(Boolean);
       }
     }
     const errors = [];
