@@ -1,0 +1,548 @@
+{
+  "sport": "ufc",
+  "date": "2026-11-21",
+  "fetched_at": "2026-11-20T22:06:20Z",
+  "credits_remaining": "480",
+  "my_books": [
+    "draftkings",
+    "fanduel"
+  ],
+  "events": [
+    {
+      "id": "981c56f62e02e086779c0b14c97afcf9",
+      "commence": "2026-11-21T20:15:00Z",
+      "date": "2026-11-21",
+      "away": "Navajo Stirling",
+      "home": "Jiri Prochazka",
+      "n_books": 6,
+      "ml": {
+        "away": {
+          "fair": 0.6131,
+          "best": -168,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": -190,
+            "betus": -190,
+            "betrivers": -177,
+            "draftkings": -180,
+            "fanduel": -168,
+            "bovada": -172
+          }
+        },
+        "home": {
+          "fair": 0.3869,
+          "best": 150,
+          "book": "draftkings",
+          "prices": {
+            "betonlineag": 161,
+            "betus": 158,
+            "betrivers": 140,
+            "draftkings": 150,
+            "fanduel": 142,
+            "bovada": 147
+          }
+        }
+      },
+      "event": "UFC Fight Night: Procházka vs. Stirling",
+      "weight": "Light Heavyweight",
+      "order_from_top": 1,
+      "away_info": {
+        "record": "11-0-0"
+      },
+      "home_info": {
+        "record": "32-6-1"
+      }
+    },
+    {
+      "id": "ca5d034598b83c81aa267bea9b3334a4",
+      "commence": "2026-11-21T19:45:00Z",
+      "date": "2026-11-21",
+      "away": "Kevin Vallejos",
+      "home": "Aljamain Sterling",
+      "n_books": 6,
+      "ml": {
+        "away": {
+          "fair": 0.5378,
+          "best": -132,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": -125,
+            "betrivers": -132,
+            "betus": -125,
+            "draftkings": -135,
+            "fanduel": -132,
+            "bovada": -125
+          }
+        },
+        "home": {
+          "fair": 0.4622,
+          "best": 114,
+          "book": "draftkings",
+          "prices": {
+            "betonlineag": 107,
+            "betrivers": 107,
+            "betus": 105,
+            "draftkings": 114,
+            "fanduel": 112,
+            "bovada": 105
+          }
+        }
+      },
+      "event": "UFC Fight Night: Procházka vs. Stirling",
+      "weight": "Featherweight",
+      "order_from_top": 2,
+      "away_info": {
+        "record": "18-1-0"
+      },
+      "home_info": {
+        "record": "26-5-0"
+      }
+    },
+    {
+      "id": "d55740629555c012eedd01b8f75d3b69",
+      "commence": "2026-11-21T19:15:00Z",
+      "date": "2026-11-21",
+      "away": "Brian Ortega",
+      "home": "Daniel Hooker",
+      "n_books": 5,
+      "ml": {
+        "away": {
+          "fair": 0.3726,
+          "best": 158,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": 161,
+            "draftkings": 154,
+            "fanduel": 158,
+            "betus": 158,
+            "bovada": 155
+          }
+        },
+        "home": {
+          "fair": 0.6274,
+          "best": -185,
+          "book": "draftkings",
+          "prices": {
+            "betonlineag": -190,
+            "draftkings": -185,
+            "fanduel": -188,
+            "betus": -190,
+            "bovada": -180
+          }
+        }
+      },
+      "event": "UFC Fight Night: Procházka vs. Stirling",
+      "weight": "Lightweight",
+      "order_from_top": 3,
+      "away_info": {
+        "record": "16-5-0"
+      },
+      "home_info": {
+        "record": "24-15-0"
+      }
+    },
+    {
+      "id": "0b6d5a32985b31eda832be4154e10fe5",
+      "commence": "2026-11-21T18:45:00Z",
+      "date": "2026-11-21",
+      "away": "Asu Almabaev",
+      "home": "Kyoji Horiguchi",
+      "n_books": 5,
+      "ml": {
+        "away": {
+          "fair": 0.3634,
+          "best": 164,
+          "book": "draftkings",
+          "prices": {
+            "betonlineag": 167,
+            "draftkings": 164,
+            "fanduel": 152,
+            "betus": 164,
+            "bovada": 165
+          }
+        },
+        "home": {
+          "fair": 0.6366,
+          "best": -180,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": -197,
+            "draftkings": -198,
+            "fanduel": -180,
+            "betus": -197,
+            "bovada": -195
+          }
+        }
+      },
+      "event": "UFC Fight Night: Procházka vs. Stirling",
+      "weight": "Flyweight",
+      "order_from_top": 4,
+      "away_info": {
+        "record": "24-3-0"
+      },
+      "home_info": {
+        "record": "36-6-0"
+      }
+    },
+    {
+      "id": "8f01dcdee59eec582ccf12e049833989",
+      "commence": "2026-11-21T18:15:00Z",
+      "date": "2026-11-21",
+      "away": "Ikram Aliskerov",
+      "home": "Jared Cannonier",
+      "n_books": 6,
+      "ml": {
+        "away": {
+          "fair": 0.7288,
+          "best": -295,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": -325,
+            "draftkings": -325,
+            "fanduel": -295,
+            "betrivers": -305,
+            "betus": -325,
+            "bovada": -300
+          }
+        },
+        "home": {
+          "fair": 0.2712,
+          "best": 260,
+          "book": "draftkings",
+          "prices": {
+            "betonlineag": 265,
+            "draftkings": 260,
+            "fanduel": 240,
+            "betrivers": 235,
+            "betus": 264,
+            "bovada": 250
+          }
+        }
+      },
+      "event": "UFC Fight Night: Procházka vs. Stirling",
+      "weight": "Middleweight",
+      "order_from_top": 5,
+      "away_info": {
+        "record": "18-2-0"
+      },
+      "home_info": {
+        "record": "18-10-0"
+      }
+    },
+    {
+      "id": "6571e7bc729a887110c0869b14c3582c",
+      "commence": "2026-11-21T17:40:00Z",
+      "date": "2026-11-21",
+      "away": "Aleksandre Topuria",
+      "home": "Santiago Luna",
+      "n_books": 5,
+      "ml": {
+        "away": {
+          "fair": 0.7044,
+          "best": -275,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": -272,
+            "betrivers": -345,
+            "betus": -270,
+            "fanduel": -275,
+            "draftkings": -278
+          }
+        },
+        "home": {
+          "fair": 0.2956,
+          "best": 225,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": 225,
+            "betrivers": 255,
+            "betus": 222,
+            "fanduel": 225,
+            "draftkings": 225
+          }
+        }
+      },
+      "event": "UFC Fight Night: Procházka vs. Stirling",
+      "weight": "Bantamweight",
+      "order_from_top": 6,
+      "away_info": {
+        "record": "7-1-0"
+      },
+      "home_info": {
+        "record": "8-1-0"
+      }
+    },
+    {
+      "id": "e0fe6ef8d4d50031f2ff78a26b9b6945",
+      "commence": "2026-11-21T17:15:00Z",
+      "date": "2026-11-21",
+      "away": "Tallison Teixeira",
+      "home": "Shamil Gaziev",
+      "n_books": 6,
+      "ml": {
+        "away": {
+          "fair": 0.3633,
+          "best": 172,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": 161,
+            "draftkings": 164,
+            "fanduel": 172,
+            "betrivers": 163,
+            "betus": 158,
+            "bovada": 165
+          }
+        },
+        "home": {
+          "fair": 0.6367,
+          "best": -198,
+          "book": "draftkings",
+          "prices": {
+            "betonlineag": -190,
+            "draftkings": -198,
+            "fanduel": -205,
+            "betrivers": -205,
+            "betus": -190,
+            "bovada": -195
+          }
+        }
+      },
+      "event": "UFC Fight Night: Procházka vs. Stirling",
+      "weight": "Heavyweight",
+      "order_from_top": 7,
+      "away_info": {
+        "record": "9-2-0"
+      },
+      "home_info": {
+        "record": "15-3-0"
+      }
+    },
+    {
+      "id": "9f892e21a835452335eba01effd8a393",
+      "commence": "2026-11-21T16:45:00Z",
+      "date": "2026-11-21",
+      "away": "Alessandro Costa",
+      "home": "Amir Albazi",
+      "n_books": 6,
+      "ml": {
+        "away": {
+          "fair": 0.5022,
+          "best": -112,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": -110,
+            "draftkings": -112,
+            "fanduel": -112,
+            "betrivers": -107,
+            "betus": -110,
+            "bovada": -109
+          }
+        },
+        "home": {
+          "fair": 0.4978,
+          "best": -104,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": -106,
+            "draftkings": -108,
+            "fanduel": -104,
+            "betrivers": -115,
+            "betus": -110,
+            "bovada": -109
+          }
+        }
+      },
+      "event": "UFC Fight Night: Procházka vs. Stirling",
+      "weight": "Flyweight",
+      "order_from_top": 8,
+      "away_info": {
+        "record": "17-5-0"
+      },
+      "home_info": {
+        "record": "17-3-0"
+      }
+    },
+    {
+      "id": "f489c8a46fa7baeab80d1bace1b0f067",
+      "commence": "2026-11-21T16:15:00Z",
+      "date": "2026-11-21",
+      "away": "Tahir Abdullayev",
+      "home": "Jake Matthews",
+      "n_books": 6,
+      "ml": {
+        "away": {
+          "fair": 0.3209,
+          "best": 205,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": 201,
+            "draftkings": 195,
+            "fanduel": 205,
+            "betrivers": 195,
+            "betus": 198,
+            "bovada": 215
+          }
+        },
+        "home": {
+          "fair": 0.6791,
+          "best": -238,
+          "book": "draftkings",
+          "prices": {
+            "betonlineag": -240,
+            "draftkings": -238,
+            "fanduel": -250,
+            "betrivers": -250,
+            "betus": -240,
+            "bovada": -260
+          }
+        }
+      },
+      "event": "UFC Fight Night: Procházka vs. Stirling",
+      "weight": "Welterweight",
+      "order_from_top": 9,
+      "away_info": {
+        "record": "20-3-0"
+      },
+      "home_info": {
+        "record": "23-8-0"
+      }
+    },
+    {
+      "id": "48c97941350cd548c5a6667dc0018546",
+      "commence": "2026-11-21T16:00:00Z",
+      "date": "2026-11-21",
+      "away": "Nikolas Motta",
+      "home": "Dom Mar Fan",
+      "n_books": 6,
+      "ml": {
+        "away": {
+          "fair": 0.392,
+          "best": 145,
+          "book": "draftkings",
+          "prices": {
+            "betonlineag": 153,
+            "betrivers": 125,
+            "betus": 150,
+            "bovada": 145,
+            "fanduel": 140,
+            "draftkings": 145
+          }
+        },
+        "home": {
+          "fair": 0.608,
+          "best": -166,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": -180,
+            "betrivers": -157,
+            "betus": -180,
+            "bovada": -170,
+            "fanduel": -166,
+            "draftkings": -175
+          }
+        }
+      },
+      "event": "UFC Fight Night: Procházka vs. Stirling",
+      "weight": "Lightweight",
+      "order_from_top": 10,
+      "away_info": {
+        "record": "15-6-0"
+      },
+      "home_info": {
+        "record": "9-3-0"
+      }
+    },
+    {
+      "id": "3252a6edf971e56a6d153f473f6b6edd",
+      "commence": "2026-11-21T15:35:00Z",
+      "date": "2026-11-21",
+      "away": "Diyar Nurgozhay",
+      "home": "Alik Lorenz",
+      "n_books": 6,
+      "ml": {
+        "away": {
+          "fair": 0.6911,
+          "best": -258,
+          "book": "draftkings",
+          "prices": {
+            "betonlineag": -255,
+            "betrivers": -265,
+            "betus": -255,
+            "bovada": -260,
+            "fanduel": -260,
+            "draftkings": -258
+          }
+        },
+        "home": {
+          "fair": 0.3089,
+          "best": 215,
+          "book": "fanduel",
+          "prices": {
+            "betonlineag": 212,
+            "betrivers": 205,
+            "betus": 210,
+            "bovada": 215,
+            "fanduel": 215,
+            "draftkings": 210
+          }
+        }
+      },
+      "event": "UFC Fight Night: Procházka vs. Stirling",
+      "weight": "Light Heavyweight",
+      "order_from_top": 11,
+      "away_info": {
+        "record": "12-2-0"
+      },
+      "home_info": {
+        "record": "8-2-0"
+      }
+    },
+    {
+      "id": "583867d6856aab7ddfcbefcf16dcd9b3",
+      "commence": "2026-11-21T15:10:00Z",
+      "date": "2026-11-21",
+      "away": "John Mitchell",
+      "home": "Shoaib Yousaf",
+      "n_books": 6,
+      "ml": {
+        "away": {
+          "fair": 0.5545,
+          "best": -142,
+          "book": "fanduel",
+          "prices": {
+            "draftkings": -142,
+            "betrivers": -134,
+            "fanduel": -142,
+            "betus": -135,
+            "betonlineag": -137,
+            "bovada": -135
+          }
+        },
+        "home": {
+          "fair": 0.4455,
+          "best": 120,
+          "book": "fanduel",
+          "prices": {
+            "draftkings": 120,
+            "betrivers": 108,
+            "fanduel": 120,
+            "betus": 114,
+            "betonlineag": 117,
+            "bovada": 115
+          }
+        }
+      },
+      "event": "UFC Fight Night: Procházka vs. Stirling",
+      "weight": "Lightweight",
+      "order_from_top": 12,
+      "away_info": {
+        "record": "11-3-0"
+      },
+      "home_info": {
+        "record": "14-3-0"
+      }
+    }
+  ],
+  "notes": [],
+  "event": "UFC Fight Night: Procházka vs. Stirling"
+}
