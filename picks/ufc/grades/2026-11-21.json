@@ -1,0 +1,16 @@
+[
+  {
+    "bet": "Prochazka ML",
+    "odds": 117,
+    "units": 0.75,
+    "outcome": "L",
+    "net": -0.75
+  },
+  {
+    "bet": "Ortega ML",
+    "odds": 136,
+    "units": 0.5,
+    "outcome": "L",
+    "net": -0.5
+  }
+]
