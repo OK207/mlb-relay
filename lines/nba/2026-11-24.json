@@ -1,0 +1,331 @@
+{
+  "sport": "nba",
+  "date": "2026-11-24",
+  "fetched_at": "2026-11-24T14:18:10Z",
+  "credits_remaining": "476",
+  "my_books": [
+    "draftkings",
+    "fanduel"
+  ],
+  "events": [
+    {
+      "id": "42f48a4769eab3d1472d76aac0fd0fa7",
+      "commence": "2026-11-25T00:11:00Z",
+      "date": "2026-11-24",
+      "away": "Detroit Pistons",
+      "home": "Orlando Magic",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.5564,
+          "best": -142,
+          "book": "fanduel",
+          "prices": {
+            "fanduel": -142,
+            "betonlineag": -138,
+            "lowvig": -136,
+            "mybookieag": -137,
+            "draftkings": -142,
+            "betrivers": -132,
+            "betmgm": -140,
+            "betus": -135,
+            "bovada": -135
+          }
+        },
+        "home": {
+          "fair": 0.4436,
+          "best": 120,
+          "book": "fanduel",
+          "prices": {
+            "fanduel": 120,
+            "betonlineag": 118,
+            "lowvig": 120,
+            "mybookieag": 112,
+            "draftkings": 120,
+            "betrivers": 110,
+            "betmgm": 115,
+            "betus": 115,
+            "bovada": 115
+          }
+        }
+      },
+      "espn_id": "401909314",
+      "neutral": false,
+      "away_info": {
+        "record": "10-6",
+        "games": 16,
+        "b2b": false,
+        "diff": "+4.8",
+        "last10": "5-5",
+        "home_rec": "3-3",
+        "road_rec": "7-3",
+        "streak": "L2",
+        "injuries": [
+          {
+            "player": "Ebuka Okorie",
+            "status": "Out",
+            "updated": "2026-11-23T22:10",
+            "note": "Okorie (oblique) won't play Tuesday in Orlando."
+          },
+          {
+            "player": "Jalen Duren",
+            "status": "Out",
+            "updated": "2026-11-23T22:08",
+            "note": "Duren (hamstring) has been ruled out for Tuesday's game against the Magic."
+          },
+          {
+            "player": "Cade Cunningham",
+            "status": "Day-To-Day",
+            "updated": "2026-11-23T22:07",
+            "note": "Cunningham (knee) is probable for Tuesday's game against the Orlando."
+          },
+          {
+            "player": "Taurean Prince",
+            "status": "Out",
+            "updated": "2026-11-20T23:02",
+            "note": "Prince (knee) underwent surgery to address lingering issues and has no timeline for a return, Hunter Patterson of The Athletic reports."
+          },
+          {
+            "player": "Duncan Robinson",
+            "status": "Out",
+            "updated": "2026-11-17T16:25",
+            "note": "Robinson will be re-evaluated in one week due to a left quadriceps strain, Coty M. Davis of The Detroit News reports."
+          }
+        ]
+      },
+      "home_info": {
+        "record": "7-9",
+        "games": 16,
+        "b2b": false,
+        "diff": "-4.1",
+        "last10": "5-5",
+        "home_rec": "1-5",
+        "road_rec": "6-4",
+        "streak": "L1",
+        "injuries": [
+          {
+            "player": "Jonathan Isaac",
+            "status": "Out",
+            "updated": "2026-11-21T21:09",
+            "note": "Isaac (knee) is out for Sunday's game against the Wizards."
+          },
+          {
+            "player": "Izaiyah Nelson",
+            "status": "Out",
+            "updated": "2026-11-18T17:25",
+            "note": "Head coach Sean Sweeney said Wednesday that Nelson (ankle) has been doing \"some on-court stuff,\" though Sweeney added that the work has been \"minimal,\" Jason Be"
+          },
+          {
+            "player": "Noah Penda",
+            "status": "Out",
+            "updated": "2026-11-14T17:33",
+            "note": "Penda (hamstring) is making progress but remains without a timetable to return to game action, Jason Beede of the Orlando Sentinel reports."
+          },
+          {
+            "player": "Paolo Banchero",
+            "status": "Out",
+            "updated": "2026-10-24T16:47",
+            "note": "Banchero is expected to be sidelined for the next four-to-six weeks due to a right high-ankle sprain, Shams Charania of ESPN reports."
+          }
+        ]
+      }
+    },
+    {
+      "id": "3167a4072c65c9314c71d0fe49be8e28",
+      "commence": "2026-11-25T01:10:00Z",
+      "date": "2026-11-24",
+      "away": "Boston Celtics",
+      "home": "Washington Wizards",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.7883,
+          "best": -450,
+          "book": "fanduel",
+          "prices": {
+            "draftkings": -453,
+            "lowvig": -455,
+            "betonlineag": -460,
+            "fanduel": -450,
+            "betrivers": -480,
+            "betmgm": -475,
+            "betus": -460,
+            "mybookieag": -469,
+            "bovada": -480
+          }
+        },
+        "home": {
+          "fair": 0.2117,
+          "best": 351,
+          "book": "draftkings",
+          "prices": {
+            "draftkings": 351,
+            "lowvig": 364,
+            "betonlineag": 358,
+            "fanduel": 350,
+            "betrivers": 350,
+            "betmgm": 360,
+            "betus": 360,
+            "mybookieag": 340,
+            "bovada": 350
+          }
+        }
+      },
+      "espn_id": "401909315",
+      "neutral": false,
+      "away_info": {
+        "record": "11-6",
+        "games": 17,
+        "b2b": false,
+        "diff": "+9.1",
+        "last10": "6-4",
+        "home_rec": "6-1",
+        "road_rec": "5-5",
+        "streak": "L4",
+        "injuries": [
+          {
+            "player": "Mitchell Robinson",
+            "status": "Out",
+            "updated": "2026-11-23T21:09",
+            "note": "Robinson (illness) is out for Tuesday's game against Washington, Taylor Snow of the Celtics' official site reports."
+          }
+        ]
+      },
+      "home_info": {
+        "record": "7-11",
+        "games": 18,
+        "b2b": false,
+        "diff": "-5.1",
+        "last10": "3-7",
+        "home_rec": "3-5",
+        "road_rec": "4-6",
+        "streak": "W3",
+        "injuries": [
+          {
+            "player": "Tristan Vukcevic",
+            "status": "Out",
+            "updated": "2026-11-23T22:10",
+            "note": "Vukcevic (hip) has been ruled out for Tuesday's game against Boston."
+          },
+          {
+            "player": "Reece Beekman",
+            "status": "Out",
+            "updated": "2026-11-02T18:22",
+            "note": "The Wizards announced Monday that Beekman sustained a right acromioclavicular joint injury and will be re-evaluated in approximately three weeks."
+          },
+          {
+            "player": "Justin Champagnie",
+            "status": "Out",
+            "updated": "2026-10-28T18:38",
+            "note": "Champagnie (foot) is expected to miss several months, per Josh Robbins of The Athletic."
+          },
+          {
+            "player": "Jamir Watkins",
+            "status": "Out",
+            "updated": "2026-07-30T20:11",
+            "note": "The Wizards announced Thursday that Watkins has undergone surgery for a torn ACL."
+          }
+        ]
+      }
+    },
+    {
+      "id": "6bfadbd22ed8a054cf82ec1b12b78243",
+      "commence": "2026-11-25T03:10:00Z",
+      "date": "2026-11-24",
+      "away": "Dallas Mavericks",
+      "home": "Denver Nuggets",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.2731,
+          "best": 251,
+          "book": "draftkings",
+          "prices": {
+            "draftkings": 251,
+            "lowvig": 256,
+            "betonlineag": 252,
+            "fanduel": 235,
+            "betrivers": 255,
+            "betmgm": 240,
+            "mybookieag": 255,
+            "betus": 255,
+            "bovada": 250
+          }
+        },
+        "home": {
+          "fair": 0.7269,
+          "best": -290,
+          "book": "fanduel",
+          "prices": {
+            "draftkings": -310,
+            "lowvig": -307,
+            "betonlineag": -310,
+            "fanduel": -290,
+            "betrivers": -335,
+            "betmgm": -300,
+            "mybookieag": -330,
+            "betus": -310,
+            "bovada": -300
+          }
+        }
+      },
+      "espn_id": "401909316",
+      "neutral": false,
+      "away_info": {
+        "record": "10-7",
+        "games": 17,
+        "b2b": false,
+        "diff": "-0.1",
+        "last10": "6-4",
+        "home_rec": "7-2",
+        "road_rec": "3-5",
+        "streak": "W3",
+        "injuries": [
+          {
+            "player": "Tobi Lawal",
+            "status": "Out",
+            "updated": "2026-11-23T23:25",
+            "note": "Lawal (groin) is out for Tuesday's game against Denver."
+          },
+          {
+            "player": "P.J. Washington",
+            "status": "Day-To-Day",
+            "updated": "2026-11-23T23:21",
+            "note": "Washington (illness) is questionable for Tuesday's game against the Nuggets."
+          },
+          {
+            "player": "Dereck Lively II",
+            "status": "Out",
+            "updated": "2026-11-20T19:31",
+            "note": "Head coach Dusty May said Friday that Lively (foot) is moving well and progressing in his recovery, and the big man told May he's \"close\" to returning, Mike Cur"
+          },
+          {
+            "player": "Sergio de Larrea",
+            "status": "Out",
+            "updated": "2026-11-17T22:53",
+            "note": "De Larrea (knee) is listed as out for Wednesday's game against the Warriors."
+          },
+          {
+            "player": "Tarik Biberovic",
+            "status": "Out",
+            "updated": "2026-11-17T22:42",
+            "note": "Biberovic (heel) is out for Wednesday's game against the Warriors."
+          }
+        ]
+      },
+      "home_info": {
+        "record": "10-5",
+        "games": 15,
+        "b2b": false,
+        "diff": "+1.8",
+        "last10": "7-3",
+        "home_rec": "4-3",
+        "road_rec": "5-2",
+        "streak": "W3",
+        "injuries": []
+      }
+    }
+  ],
+  "notes": [],
+  "season_type": 2
+}
