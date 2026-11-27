@@ -1,0 +1,1180 @@
+{
+  "sport": "nba",
+  "date": "2026-11-27",
+  "fetched_at": "2026-11-27T14:16:11Z",
+  "credits_remaining": "474",
+  "my_books": [
+    "draftkings",
+    "fanduel"
+  ],
+  "events": [
+    {
+      "id": "3c522e32c3035d7dc3e1734903b84654",
+      "commence": "2026-11-28T00:10:00Z",
+      "date": "2026-11-27",
+      "away": "Miami Heat",
+      "home": "New York Knicks",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.386,
+          "best": 151,
+          "book": "draftkings",
+          "prices": {
+            "draftkings": 151,
+            "fanduel": 142,
+            "betrivers": 155,
+            "betmgm": 145,
+            "bovada": 150,
+            "mybookieag": 143,
+            "lowvig": 154,
+            "betonlineag": 153,
+            "betus": 150
+          }
+        },
+        "home": {
+          "fair": 0.614,
+          "best": -168,
+          "book": "fanduel",
+          "prices": {
+            "draftkings": -180,
+            "fanduel": -168,
+            "betrivers": -190,
+            "betmgm": -175,
+            "bovada": -175,
+            "mybookieag": -176,
+            "lowvig": -175,
+            "betonlineag": -175,
+            "betus": -175
+          }
+        }
+      },
+      "espn_id": "401909326",
+      "neutral": false,
+      "away_info": {
+        "record": "10-7",
+        "games": 17,
+        "b2b": false,
+        "diff": "+0.8",
+        "last10": "8-2",
+        "home_rec": "6-3",
+        "road_rec": "4-4",
+        "streak": "L1",
+        "injuries": [
+          {
+            "player": "Giannis Antetokounmpo",
+            "status": "Day-To-Day",
+            "updated": "2026-11-26T21:15",
+            "note": "Antetokounmpo is probable for Friday's game against the Knicks due to right groin tendinitis."
+          },
+          {
+            "player": "Andrew Wiggins",
+            "status": "Day-To-Day",
+            "updated": "2026-11-26T21:08",
+            "note": "Wiggins is probable for Friday's game against the Knicks due to a right ankle sprain."
+          }
+        ]
+      },
+      "home_info": {
+        "record": "12-6",
+        "games": 18,
+        "b2b": false,
+        "diff": "+6.4",
+        "last10": "8-2",
+        "home_rec": "7-3",
+        "road_rec": "5-3",
+        "streak": "W6",
+        "injuries": [
+          {
+            "player": "Miles McBride",
+            "status": "Day-To-Day",
+            "updated": "2026-11-26T22:11",
+            "note": "McBride (groin) is questionable for Friday's game against the Heat."
+          },
+          {
+            "player": "Jordan Clarkson",
+            "status": "Out",
+            "updated": "2026-11-26T22:03",
+            "note": "Clarkson (foot) is questionable for Friday's game against the Heat."
+          },
+          {
+            "player": "OG Anunoby",
+            "status": "Out",
+            "updated": "2026-11-26T21:57",
+            "note": "Anunoby (calf) is doubtful for Friday's game against the Heat."
+          },
+          {
+            "player": "Andre Drummond",
+            "status": "Day-To-Day",
+            "updated": "2026-11-26T21:51",
+            "note": "Drummond (head) is questionable for Friday's game against the Heat."
+          }
+        ]
+      }
+    },
+    {
+      "id": "326e8215b0369df0d4d65e5c0afe9ff5",
+      "commence": "2026-11-28T00:40:00Z",
+      "date": "2026-11-27",
+      "away": "Milwaukee Bucks",
+      "home": "Detroit Pistons",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.2196,
+          "best": 370,
+          "book": "fanduel",
+          "prices": {
+            "fanduel": 370,
+            "mybookieag": 330,
+            "draftkings": 331,
+            "betrivers": 335,
+            "bovada": 340,
+            "lowvig": 340,
+            "betonlineag": 334,
+            "betmgm": 350,
+            "betus": 333
+          }
+        },
+        "home": {
+          "fair": 0.7804,
+          "best": -424,
+          "book": "draftkings",
+          "prices": {
+            "fanduel": -480,
+            "mybookieag": -450,
+            "draftkings": -424,
+            "betrivers": -455,
+            "bovada": -460,
+            "lowvig": -420,
+            "betonlineag": -425,
+            "betmgm": -475,
+            "betus": -425
+          }
+        }
+      },
+      "espn_id": "401909327",
+      "neutral": false,
+      "away_info": {
+        "record": "2-17",
+        "games": 19,
+        "b2b": false,
+        "diff": "-11.1",
+        "last10": "1-9",
+        "home_rec": "1-9",
+        "road_rec": "1-8",
+        "streak": "L1",
+        "injuries": []
+      },
+      "home_info": {
+        "record": "11-6",
+        "games": 17,
+        "b2b": false,
+        "diff": "+5.6",
+        "last10": "5-5",
+        "home_rec": "3-3",
+        "road_rec": "8-3",
+        "streak": "W1",
+        "injuries": [
+          {
+            "player": "Duncan Robinson",
+            "status": "Out",
+            "updated": "2026-11-26T22:26",
+            "note": "Robinson (quadriceps) is out for Friday's game against the Bucks."
+          },
+          {
+            "player": "Cade Cunningham",
+            "status": "Out",
+            "updated": "2026-11-26T22:25",
+            "note": "Cunningham (knee) is out for Friday's game against the Bucks."
+          },
+          {
+            "player": "Jalen Duren",
+            "status": "Out",
+            "updated": "2026-11-26T15:31",
+            "note": "Detroit recalled Duren (hamstring) from the G League's Motor City Cruise on Wednesday."
+          },
+          {
+            "player": "Ebuka Okorie",
+            "status": "Out",
+            "updated": "2026-11-24T18:37",
+            "note": "The Pistons announced Tuesday that Okorie (oblique) will miss at least two weeks, per Eric Vincent of ClutchPoints.com."
+          },
+          {
+            "player": "Taurean Prince",
+            "status": "Out",
+            "updated": "2026-11-24T18:33",
+            "note": "Prince underwent arthroscopic right knee surgery Nov. 18 and will be re-evaluated in four weeks, Eric Vincent of ClutchPoints.com reports."
+          }
+        ]
+      }
+    },
+    {
+      "id": "5b64071f3e3bf67b0fdea8d1ac81d0ec",
+      "commence": "2026-11-28T00:40:00Z",
+      "date": "2026-11-27",
+      "away": "Philadelphia 76ers",
+      "home": "Indiana Pacers",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.6011,
+          "best": -166,
+          "book": "fanduel",
+          "prices": {
+            "fanduel": -166,
+            "draftkings": -170,
+            "betrivers": -159,
+            "betmgm": -170,
+            "bovada": -165,
+            "mybookieag": -165,
+            "lowvig": -165,
+            "betonlineag": -165,
+            "betus": -165
+          }
+        },
+        "home": {
+          "fair": 0.3989,
+          "best": 142,
+          "book": "draftkings",
+          "prices": {
+            "fanduel": 140,
+            "draftkings": 142,
+            "betrivers": 130,
+            "betmgm": 140,
+            "bovada": 140,
+            "mybookieag": 134,
+            "lowvig": 146,
+            "betonlineag": 145,
+            "betus": 142
+          }
+        }
+      },
+      "espn_id": "401909328",
+      "neutral": false,
+      "away_info": {
+        "record": "15-4",
+        "games": 19,
+        "b2b": false,
+        "diff": "+2.2",
+        "last10": "7-3",
+        "home_rec": "8-3",
+        "road_rec": "7-1",
+        "streak": "W1",
+        "injuries": [
+          {
+            "player": "Joel Embiid",
+            "status": "Day-To-Day",
+            "updated": "2026-11-26T22:16",
+            "note": "Embiid (illness) is questionable for Friday's game against the Pacers."
+          },
+          {
+            "player": "Jaylen Brown",
+            "status": "Out",
+            "updated": "2026-11-26T22:13",
+            "note": "Brown (hamstring) is out for Friday's game against the Pacers."
+          },
+          {
+            "player": "Ariel Hukporti",
+            "status": "Out",
+            "updated": "2026-10-06T19:17",
+            "note": "Hukporti has sustained a season-ending ruptured right Achilles tendon, per Shams Charania of ESPN."
+          }
+        ]
+      },
+      "home_info": {
+        "record": "6-12",
+        "games": 18,
+        "b2b": false,
+        "diff": "-3.3",
+        "last10": "4-6",
+        "home_rec": "3-5",
+        "road_rec": "3-6",
+        "streak": "W1",
+        "injuries": [
+          {
+            "player": "Kelly Oubre Jr.",
+            "status": "Day-To-Day",
+            "updated": "2026-11-27T00:42",
+            "note": "Oubre is questionable for Friday's game against the 76ers due to a right hand laceration."
+          },
+          {
+            "player": "Larry Nance Jr.",
+            "status": "Day-To-Day",
+            "updated": "2026-11-26T22:43",
+            "note": "Nance (ankle) is questionable for Friday's game against the 76ers."
+          },
+          {
+            "player": "T.J. McConnell",
+            "status": "Day-To-Day",
+            "updated": "2026-11-26T22:29",
+            "note": "McConnell (hamstring) is questionable for Friday's game against the 76ers."
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "status": "Out",
+            "updated": "2026-11-24T19:41",
+            "note": "Haliburton (hamstring) was recalled from the G League's Noblesville Boom on Tuesday, Tony East of Forbes.com reports."
+          },
+          {
+            "player": "Ben Sheppard",
+            "status": "Out",
+            "updated": "2026-10-28T21:41",
+            "note": "Head coach Rick Carlise confirmed Sheppard will miss \"months\" after undergoing surgery to repair a torn meniscus in his left knee, Tony East of Forbes.com repor"
+          }
+        ]
+      }
+    },
+    {
+      "id": "709de4f76f95aebf383d180ac3c6f679",
+      "commence": "2026-11-28T00:40:00Z",
+      "date": "2026-11-27",
+      "away": "Brooklyn Nets",
+      "home": "Toronto Raptors",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.2414,
+          "best": 300,
+          "book": "fanduel",
+          "prices": {
+            "fanduel": 300,
+            "mybookieag": 275,
+            "draftkings": 298,
+            "betrivers": 330,
+            "bovada": 295,
+            "lowvig": 293,
+            "betonlineag": 289,
+            "betmgm": 300,
+            "betus": 290
+          }
+        },
+        "home": {
+          "fair": 0.7586,
+          "best": -375,
+          "book": "fanduel",
+          "prices": {
+            "fanduel": -375,
+            "mybookieag": -360,
+            "draftkings": -375,
+            "betrivers": -435,
+            "bovada": -390,
+            "lowvig": -356,
+            "betonlineag": -360,
+            "betmgm": -375,
+            "betus": -360
+          }
+        }
+      },
+      "espn_id": "401909329",
+      "neutral": false,
+      "away_info": {
+        "record": "4-13",
+        "games": 17,
+        "b2b": false,
+        "diff": "-8.1",
+        "last10": "3-7",
+        "home_rec": "1-6",
+        "road_rec": "3-7",
+        "streak": "W1",
+        "injuries": [
+          {
+            "player": "Moritz Wagner",
+            "status": "Out",
+            "updated": "2026-11-26T21:33",
+            "note": "Wagner (knee) won't be available for Friday's game against Toronto."
+          },
+          {
+            "player": "Nolan Traore",
+            "status": "Out",
+            "updated": "2026-11-23T15:22",
+            "note": "Traore will be re-evaluated in approximately 8-10 weeks due to a right hamstring strain, Michael Scotto of HoopsHype.com reports."
+          }
+        ]
+      },
+      "home_info": {
+        "record": "6-11",
+        "games": 17,
+        "b2b": false,
+        "diff": "-0.1",
+        "last10": "2-8",
+        "home_rec": "2-7",
+        "road_rec": "4-4",
+        "streak": "L1",
+        "injuries": [
+          {
+            "player": "Alijah Martin",
+            "status": "Day-To-Day",
+            "updated": "2026-11-26T21:18",
+            "note": "Martin is questionable for Friday's game against the Nets due to left knee soreness."
+          },
+          {
+            "player": "Kawhi Leonard",
+            "status": "Out",
+            "updated": "2026-11-24T21:15",
+            "note": "Leonard has begun individual on-court workouts following treatment to address swelling in his left knee, and he will be re-evaluated in one week, Marc J. Spears"
+          },
+          {
+            "player": "Nate Bittle",
+            "status": "Out",
+            "updated": "2026-11-22T21:13",
+            "note": "Bittle (foot) has been ruled out for Monday's game against the Bucks, Blake Murphy of Sportsnet.ca reports."
+          },
+          {
+            "player": "RJ Barrett",
+            "status": "Out",
+            "updated": "2026-11-19T21:13",
+            "note": "Barrett has been diagnosed with a right hamstring strain and will be re-evaluated in two weeks, Brett Siegel of ClutchPoints.com reports."
+          }
+        ]
+      }
+    },
+    {
+      "id": "c5dc35b4116988de2c1425df17456478",
+      "commence": "2026-11-28T01:10:00Z",
+      "date": "2026-11-27",
+      "away": "Atlanta Hawks",
+      "home": "Boston Celtics",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.251,
+          "best": 290,
+          "book": "fanduel",
+          "prices": {
+            "fanduel": 290,
+            "draftkings": 286,
+            "betrivers": 250,
+            "betmgm": 290,
+            "bovada": 290,
+            "mybookieag": 260,
+            "lowvig": 285,
+            "betonlineag": 280,
+            "betus": 280
+          }
+        },
+        "home": {
+          "fair": 0.749,
+          "best": -359,
+          "book": "draftkings",
+          "prices": {
+            "fanduel": -360,
+            "draftkings": -359,
+            "betrivers": -315,
+            "betmgm": -375,
+            "bovada": -380,
+            "mybookieag": -340,
+            "lowvig": -345,
+            "betonlineag": -350,
+            "betus": -350
+          }
+        }
+      },
+      "espn_id": "401909330",
+      "neutral": false,
+      "away_info": {
+        "record": "11-6",
+        "games": 17,
+        "b2b": false,
+        "diff": "+3.1",
+        "last10": "8-2",
+        "home_rec": "5-3",
+        "road_rec": "6-3",
+        "streak": "W4",
+        "injuries": [
+          {
+            "player": "Jock Landale",
+            "status": "Out",
+            "updated": "2026-11-26T22:44",
+            "note": "Landale (hip) is out for Friday's game against the Celtics."
+          },
+          {
+            "player": "Asa Newell",
+            "status": "Out",
+            "updated": "2026-11-17T21:16",
+            "note": "Newell underwent surgery Tuesday for a plantar plate tear in his left great toe, and he will be re-evaluated in approximately four months, Brad Rowland of the L"
+          },
+          {
+            "player": "CJ McCollum",
+            "status": "Out",
+            "updated": "2026-11-17T21:08",
+            "note": "McCollum (calf) will miss at least four weeks, per Brad Rowland of the Locked On Podcast Network."
+          },
+          {
+            "player": "Mouhamed Gueye",
+            "status": "Out",
+            "updated": "2026-11-13T00:06",
+            "note": "Gueye (foot) is ready to begin on-court activities and will be re-evaluated in four weeks, Brad Rowland of the Locked On Podcast Network reports."
+          },
+          {
+            "player": "Henri Veesaar",
+            "status": "Out",
+            "updated": "2026-09-21T19:50",
+            "note": "Veesaar was diagnosed with a torn right ACL and is expected to miss the 2026-27 season, the Hawks announced Monday."
+          }
+        ]
+      },
+      "home_info": {
+        "record": "12-6",
+        "games": 18,
+        "b2b": false,
+        "diff": "+9.4",
+        "last10": "6-4",
+        "home_rec": "6-1",
+        "road_rec": "6-5",
+        "streak": "W1",
+        "injuries": [
+          {
+            "player": "Mitchell Robinson",
+            "status": "Out",
+            "updated": "2026-11-26T19:00",
+            "note": "Robinson (illness) is questionable for Friday's game against the Hawks."
+          }
+        ]
+      }
+    },
+    {
+      "id": "f0bc60d1516d217dba58c1f4fa653a59",
+      "commence": "2026-11-28T01:40:00Z",
+      "date": "2026-11-27",
+      "away": "Memphis Grizzlies",
+      "home": "Minnesota Timberwolves",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.3672,
+          "best": 160,
+          "book": "draftkings",
+          "prices": {
+            "fanduel": 154,
+            "draftkings": 160,
+            "mybookieag": 153,
+            "betrivers": 170,
+            "bovada": 170,
+            "betonlineag": 165,
+            "lowvig": 166,
+            "betmgm": 154,
+            "betus": 163
+          }
+        },
+        "home": {
+          "fair": 0.6328,
+          "best": -184,
+          "book": "fanduel",
+          "prices": {
+            "fanduel": -184,
+            "draftkings": -192,
+            "mybookieag": -189,
+            "betrivers": -215,
+            "bovada": -200,
+            "betonlineag": -190,
+            "lowvig": -190,
+            "betmgm": -190,
+            "betus": -190
+          }
+        }
+      },
+      "espn_id": "401909331",
+      "neutral": false,
+      "away_info": {
+        "record": "14-5",
+        "games": 19,
+        "b2b": false,
+        "diff": "+9.4",
+        "last10": "8-2",
+        "home_rec": "5-4",
+        "road_rec": "9-1",
+        "streak": "W2",
+        "injuries": [
+          {
+            "player": "Isaiah Stewart",
+            "status": "Day-To-Day",
+            "updated": "2026-11-26T23:27",
+            "note": "Stewart is questionable for Friday's game against the Timberwolves due to right hip soreness."
+          },
+          {
+            "player": "Zach Edey",
+            "status": "Day-To-Day",
+            "updated": "2026-11-26T23:24",
+            "note": "Edey (ankle) is questionable for Friday's game against the Timberwolves."
+          },
+          {
+            "player": "Scotty Pippen Jr.",
+            "status": "Out",
+            "updated": "2026-11-24T23:04",
+            "note": "Pippen (back) is out for Wednesday's game against the Clippers."
+          },
+          {
+            "player": "Cameron Boozer",
+            "status": "Out",
+            "updated": "2026-11-23T23:07",
+            "note": "Boozer (ankle) will be re-evaluated in four weeks, Brett Siegel of ClutchPoints.com reports."
+          },
+          {
+            "player": "Jerami Grant",
+            "status": "Out",
+            "updated": "2026-11-23T04:04",
+            "note": "Grant was diagnosed with a grade 1 left calf strain and will be re-evaluated in two weeks."
+          },
+          {
+            "player": "GG Jackson",
+            "status": "Out",
+            "updated": "2026-11-17T23:18",
+            "note": "Jackson underwent a procedure Wednesday to repair a broken fifth metatarsal in his left foot. He is expected to recover fully and will be re-evaluated in approx"
+          },
+          {
+            "player": "Richie Saunders",
+            "status": "Out",
+            "updated": "2026-11-07T17:24",
+            "note": "Saunders signed a two-way contract with the Grizzlies on Saturday, Shams Charania of ESPN reports."
+          }
+        ]
+      },
+      "home_info": {
+        "record": "14-5",
+        "games": 19,
+        "b2b": false,
+        "diff": "+10.4",
+        "last10": "8-2",
+        "home_rec": "9-3",
+        "road_rec": "5-2",
+        "streak": "W3",
+        "injuries": [
+          {
+            "player": "LaMelo Ball",
+            "status": "Day-To-Day",
+            "updated": "2026-11-26T23:14",
+            "note": "Ball (ankle) is questionable for Friday's game against the Grizzlies."
+          },
+          {
+            "player": "Donte DiVincenzo",
+            "status": "Out",
+            "updated": "2026-11-24T17:10",
+            "note": "DiVincenzo (Achilles) has been cleared for team basketball activities and is targeting a return to game action in January, Jon Krawczynski of The Athletic repor"
+          },
+          {
+            "player": "Jaylen Clark",
+            "status": "Out",
+            "updated": "2026-11-15T22:40",
+            "note": "Clark (hamstring) has been ruled out for the next two weeks."
+          },
+          {
+            "player": "Anthony Edwards",
+            "status": "Out",
+            "updated": "2026-10-29T18:33",
+            "note": "Edwards underwent a successful arthroscopic procedure on his right knee Thursday, the Timberwolves announced."
+          }
+        ]
+      }
+    },
+    {
+      "id": "46b1c571cf786a86e800d61fd1d79004",
+      "commence": "2026-11-28T02:10:00Z",
+      "date": "2026-11-27",
+      "away": "Dallas Mavericks",
+      "home": "Phoenix Suns",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.4474,
+          "best": 114,
+          "book": "draftkings",
+          "prices": {
+            "fanduel": 110,
+            "mybookieag": 108,
+            "draftkings": 114,
+            "betrivers": 115,
+            "bovada": 115,
+            "lowvig": 117,
+            "betonlineag": 115,
+            "betmgm": 110,
+            "betus": 115
+          }
+        },
+        "home": {
+          "fair": 0.5526,
+          "best": -130,
+          "book": "fanduel",
+          "prices": {
+            "fanduel": -130,
+            "mybookieag": -132,
+            "draftkings": -135,
+            "betrivers": -139,
+            "bovada": -135,
+            "lowvig": -133,
+            "betonlineag": -135,
+            "betmgm": -135,
+            "betus": -135
+          }
+        }
+      },
+      "espn_id": "401909332",
+      "neutral": false,
+      "away_info": {
+        "record": "11-7",
+        "games": 18,
+        "b2b": false,
+        "diff": "+1.0",
+        "last10": "7-3",
+        "home_rec": "7-2",
+        "road_rec": "4-5",
+        "streak": "W4",
+        "injuries": [
+          {
+            "player": "Tobi Lawal",
+            "status": "Out",
+            "updated": "2026-11-27T00:01",
+            "note": "Lawal (groin) is out for Friday's game against the Suns."
+          },
+          {
+            "player": "Sergio de Larrea",
+            "status": "Out",
+            "updated": "2026-11-26T23:59",
+            "note": "De Larrea (knee) is out for Friday's game against the Suns."
+          },
+          {
+            "player": "Dereck Lively II",
+            "status": "Out",
+            "updated": "2026-11-26T23:56",
+            "note": "Lively (foot) is out for Friday's game against the Suns."
+          },
+          {
+            "player": "Tarik Biberovic",
+            "status": "Out",
+            "updated": "2026-11-26T23:53",
+            "note": "Biberovic (heel) is out for Friday's game against the Suns."
+          }
+        ]
+      },
+      "home_info": {
+        "record": "9-8",
+        "games": 17,
+        "b2b": false,
+        "diff": "-1.3",
+        "last10": "7-3",
+        "home_rec": "5-4",
+        "road_rec": "4-4",
+        "streak": "L1",
+        "injuries": [
+          {
+            "player": "Mark Williams",
+            "status": "Out",
+            "updated": "2026-09-11T16:03",
+            "note": "Williams underwent surgery Thursday to repair a torn labrum in his left shoulder and will miss an extended period of time, Shams Charania of ESPN reports."
+          }
+        ]
+      }
+    },
+    {
+      "id": "fecbaa4e1973217826262c63d8f52dea",
+      "commence": "2026-11-28T02:40:00Z",
+      "date": "2026-11-27",
+      "away": "New Orleans Pelicans",
+      "home": "Los Angeles Clippers",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.4212,
+          "best": 130,
+          "book": "fanduel",
+          "prices": {
+            "fanduel": 130,
+            "mybookieag": 123,
+            "draftkings": 124,
+            "betrivers": 130,
+            "lowvig": 132,
+            "betonlineag": 130,
+            "betmgm": 125,
+            "bovada": 125,
+            "betus": 129
+          }
+        },
+        "home": {
+          "fair": 0.5788,
+          "best": -148,
+          "book": "draftkings",
+          "prices": {
+            "fanduel": -154,
+            "mybookieag": -151,
+            "draftkings": -148,
+            "betrivers": -159,
+            "lowvig": -149,
+            "betonlineag": -150,
+            "betmgm": -150,
+            "bovada": -145,
+            "betus": -150
+          }
+        }
+      },
+      "espn_id": "401909335",
+      "neutral": false,
+      "away_info": {
+        "record": "5-14",
+        "games": 19,
+        "b2b": false,
+        "diff": "-8.0",
+        "last10": "1-9",
+        "home_rec": "4-8",
+        "road_rec": "1-6",
+        "streak": "L4",
+        "injuries": [
+          {
+            "player": "Trendon Watford",
+            "status": "Out",
+            "updated": "2026-11-26T21:22",
+            "note": "Watford (ankle) is probable for Friday's game against the Clippers."
+          },
+          {
+            "player": "Bennedict Mathurin",
+            "status": "Out",
+            "updated": "2026-11-26T21:21",
+            "note": "Mathurin (foot) is doubtful for Friday's game against the Clippers."
+          },
+          {
+            "player": "Julian Reese",
+            "status": "Day-To-Day",
+            "updated": "2026-11-25T16:11",
+            "note": "The Pelicans transferred Reese from the G League's Laketown Squadron, and he will be available for New Orleans' game against the Warriors on Monday."
+          },
+          {
+            "player": "Dejounte Murray",
+            "status": "Out",
+            "updated": "2026-11-13T20:19",
+            "note": "Murray (ankle) is out for Friday's game against Memphis."
+          }
+        ]
+      },
+      "home_info": {
+        "record": "4-13",
+        "games": 17,
+        "b2b": false,
+        "diff": "-7.5",
+        "last10": "3-7",
+        "home_rec": "4-4",
+        "road_rec": "0-9",
+        "streak": "L5",
+        "injuries": [
+          {
+            "player": "Bradley Beal",
+            "status": "Out",
+            "updated": "2026-10-15T01:03",
+            "note": "Beal (knee) will not be ready for the start of the regular season, NBA writer Justin Russo reports."
+          },
+          {
+            "player": "Jordan Miller",
+            "status": "Out",
+            "updated": "2026-08-26T20:04",
+            "note": "Miller underwent surgery Wednesday to repair a torn left rotator cuff and will be re-evaluated in six months, per Law Murray of The Athletic."
+          }
+        ]
+      }
+    },
+    {
+      "id": "592a440c590415d43f5ffbfd922cd41e",
+      "commence": "2026-11-28T02:40:00Z",
+      "date": "2026-11-27",
+      "away": "Golden State Warriors",
+      "home": "Portland Trail Blazers",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.2346,
+          "best": 312,
+          "book": "draftkings",
+          "prices": {
+            "fanduel": 295,
+            "mybookieag": 300,
+            "draftkings": 312,
+            "betrivers": 300,
+            "bovada": 305,
+            "betonlineag": 310,
+            "lowvig": 315,
+            "betmgm": 310,
+            "betus": 312
+          }
+        },
+        "home": {
+          "fair": 0.7654,
+          "best": -370,
+          "book": "fanduel",
+          "prices": {
+            "fanduel": -370,
+            "mybookieag": -400,
+            "draftkings": -395,
+            "betrivers": -400,
+            "bovada": -410,
+            "betonlineag": -390,
+            "lowvig": -386,
+            "betmgm": -400,
+            "betus": -390
+          }
+        }
+      },
+      "espn_id": "401909336",
+      "neutral": false,
+      "away_info": {
+        "record": "10-8",
+        "games": 18,
+        "b2b": false,
+        "diff": "+0.3",
+        "last10": "5-5",
+        "home_rec": "8-1",
+        "road_rec": "2-7",
+        "streak": "W2",
+        "injuries": [
+          {
+            "player": "Stephen Curry",
+            "status": "Out",
+            "updated": "2026-11-26T01:36",
+            "note": "Curry (abdomen) will be re-evaluated Friday after Thanksgiving, Anthony Slater of ESPN.com reports."
+          },
+          {
+            "player": "Kristaps Porzingis",
+            "status": "Out",
+            "updated": "2026-11-06T21:26",
+            "note": "Porzingis announced on his social media that he's stepping away from basketball."
+          },
+          {
+            "player": "Moses Moody",
+            "status": "Out",
+            "updated": "2026-10-16T16:14",
+            "note": "Moody (knee) is progressing toward a potential return between December and January after rupturing his left patellar tendon in March, Anthony Slater of ESPN rep"
+          },
+          {
+            "player": "Jimmy Butler III",
+            "status": "Out",
+            "updated": "2026-10-16T16:11",
+            "note": "Butler (knee) could return sometime between January and February as he continues recovering from a torn right ACL, Anthony Slater of ESPN reports."
+          }
+        ]
+      },
+      "home_info": {
+        "record": "12-6",
+        "games": 18,
+        "b2b": false,
+        "diff": "+6.4",
+        "last10": "6-4",
+        "home_rec": "4-2",
+        "road_rec": "8-4",
+        "streak": "W2",
+        "injuries": [
+          {
+            "player": "Chris Youngblood",
+            "status": "Out",
+            "updated": "2026-11-27T00:56",
+            "note": "Youngblood (heel) is out for Friday's game against the Warriors."
+          },
+          {
+            "player": "Vit Krejci",
+            "status": "Out",
+            "updated": "2026-11-11T19:56",
+            "note": "Krejci underwent surgery on his fractured left ankle Wednesday and will be re-evaluated in eight weeks, Brett Siegel of ClutchPoints.com reports."
+          },
+          {
+            "player": "Ja Morant",
+            "status": "Out",
+            "updated": "2026-11-08T02:18",
+            "note": "Head coach Micah Nori said Morant met with a doctor in Los Angeles, who gave him a positive outlook on his recovery from the hamstring injury. While Nori declin"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "status": "Out",
+            "updated": "2026-08-24T20:23",
+            "note": "Sharpe suffered a torn meniscus in his knee and is expected to miss six months, per Shams Charania of ESPN."
+          }
+        ]
+      }
+    },
+    {
+      "id": "13d9ca3bcb664829c603755d31401002",
+      "commence": "2026-11-28T02:40:00Z",
+      "date": "2026-11-27",
+      "away": "Los Angeles Lakers",
+      "home": "San Antonio Spurs",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.3296,
+          "best": 196,
+          "book": "draftkings",
+          "prices": {
+            "draftkings": 196,
+            "fanduel": 184,
+            "betrivers": 180,
+            "betmgm": 190,
+            "bovada": 190,
+            "mybookieag": 185,
+            "lowvig": 202,
+            "betonlineag": 200,
+            "betus": 200
+          }
+        },
+        "home": {
+          "fair": 0.6704,
+          "best": -220,
+          "book": "fanduel",
+          "prices": {
+            "draftkings": -237,
+            "fanduel": -220,
+            "betrivers": -225,
+            "betmgm": -235,
+            "bovada": -230,
+            "mybookieag": -232,
+            "lowvig": -238,
+            "betonlineag": -240,
+            "betus": -235
+          }
+        }
+      },
+      "espn_id": "401909333",
+      "neutral": false,
+      "away_info": {
+        "record": "15-3",
+        "games": 18,
+        "b2b": false,
+        "diff": "+6.7",
+        "last10": "9-1",
+        "home_rec": "8-2",
+        "road_rec": "7-1",
+        "streak": "W2",
+        "injuries": [
+          {
+            "player": "Austin Reaves",
+            "status": "Out",
+            "updated": "2026-11-26T23:21",
+            "note": "Reaves (heel) is questionable for Friday's game against the Spurs."
+          }
+        ]
+      },
+      "home_info": {
+        "record": "15-4",
+        "games": 19,
+        "b2b": false,
+        "diff": "+11.3",
+        "last10": "8-2",
+        "home_rec": "7-3",
+        "road_rec": "8-1",
+        "streak": "L1",
+        "injuries": [
+          {
+            "player": "Dylan Harper",
+            "status": "Out",
+            "updated": "2026-11-26T23:41",
+            "note": "Harper (hip) is questionable for Friday's game against the Lakers."
+          },
+          {
+            "player": "De'Aaron Fox",
+            "status": "Day-To-Day",
+            "updated": "2026-11-26T23:35",
+            "note": "Fox (shin) is questionable for Friday's game against the Lakers."
+          },
+          {
+            "player": "Tobias Harris",
+            "status": "Out",
+            "updated": "2026-11-16T19:26",
+            "note": "Harris (calf) is likely to be sidelined until early December, per Jeff Garcia of KENS 5 San Antonio."
+          },
+          {
+            "player": "Jayden Quaintance",
+            "status": "Out",
+            "updated": "2026-10-05T21:43",
+            "note": "Quaintance has been around the team but has not yet been cleared for basketball activities, Matt Guzman of SI.com reports."
+          }
+        ]
+      }
+    },
+    {
+      "id": "428050645d1dc8b16d84287e21de55fa",
+      "commence": "2026-11-28T02:40:00Z",
+      "date": "2026-11-27",
+      "away": "Denver Nuggets",
+      "home": "Utah Jazz",
+      "n_books": 9,
+      "ml": {
+        "away": {
+          "fair": 0.7917,
+          "best": -450,
+          "book": "fanduel",
+          "prices": {
+            "fanduel": -450,
+            "draftkings": -468,
+            "betrivers": -455,
+            "betmgm": -475,
+            "bovada": -440,
+            "mybookieag": -500,
+            "lowvig": -469,
+            "betonlineag": -475,
+            "betus": -475
+          }
+        },
+        "home": {
+          "fair": 0.2083,
+          "best": 361,
+          "book": "draftkings",
+          "prices": {
+            "fanduel": 350,
+            "draftkings": 361,
+            "betrivers": 335,
+            "betmgm": 360,
+            "bovada": 330,
+            "mybookieag": 360,
+            "lowvig": 374,
+            "betonlineag": 367,
+            "betus": 375
+          }
+        }
+      },
+      "espn_id": "401909334",
+      "neutral": false,
+      "away_info": {
+        "record": "10-6",
+        "games": 16,
+        "b2b": false,
+        "diff": "+0.5",
+        "last10": "7-3",
+        "home_rec": "4-4",
+        "road_rec": "5-2",
+        "streak": "L1",
+        "injuries": []
+      },
+      "home_info": {
+        "record": "3-16",
+        "games": 19,
+        "b2b": false,
+        "diff": "-7.6",
+        "last10": "2-8",
+        "home_rec": "1-9",
+        "road_rec": "2-7",
+        "streak": "L3",
+        "injuries": [
+          {
+            "player": "Jaxson Hayes",
+            "status": "Day-To-Day",
+            "updated": "2026-11-27T00:11",
+            "note": "Hayes (knee) is questionable for Friday's game against the Nuggets."
+          },
+          {
+            "player": "Jusuf Nurkic",
+            "status": "Out",
+            "updated": "2026-11-27T00:08",
+            "note": "Nurkic (foot) is questionable for Friday's game against the Nuggets."
+          },
+          {
+            "player": "Lauri Markkanen",
+            "status": "Out",
+            "updated": "2026-11-11T18:22",
+            "note": "Markkanen has been diagnosed with a non-displaced fracture in his right hand and will be sidelined for at least one month, Shams Charania of ESPN reports."
+          },
+          {
+            "player": "Jaren Jackson Jr.",
+            "status": "Out",
+            "updated": "2026-10-27T19:25",
+            "note": "Jackson has been diagnosed with a torn MCL in his right knee and will be sidelined for 6-to-8 weeks, per Shams Charania of ESPN."
+          }
+        ]
+      }
+    }
+  ],
+  "notes": [],
+  "season_type": 2
+}
